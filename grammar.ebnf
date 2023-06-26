@@ -1,0 +1,12 @@
+tpye = int
+    || boolean
+    || String
+    || double
+    || float
+    || char
+    || short;
+
+assignment = tpye name = expression
+    || name = expression
+;
+

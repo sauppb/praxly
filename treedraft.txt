@@ -1,0 +1,54 @@
+steps to adding a block
+
+1. define the object for the executable (milestone 1 type stuff)
+2. finish the walk through the json in m1 module
+3. edit the lexer in milestone2 to make sure that the text will tokenize properly
+4. edit the parser so that it will package correctly into the tree
+**DO NOT PROCEED UNTIL THE TEXT RUNS**
+5. define the block and render it in the toolbox
+6. define the generator
+** MAKE SURE BLOCKS WORK BEFORE PROCEEDING**
+7. update tree2blocks for block generation from text
+8. update tree2text for text generation from blocks
+** TEST FOR EVERY POSSIBILITY YOU CAN THINK OF **
+
+
+
+
+
+assignement{
+    vartype: 
+    type: 'assignment;
+    value: 
+    name: 
+}
+
+
+
+
+int x = 1
+while x < 4
+    print x
+    x = x + 1
+end while
+
+
+variable{
+    name: 
+    type: 'variable', 
+    variabletype: 
+    expression: 
+
+}
+
+
+TODO: 
+
+reorganize toolbox
+for loops
+
+
+
+
+
+    
