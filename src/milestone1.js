@@ -1,28 +1,56 @@
 
 // import { workspace } from "./main";
+
+import { indextoAceRange } from "./milestone2";
+
   
 
 export var printBuffer = "";
 var variableList = {};
 export var errorOutput = "";
+export var blockErrors = {};
 
-export function addError(error){
-    errorOutput += error + '\n';
+
+
+export function textError(type, error, startIndex, endIndex){
+    var ranges = indextoAceRange(startIndex, endIndex);
+    errorOutput += `${type} error occured on line line ${ranges[0]}:    ${error}\n`;
 }
 
-export function addBlockError(blockid, message){
+
+
+export function addBlockErrors(blockid, message, workspace){
     var block = workspace.getBlockById(blockid);
     block.setWarningText(message);
+
+}
+
+export function runtimeError(errormessage, blockjson){
+    if (typeof(blockjson.startIndex !== 'undefined') && typeof(blockjson.endIndex !== 'undefined')){
+        textError('runtime', errormessage, blockjson.startIndex, blockjson.endIndex);
+    }
+    if (typeof(blockjson.blockid !== 'undefined')){
+        blockErrors[blockjson.blockid] = errormessage;
+    }
+
 
 }
 
 export function clearOutput() {
     printBuffer = "";
     errorOutput = "";
+    blockErrors = {};
 }
 
 
 export const createExecutable = (blockjson) => {
+    if (typeof blockjson === 'undefined' || typeof blockjson.type === 'undefined'  ) {
+        console.error('error constructing the tree: reached an invalid branch that is either undefined or has an undefined type');
+        return new Praxly_invalid();
+      }
+      
+
+
     console.log(blockjson.type);
     switch(blockjson.type) {
         case 'INT':
@@ -709,6 +737,15 @@ class Praxly_not {
     }
 }
 
+class Praxly_invalid {
+    constructor() {
+        this.error = 'error\n';
+    }
+    evaluate() {
+        printBuffer += this.error;
+    }
+}
+
 //alright, here's the fun function
 
 
@@ -789,9 +826,5 @@ const ResultType = {
     }
   }
   
-
-
-
-
 
 

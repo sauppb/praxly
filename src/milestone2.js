@@ -3,10 +3,41 @@ import { createExecutable } from './milestone1';
 import { printBuffer } from './milestone1';
 import { clearOutput } from './milestone1';
 import { variables } from 'blockly/blocks';
+import { textError } from './milestone1';
 
 export const textEditor = ace.edit("aceCode", {fontSize: 16});
 
 // Get the underlying DOM element of the Ace editor
+
+export const  indextoAceRange = (startindex, endindex) => {
+  let code = textEditor.getValue();
+  var startLine = 0;
+  var startLineIndex = 0;
+  var endLine = 0; 
+  var endLineIndex = 0;
+  var currentLine = 1; 
+  var currentLineIndex = 0;
+  for (let i = 0; i < code.length - 1; i++) {
+    if (i === startindex){
+      startLine = currentLine;
+      startLineIndex = currentLineIndex;
+    }
+    if (i === endindex){
+      endLineIndex = currentLineIndex;
+      endLine = currentLine;
+    }
+    if (code[i] === '\n'){
+      currentLineIndex = 0;
+      currentLine += 1;
+    } else{
+      currentLineIndex += 1;
+    }
+  }
+  var start = { row: startLine, column: startLineIndex};
+  var end = {row: endLine, column: endLineIndex};
+  return [startLine, startLineIndex, endLine, endLineIndex];
+}
+
 
 
 export const text2tree = () => {
@@ -75,7 +106,7 @@ class Token {
     }
 
     hasNot_ahead(c) {
-      return this.i < this.length && !this.source[this.i + 1] === c;
+      return this.i < this.length && !this.source[this.i + 1] !== c;
     }
 
 
@@ -103,6 +134,7 @@ class Token {
     lex() {
       while (this.i < this.length) {
         if (this.has("+")) {
+          
           this.capture();
           if (this.has('=')){
             this.capture();
@@ -118,15 +150,21 @@ class Token {
           }
 //problem
         } else if (this.has('/') && this.has_ahead('*')){
+          // console.log('saw a comment');
           this.skip();
+          var commentStart = this.i;
           this.skip();
           while (this.hasNot('*') && this.hasNot_ahead('/')){
             this.capture();
           }
+          // console.log(`the next character is ${this.source[this.i]}`);
           if (this.has('*') && this.has_ahead('/')){
             this.skip();
             this.skip();
             this.emit_token('comment');
+          } 
+          else {
+            textError("lexing", 'looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.',commentStart, this.i);
           }
           
         } else if (this.has("-")) {
@@ -222,8 +260,14 @@ class Token {
             while (this.i < this.length && !this.has("\"") && !this.has("\'")) {
                 this.capture();
               }
-            this.skip();
-            this.emit_token("String");
+            if (this.has("\"") || this.has("\'") ){
+              this.skip();
+              this.emit_token("String");
+              
+            }
+            else {
+              textError("lexing", 'looks like you didn\'t close your quotes on your String. Remember Strings start and end with a single or double quote mark (\' or \") .',commentStart, this.i);
+            }
           } else if (this.has_letter()) {
             while (this.i < this.length && this.has_letter()) {
               this.capture();
@@ -269,6 +313,8 @@ class Token {
             this.skip();
           } 
           else {
+            textError('lexing', `invalid character ${this.source[this.i] }`, this.i, this.i);
+
             console.log("invalid character at index ", this.i);
             return 0;
           }
@@ -368,6 +414,8 @@ class Parser {
         value: tok.value, 
         type: tok.token_type,
         blockID: "code",
+        startIndex: startIndex, 
+        endIndex: endIndex
         
       };
     } else if (this.has("String")) {
@@ -376,6 +424,8 @@ class Parser {
           value: tok.value, 
           type: 'STRING',
           blockID: "code",
+          startIndex: startIndex, 
+          endIndex: endIndex
         };
     } else if (this.has("char")) {
         this.advance();
@@ -383,6 +433,8 @@ class Parser {
           value: tok.value, 
           type: tok.token_type,
           blockID: "code",
+          startIndex: startIndex, 
+          endIndex: endIndex
         };
     } else if (this.has("double")) {
         this.advance();
@@ -390,6 +442,8 @@ class Parser {
           value: tok.value, 
           type: tok.token_type,
           blockID: "code",
+          startIndex: startIndex, 
+          endIndex: endIndex
         };
     } else if (this.has("boolean")) {
       this.advance();
@@ -397,6 +451,8 @@ class Parser {
         value: tok.value, 
         type: 'BOOLEAN',
         blockID: "code",
+        startIndex: startIndex, 
+        endIndex: endIndex
       };
     
     } else if (this.has("(")) {
@@ -405,6 +461,7 @@ class Parser {
       if (this.has(")")) {
         this.advance();
       } else {
+        textError('parsing', 'did not detect closing parentheses', startIndex, endIndex);
         console.log("did not detect closing parentheses");
       }
       return expression;
@@ -415,18 +472,23 @@ class Parser {
         name: tok.value, 
         type: 'VARIABLE',
         blockID: "code",
+        startIndex: startIndex, 
+        endIndex: endIndex
       };
       
 
     } else {
-        console.log(`atom problem at this token: ${this.i}`);
-        return;
+      textError('parsing', 'Missing or Unrecognized token. This is likely the result of a lexing error.', startIndex, endIndex);
+      console.log(`atom problem at this token: ${this.i}`);
+      return;
     }
   }
 
   exponent() {
     let l =this.unary();
     // let l =this.atom();
+    var startIndex = this.tokens[this.i].startIndex;
+    var endIndex = this.tokens[this.i].endIndex;
     while (this.has("EXPONENT")) {
       this.advance();
       const r =this.exponent();
@@ -435,7 +497,10 @@ class Parser {
               left: l, 
               right: r,
               type: "EXPONENT", 
-              blockID: "code"
+              blockID: "code", 
+              startIndex: startIndex, 
+              endIndex: endIndex
+
           }
     }
     return l;
@@ -443,6 +508,8 @@ class Parser {
 
   multiplicitive() {
     let l =this.exponent();
+    var startIndex = this.tokens[this.i].startIndex;
+    var endIndex = this.tokens[this.i].endIndex;
     while (this.has("MULTIPLY") || this.has("DIVIDE") || this.has("MOD")) {
       if (this.has("MULTIPLY")) {
         this.advance();
@@ -452,7 +519,9 @@ class Parser {
             left: l, 
             right: r,
             type: "MULTIPLY", 
-            blockID: "code"
+            blockID: "code", 
+            startIndex: startIndex, 
+            endIndex: endIndex
         }
       } else if (this.has("DIVIDE")) {
         this.advance();
@@ -462,7 +531,9 @@ class Parser {
             left: l, 
             right: r,
             type: "DIVIDE", 
-            blockID: "code"
+            blockID: "code", 
+            startIndex: startIndex, 
+            endIndex: endIndex
         }
       } else if (this.has("MOD")) {
         this.advance();
@@ -472,7 +543,9 @@ class Parser {
             left: l, 
             right: r,
             type: "MOD", 
-            blockID: "code"
+            blockID: "code", 
+            startIndex: startIndex, 
+            endIndex: endIndex
         }
       }
     }
@@ -481,6 +554,8 @@ class Parser {
 
   additive() {
     let l =this.multiplicitive();
+    var startIndex = this.tokens[this.i].startIndex;
+    var endIndex = this.tokens[this.i].endIndex;
     while (this.has("ADD") || this.has("SUBTRACT")) {
       if (this.has("SUBTRACT")) {
         this.advance();
@@ -490,7 +565,9 @@ class Parser {
             left: l, 
             right: r,
             type: "SUBTRACT", 
-            blockID: "code"
+            blockID: "code", 
+            startIndex: startIndex, 
+            endIndex: endIndex
         }
       } else if (this.has("ADD")) {
         this.advance();
@@ -500,7 +577,9 @@ class Parser {
             left: l, 
             right: r,
             type: "ADD", 
-            blockID: "code"
+            blockID: "code", 
+            startIndex: startIndex, 
+            endIndex: endIndex
         }
       }
     }
@@ -511,8 +590,12 @@ class Parser {
     if (!this.has('not') && !this.has('SUBTRACT')){
       return this.atom();
     }
+    var startIndex = this.tokens[this.i].startIndex;
+    var endIndex = this.tokens[this.i].endIndex;
     var result = {
       blockID: 'code',
+      startIndex: startIndex, 
+      endIndex: endIndex
     };
     while (this.has('not')){
       if (this.has('not')){
@@ -527,6 +610,8 @@ class Parser {
 
   comparable() {
     let l =this.additive();
+    var startIndex = this.tokens[this.i].startIndex;
+    var endIndex = this.tokens[this.i].endIndex;
     while (
       this.has("Less_Than_Equal_To") ||
       this.has("Greater_Than_Equal_To") ||
@@ -543,7 +628,9 @@ class Parser {
             left: l, 
             right: r,
             type: "LESS_THAN_EQUAL", 
-            blockID: "code"
+            blockID: "code", 
+            startIndex: startIndex, 
+            endIndex: endIndex
         }
       } else if (this.has("Greater_Than_Equal_To")) {
         this.advance();
@@ -553,7 +640,9 @@ class Parser {
             left: l, 
             right: r,
             type: "GREATER_THAN_EQUAL", 
-            blockID: "code"
+            blockID: "code", 
+            startIndex: startIndex, 
+            endIndex: endIndex
         }
       } else if (this.has("Less_Than")) {
         this.advance();
@@ -563,7 +652,9 @@ class Parser {
             left: l, 
             right: r,
             type: "LESS_THAN", 
-            blockID: "code"
+            blockID: "code", 
+            startIndex: startIndex, 
+            endIndex: endIndex
         }
       } else if (this.has("Greater_Than")) {
         this.advance();
@@ -573,7 +664,9 @@ class Parser {
             left: l, 
             right: r,
             type: "GREATER_THAN", 
-            blockID: "code"
+            blockID: "code", 
+            startIndex: startIndex, 
+            endIndex: endIndex
         }
     } else if (this.has("Equals")) {
         this.advance();
@@ -583,7 +676,9 @@ class Parser {
             left: l, 
             right: r,
             type: "EQUALS", 
-            blockID: "code"
+            blockID: "code", 
+            startIndex: startIndex, 
+            endIndex: endIndex
         }
     } else if (this.has("Not_Equal")) {
         this.advance();
@@ -593,7 +688,9 @@ class Parser {
             left: l, 
             right: r,
             type: "NOT_EQUAL", 
-            blockID: "code"
+            blockID: "code", 
+            startIndex: startIndex, 
+            endIndex: endIndex
         }
     }
     
@@ -616,6 +713,8 @@ return l;
 
 boolean_operation() {
   let l =this.comparable();
+  var startIndex = this.tokens[this.i].startIndex;
+  var endIndex = this.tokens[this.i].endIndex;
   while (
     this.has("and") ||
     this.has("or")
@@ -628,7 +727,9 @@ boolean_operation() {
           left: l, 
           right: r,
           type: "AND", 
-          blockID: "code"
+          blockID: "code", 
+          startIndex: startIndex, 
+          endIndex: endIndex
       }
     } else if (this.has("or")) {
       this.advance();
@@ -638,7 +739,9 @@ boolean_operation() {
           left: l, 
           right: r,
           type: "OR", 
-          blockID: "code"
+          blockID: "code", 
+          startIndex: startIndex, 
+          endIndex: endIndex
       }
     
   }
@@ -676,9 +779,12 @@ codeBlock(endToken) {
 
 statement() {
   // while loop here?
-  
+  var startIndex = this.tokens[this.i].startIndex;
+  var endIndex = this.tokens[this.i].endIndex;
   let result = {
-    blockID: 'code'
+    blockID: 'code', 
+    startIndex: startIndex, 
+    endIndex: endIndex
   };
   if (this.has("if")) {
 
@@ -854,15 +960,15 @@ statement() {
 }
 
   //this should be fine since there is no support for variables yet
-  assignment() {
-    let l =this.boolean_operation();
-    while (this.has("Assignment")) {
-      this.advance();
-      const r =this.boolean_operation();
-      l =new Assignment(left, right);
-    }
-    return l;
-  }
+  // assignment() {
+  //   let l =this.boolean_operation();
+  //   while (this.has("Assignment")) {
+  //     this.advance();
+  //     const r =this.boolean_operation();
+  //     l =new Assignment(left, right);
+  //   }
+  //   return l;
+  // }
 
 
 }

@@ -16,7 +16,7 @@ import ace from 'ace-builds';
 import "ace-builds/src-min-noconflict/theme-twilight";
 import "ace-builds/src-min-noconflict/theme-katzenmilch";
 import { tree2blocks } from './tree2blocks';
-
+import { errorOutput } from './milestone1';
 import { text2tree } from './milestone2';
 
 const output = document.querySelector('.output');
@@ -34,7 +34,7 @@ let darkMode = false;
 let live = true;
 
 runButton.addEventListener('click', () => { 
-  clearOutput();
+  // clearOutput();
   // mainTree = blocks2tree(workspace, praxlyGenerator);
   if (mainTree === null){
     alert('there is nothing to run :( \n try typing some code or dragging some blocks first.');
@@ -66,6 +66,8 @@ let turnBlocksToCode = () => {
 
   console.log("blockly has the lock");
   textEditor.removeEventListener("input", turnCodeToBLocks);
+  clearOutput();
+
   mainTree = blocks2tree(workspace, praxlyGenerator);
   console.log(mainTree);
   const text = tree2text(mainTree);
@@ -189,8 +191,9 @@ editorElement.addEventListener("keydown", function(event) {
     // Prevent the default save action (e.g., opening the save dialog)
     event.preventDefault();
     const output = document.querySelector('.output');
+    const error = document.querySelector('.error');
     output.innerHTML = "";
-    clearOutput();
+    // clearOutput();
     
     // Log the current text typed in the editor to the console
     // let code = textEditor.getValue();
@@ -209,6 +212,9 @@ editorElement.addEventListener("keydown", function(event) {
 
       
     output.innerHTML = printBuffer;
+    error.innerHTML = errorOutput;
+    // console.log('error message below');
+    // console.log(errorOutput);
     console.log(trees);
     
     
