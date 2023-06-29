@@ -8,32 +8,32 @@ import { indextoAceRange } from "./milestone2";
 export var printBuffer = "";
 var variableList = {};
 export var errorOutput = "";
-export var blockErrors = {};
+export var blockErrorsBuffer = {};
 
 
 
 export function textError(type, error, startIndex, endIndex){
     var ranges = indextoAceRange(startIndex, endIndex);
-    errorOutput += `${type} error occured on line line ${ranges[0]}:    ${error}\n`;
+    errorOutput += `${type} error occured on line line ${ranges[0]}:    ${error}<br>`;
 }
 
 
 
 export function addBlockErrors(workspace){
-    for (var key in blockErrors){
+    for (var key in blockErrorsBuffer){
         var block = workspace.getBlockById(key);
-        block.setWarningText(blockErrors[key]);
+        block.setWarningText(blockErrorsBuffer[key]);
 
     }
 
 }
 
-export function runtimeError(errormessage, blockjson){
+export function sendRuntimeError(errormessage, blockjson){
     if (typeof(blockjson.startIndex !== 'undefined') && typeof(blockjson.endIndex !== 'undefined')){
         textError('runtime', errormessage, blockjson.startIndex, blockjson.endIndex);
     }
     if (typeof(blockjson.blockid !== 'undefined')){
-        blockErrors[blockjson.blockid] = errormessage;
+        blockErrorsBuffer[blockjson.blockid] = errormessage + '<br>';
     }
 
 
@@ -42,7 +42,7 @@ export function runtimeError(errormessage, blockjson){
 export function clearOutput() {
     printBuffer = "";
     errorOutput = "";
-    blockErrors = {};
+    blockErrorsBuffer = {};
 }
 
 
@@ -129,6 +129,8 @@ export const createExecutable = (blockjson) => {
                 return new Praxly_if(createExecutable(blockjson.condition), createExecutable(blockjson.statement), blockjson);
             }
             catch (error) {
+
+                sendRuntimeError('there is an error with this statement. it is likely empty or has something invalid', blockjson);
                 console.error('An error occurred: empty statement', error);
                 return  new Praxly_statement(null);
             }
@@ -137,6 +139,7 @@ export const createExecutable = (blockjson) => {
                 return new Praxly_if_else(createExecutable(blockjson.condition), createExecutable(blockjson.statement), createExecutable(blockjson.alternative), blockjson);
             }
             catch (error) {
+                sendRuntimeError('there is an error with this statement. it is likely empty or has something invalid', blockjson);
                 console.error('An error occurred: empty statement', error);
                 return  new Praxly_statement(null);
             }
@@ -145,6 +148,7 @@ export const createExecutable = (blockjson) => {
                 return new Praxly_assignment(blockjson, blockjson.varType, blockjson.name, createExecutable(blockjson.value), blockjson);
             } 
             catch (error) {
+                sendRuntimeError('assignment error', blockjson);
                 console.error('assignment error: ', error);
                 return null;
             }
@@ -154,6 +158,7 @@ export const createExecutable = (blockjson) => {
                 return new Praxly_variable(blockjson, blockjson.name, blockjson);
             } 
             catch (error) {
+                sendRuntimeError('assignment error', blockjson);
                 console.error('assignment error: ', error);
                 return null;
             }
@@ -200,9 +205,9 @@ export const createExecutable = (blockjson) => {
                 return  new Praxly_statement(null);
             }
         case 'NOT':
-            return new Praxly_not(createExecutable(blockjson.value));
+            return new Praxly_not(createExecutable(blockjson.value), blockjson);
         case 'COMMENT':
-            return  new Praxly_comment(blockjson.value);
+            return  new Praxly_comment(blockjson.value, blockjson);
 
 
             
@@ -212,7 +217,8 @@ export const createExecutable = (blockjson) => {
 
 
 class Praxly_comment {
-    constructor(value) {
+    constructor(value, blockjson) {
+        this.json = blockjson;
         this.value = value;
     }
     evaluate() {
@@ -223,6 +229,7 @@ class Praxly_comment {
 
 class Praxly_int {
     constructor( value, blockjson ) {
+        this.json = blockjson;
         this.value = Math.floor(value);
     }
     evaluate() {
@@ -233,6 +240,7 @@ class Praxly_int {
 
 class Praxly_double {
     constructor( value , blockjson ) {
+        this.json = blockjson;
         this.value = value;
 
     }
@@ -241,6 +249,7 @@ class Praxly_double {
 
 class Praxly_float {
     constructor( value  , blockjson) {
+        this.json = blockjson;
         this.value = Math.floor(value);
 
     }
@@ -268,6 +277,7 @@ class Praxly_char {
 
 class Praxly_String {
     constructor( value  , blockjson) {
+        this.json = blockjson;
         this.value = value;
     }
     evaluate() {
@@ -278,6 +288,7 @@ class Praxly_String {
 class Praxly_print {
       
     constructor(value  , blockjson){
+        this.json = blockjson;
         this.expression = value;
     }
     evaluate() {
@@ -292,6 +303,7 @@ class Praxly_addition {
     b_operand  ;
 
     constructor(a, b, blockjson  ) {
+        this.json = blockjson;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -317,6 +329,7 @@ class Praxly_subtraction {
     b_operand  ;
 
     constructor(a, b, blockjson  ) {
+        this.json = blockjson;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -342,6 +355,7 @@ class Praxly_multiplication {
     b_operand  ;
 
     constructor(a, b, blockjson  ) {
+        this.json = blockjson;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -367,6 +381,7 @@ class Praxly_division {
     b_operand  ;
 
     constructor(a, b, blockjson  ) {
+        this.json = blockjson;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -392,6 +407,7 @@ class Praxly_modulo {
     b_operand  ;
 
     constructor(a, b, blockjson  ) {
+        this.json = blockjson;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -417,6 +433,7 @@ class Praxly_exponent {
     b_operand  ;
 
     constructor(a, b, blockjson  ) {
+        this.json = blockjson;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -442,6 +459,7 @@ class Praxly_and {
     b_operand  ;
 
     constructor(a, b, blockjson  ) {
+        this.json = blockjson;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -457,6 +475,7 @@ class Praxly_or {
     b_operand  ;
 
     constructor(a, b, blockjson  ) {
+        this.json = blockjson;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -471,6 +490,7 @@ class Praxly_equals {
     b_operand  ;
 
     constructor(a, b, blockjson  ) {
+        this.json = blockjson;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -485,6 +505,7 @@ class Praxly_not_equals {
     b_operand  ;
 
     constructor(a, b, blockjson  ) {
+        this.json = blockjson;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -499,6 +520,7 @@ class Praxly_greater_than {
     b_operand  ;
 
     constructor(a, b, blockjson  ) {
+        this.json = blockjson;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -513,6 +535,7 @@ class Praxly_less_than {
     b_operand  ;
 
     constructor(a, b, blockjson  ) {
+        this.json = blockjson;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -527,6 +550,7 @@ class Praxly_greater_than_equal {
     b_operand  ;
 
     constructor(a, b, blockjson  ) {
+        this.json = blockjson;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -541,6 +565,7 @@ class Praxly_less_than_equal {
     b_operand  ;
 
     constructor(a, b, blockjson  ) {
+        this.json = blockjson;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -551,7 +576,8 @@ class Praxly_less_than_equal {
 }
 
 class Praxly_if {
-    constructor(condition, code) {
+    constructor(condition, code, blockjson) {
+        this.json = blockjson;
         this.condition = condition;
         this.code = code;
     }
@@ -564,7 +590,8 @@ class Praxly_if {
 }
 
 class Praxly_if_else {
-    constructor(condition, code, alternitive) {
+    constructor(condition, code, alternitive, blockjson) {
+        this.json = blockjson;
         this.condition = condition;
         this.code = code;
         this.alternitive = alternitive;
@@ -633,6 +660,7 @@ class Praxly_codeBlock {
 
 class Praxly_assignment {
     constructor( json, type, name, expression, blockjson){
+        this.json = blockjson;
         if (type === "reassignment"){
             console.log(variableList);
             if (!variableList.hasOwnProperty(name)){
@@ -663,7 +691,9 @@ class Praxly_assignment {
 
 class Praxly_variable {
     constructor(json, name, blockjson){
+        this.json = blockjson;
         if (!variableList.hasOwnProperty(name)){
+            sendRuntimeError('this variable is not recognized by the program. Perhaps you forgot to initialize it?', blockjson);
             console.error("Error: variable name not in the variablelist:");
         }
         this.name = name;
@@ -675,6 +705,7 @@ class Praxly_variable {
 
 class Praxly_for {
     constructor(initialization, condition, incrimentation, statement, blockjson){
+        this.json = blockjson;
         this.initialization = initialization;
         this.condition = condition; 
         this.incrimentation = incrimentation;
@@ -693,6 +724,7 @@ class Praxly_for {
 
 class Praxly_while {
     constructor(condition, statement, blockjson){
+        this.json = blockjson;
         this.condition = condition; 
         this.statement = statement;
     }
@@ -705,6 +737,7 @@ class Praxly_while {
 }
 class Praxly_do_while {
     constructor(condition, statement, blockjson){
+        this.json = blockjson;
         this.condition = condition; 
         this.statement = statement;
     }
@@ -718,6 +751,7 @@ class Praxly_do_while {
 }
 class Praxly_repeat_until {
     constructor(condition, statement, blockjson){
+        this.json = blockjson;
         this.condition = condition; 
         this.statement = statement;
     }
@@ -732,6 +766,7 @@ class Praxly_repeat_until {
 
 class Praxly_not {
     constructor(value  , blockjson){
+        this.json = blockjson;
         this.expression = value;
     }
 

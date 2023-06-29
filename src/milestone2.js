@@ -157,11 +157,14 @@ class Token {
           while (this.hasNot('*') && this.hasNot_ahead('/')){
             this.capture();
           }
-          // console.log(`the next character is ${this.source[this.i]}`);
+
           if (this.has('*') && this.has_ahead('/')){
             this.skip();
             this.skip();
             this.emit_token('comment');
+            if (this.has('\n')){
+              this.skip();
+            }
           } 
           else {
             textError("lexing", 'looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.',commentStart, this.i);
@@ -478,7 +481,7 @@ class Parser {
       
 
     } else {
-      textError('parsing', 'Missing or Unrecognized token. This is likely the result of a lexing error.', startIndex, endIndex);
+      textError('parsing', `Missing or Unrecognized token: ${this.i} This is likely the result of a lexing error.', startIndex, endIndex`);
       console.log(`atom problem at this token: ${this.i}`);
       return;
     }
