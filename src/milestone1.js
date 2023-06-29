@@ -19,9 +19,12 @@ export function textError(type, error, startIndex, endIndex){
 
 
 
-export function addBlockErrors(blockid, message, workspace){
-    var block = workspace.getBlockById(blockid);
-    block.setWarningText(message);
+export function addBlockErrors(workspace){
+    for (var key in blockErrors){
+        var block = workspace.getBlockById(key);
+        block.setWarningText(blockErrors[key]);
+
+    }
 
 }
 
@@ -54,46 +57,46 @@ export const createExecutable = (blockjson) => {
     console.log(blockjson.type);
     switch(blockjson.type) {
         case 'INT':
-            return new Praxly_int(blockjson.value);
+            return new Praxly_int( blockjson.value, blockjson);
         case 'STRING':
-            return new Praxly_String(blockjson.value);
+            return new Praxly_String(blockjson.value, blockjson);
         case 'BOOLEAN':
-            return new Praxly_boolean(blockjson.value);
+            return new Praxly_boolean( blockjson.value, blockjson);
         
         // more here coming soon
         case 'ADD':
-            return new Praxly_addition(createExecutable(blockjson.left), createExecutable(blockjson.right));
+            return new Praxly_addition(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
         
         case 'SUBTRACT':
-            return new Praxly_subtraction(createExecutable(blockjson.left), createExecutable(blockjson.right));
+            return new Praxly_subtraction(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
         case 'MULTIPLY':
-            return new Praxly_multiplication(createExecutable(blockjson.left), createExecutable(blockjson.right));
+            return new Praxly_multiplication(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
         case 'DIVIDE':
-            return new Praxly_division(createExecutable(blockjson.left), createExecutable(blockjson.right));
+            return new Praxly_division(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
         case 'EXPONENT':
-            return new Praxly_exponent(createExecutable(blockjson.left), createExecutable(blockjson.right));
+            return new Praxly_exponent(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
         case 'MOD':
-            return new Praxly_modulo(createExecutable(blockjson.left), createExecutable(blockjson.right));
+            return new Praxly_modulo(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
         case 'AND':
-            return new Praxly_and(createExecutable(blockjson.left), createExecutable(blockjson.right));
+            return new Praxly_and(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
         case 'OR':
-            return new Praxly_or(createExecutable(blockjson.left), createExecutable(blockjson.right));
+            return new Praxly_or(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
         case 'EQUALS':
-            return new Praxly_equals(createExecutable(blockjson.left), createExecutable(blockjson.right));
+            return new Praxly_equals(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
         case 'LESS_THAN_EQUAL':
-            return new Praxly_less_than_equal(createExecutable(blockjson.left), createExecutable(blockjson.right));
+            return new Praxly_less_than_equal(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
         case 'GREATER_THAN_EQUAL':
-            return new Praxly_greater_than_equal(createExecutable(blockjson.left), createExecutable(blockjson.right));
+            return new Praxly_greater_than_equal(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
         case 'GREATER_THAN':
-            return new Praxly_greater_than(createExecutable(blockjson.left), createExecutable(blockjson.right));
+            return new Praxly_greater_than(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
         case 'LESS_THAN':
-            return new Praxly_less_than(createExecutable(blockjson.left), createExecutable(blockjson.right));
+            return new Praxly_less_than(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
         case 'NOT_EQUAL':
-            return new Praxly_not_equals(createExecutable(blockjson.left), createExecutable(blockjson.right));
+            return new Praxly_not_equals(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
         
         
         case 'PRINT':
-            return new Praxly_print(createExecutable(blockjson.value));
+            return new Praxly_print(createExecutable(blockjson.value), blockjson);
 
         case 'CODEBLOCK':
             let statements = blockjson.statements;
@@ -115,7 +118,7 @@ export const createExecutable = (blockjson) => {
             
         case 'STATEMENT':
             try {
-                return new Praxly_statement( createExecutable(blockjson.value));
+                return new Praxly_statement( createExecutable(blockjson.value), blockjson);
             } catch (error)  {
                 console.error('An error occurred: empty statement', error);
                 return  new Praxly_statement(null);
@@ -123,7 +126,7 @@ export const createExecutable = (blockjson) => {
 
         case 'IF':
             try{
-                return new Praxly_if(createExecutable(blockjson.condition), createExecutable(blockjson.statement));
+                return new Praxly_if(createExecutable(blockjson.condition), createExecutable(blockjson.statement), blockjson);
             }
             catch (error) {
                 console.error('An error occurred: empty statement', error);
@@ -131,7 +134,7 @@ export const createExecutable = (blockjson) => {
             }
         case 'IF_ELSE':
             try{
-                return new Praxly_if_else(createExecutable(blockjson.condition), createExecutable(blockjson.statement), createExecutable(blockjson.alternative));
+                return new Praxly_if_else(createExecutable(blockjson.condition), createExecutable(blockjson.statement), createExecutable(blockjson.alternative), blockjson);
             }
             catch (error) {
                 console.error('An error occurred: empty statement', error);
@@ -139,7 +142,7 @@ export const createExecutable = (blockjson) => {
             }
         case 'ASSIGNMENT':
             try {
-                return new Praxly_assignment(blockjson.varType, blockjson.name, createExecutable(blockjson.value));
+                return new Praxly_assignment(blockjson, blockjson.varType, blockjson.name, createExecutable(blockjson.value), blockjson);
             } 
             catch (error) {
                 console.error('assignment error: ', error);
@@ -148,7 +151,7 @@ export const createExecutable = (blockjson) => {
         
         case 'VARIABLE':
             try {
-                return new Praxly_variable(blockjson.name);
+                return new Praxly_variable(blockjson, blockjson.name, blockjson);
             } 
             catch (error) {
                 console.error('assignment error: ', error);
@@ -160,7 +163,7 @@ export const createExecutable = (blockjson) => {
                 var condition = createExecutable(blockjson.condition);
                 var incrimentation = createExecutable(blockjson.incriment);
                 var statement = createExecutable(blockjson.statement);
-                return new Praxly_for(initialization, condition, incrimentation, statement);
+                return new Praxly_for(initialization, condition, incrimentation, statement, blockjson);
             }
             catch (error) {
                 console.error('An error occurred: empty statement', error);
@@ -170,7 +173,7 @@ export const createExecutable = (blockjson) => {
             try{
                 var condition = createExecutable(blockjson.condition);
                 var statement = createExecutable(blockjson.statement);
-                return new Praxly_while(condition, statement);
+                return new Praxly_while(condition, statement, blockjson);
             }
             catch (error) {
                 console.error('An error occurred: empty statement', error);
@@ -180,7 +183,7 @@ export const createExecutable = (blockjson) => {
             try{
                 var condition = createExecutable(blockjson.condition);
                 var statement = createExecutable(blockjson.statement);
-                return new Praxly_do_while(condition, statement);
+                return new Praxly_do_while(condition, statement, blockjson);
             }
             catch (error) {
                 console.error('An error occurred: empty statement', error);
@@ -190,7 +193,7 @@ export const createExecutable = (blockjson) => {
             try{
                 var condition = createExecutable(blockjson.condition);
                 var statement = createExecutable(blockjson.statement);
-                return new Praxly_repeat_until(condition, statement);
+                return new Praxly_repeat_until(condition, statement, blockjson);
             }
             catch (error) {
                 console.error('An error occurred: empty statement', error);
@@ -209,7 +212,7 @@ export const createExecutable = (blockjson) => {
 
 
 class Praxly_comment {
-    constructor(value ) {
+    constructor(value) {
         this.value = value;
     }
     evaluate() {
@@ -219,7 +222,7 @@ class Praxly_comment {
 }
 
 class Praxly_int {
-    constructor(value ) {
+    constructor( value, blockjson ) {
         this.value = Math.floor(value);
     }
     evaluate() {
@@ -229,7 +232,7 @@ class Praxly_int {
 }
 
 class Praxly_double {
-    constructor(value ) {
+    constructor( value , blockjson ) {
         this.value = value;
 
     }
@@ -237,7 +240,7 @@ class Praxly_double {
 }
 
 class Praxly_float {
-    constructor(value ) {
+    constructor( value  , blockjson) {
         this.value = Math.floor(value);
 
     }
@@ -245,7 +248,7 @@ class Praxly_float {
 }
 
 class Praxly_boolean {
-    constructor(value  ) {
+    constructor( value  ) {
         this.value = value;
 
     }
@@ -256,7 +259,7 @@ class Praxly_boolean {
 }
 
 class Praxly_char {
-    constructor(value  ) {
+    constructor( value  ) {
         this.value = value;
 
     }
@@ -264,7 +267,7 @@ class Praxly_char {
 }
 
 class Praxly_String {
-    constructor(value  ) {
+    constructor( value  , blockjson) {
         this.value = value;
     }
     evaluate() {
@@ -274,7 +277,7 @@ class Praxly_String {
 
 class Praxly_print {
       
-    constructor(value  ){
+    constructor(value  , blockjson){
         this.expression = value;
     }
     evaluate() {
@@ -288,7 +291,7 @@ class Praxly_addition {
     a_operand  ;
     b_operand  ;
 
-    constructor(a  , b  ) {
+    constructor(a, b, blockjson  ) {
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -313,7 +316,7 @@ class Praxly_subtraction {
     a_operand  ;
     b_operand  ;
 
-    constructor(a  , b  ) {
+    constructor(a, b, blockjson  ) {
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -338,7 +341,7 @@ class Praxly_multiplication {
     a_operand  ;
     b_operand  ;
 
-    constructor(a  , b  ) {
+    constructor(a, b, blockjson  ) {
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -363,7 +366,7 @@ class Praxly_division {
     a_operand  ;
     b_operand  ;
 
-    constructor(a  , b  ) {
+    constructor(a, b, blockjson  ) {
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -388,7 +391,7 @@ class Praxly_modulo {
     a_operand  ;
     b_operand  ;
 
-    constructor(a  , b  ) {
+    constructor(a, b, blockjson  ) {
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -413,7 +416,7 @@ class Praxly_exponent {
     a_operand  ;
     b_operand  ;
 
-    constructor(a  , b  ) {
+    constructor(a, b, blockjson  ) {
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -438,7 +441,7 @@ class Praxly_and {
     a_operand  ;
     b_operand  ;
 
-    constructor(a  , b  ) {
+    constructor(a, b, blockjson  ) {
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -453,7 +456,7 @@ class Praxly_or {
     a_operand  ;
     b_operand  ;
 
-    constructor(a  , b  ) {
+    constructor(a, b, blockjson  ) {
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -467,7 +470,7 @@ class Praxly_equals {
     a_operand  ;
     b_operand  ;
 
-    constructor(a  , b  ) {
+    constructor(a, b, blockjson  ) {
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -481,7 +484,7 @@ class Praxly_not_equals {
     a_operand  ;
     b_operand  ;
 
-    constructor(a  , b  ) {
+    constructor(a, b, blockjson  ) {
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -495,7 +498,7 @@ class Praxly_greater_than {
     a_operand  ;
     b_operand  ;
 
-    constructor(a  , b  ) {
+    constructor(a, b, blockjson  ) {
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -509,7 +512,7 @@ class Praxly_less_than {
     a_operand  ;
     b_operand  ;
 
-    constructor(a  , b  ) {
+    constructor(a, b, blockjson  ) {
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -523,7 +526,7 @@ class Praxly_greater_than_equal {
     a_operand  ;
     b_operand  ;
 
-    constructor(a  , b  ) {
+    constructor(a, b, blockjson  ) {
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -537,7 +540,7 @@ class Praxly_less_than_equal {
     a_operand  ;
     b_operand  ;
 
-    constructor(a  , b  ) {
+    constructor(a, b, blockjson  ) {
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -629,7 +632,7 @@ class Praxly_codeBlock {
 
 
 class Praxly_assignment {
-    constructor(type, name, expression){
+    constructor( json, type, name, expression, blockjson){
         if (type === "reassignment"){
             console.log(variableList);
             if (!variableList.hasOwnProperty(name)){
@@ -659,7 +662,7 @@ class Praxly_assignment {
 }
 
 class Praxly_variable {
-    constructor(name){
+    constructor(json, name, blockjson){
         if (!variableList.hasOwnProperty(name)){
             console.error("Error: variable name not in the variablelist:");
         }
@@ -671,7 +674,7 @@ class Praxly_variable {
 }
 
 class Praxly_for {
-    constructor(initialization, condition, incrimentation, statement){
+    constructor(initialization, condition, incrimentation, statement, blockjson){
         this.initialization = initialization;
         this.condition = condition; 
         this.incrimentation = incrimentation;
@@ -689,7 +692,7 @@ class Praxly_for {
 }
 
 class Praxly_while {
-    constructor(condition, statement){
+    constructor(condition, statement, blockjson){
         this.condition = condition; 
         this.statement = statement;
     }
@@ -701,7 +704,7 @@ class Praxly_while {
     }
 }
 class Praxly_do_while {
-    constructor(condition, statement){
+    constructor(condition, statement, blockjson){
         this.condition = condition; 
         this.statement = statement;
     }
@@ -714,7 +717,7 @@ class Praxly_do_while {
     }
 }
 class Praxly_repeat_until {
-    constructor(condition, statement){
+    constructor(condition, statement, blockjson){
         this.condition = condition; 
         this.statement = statement;
     }
@@ -728,7 +731,7 @@ class Praxly_repeat_until {
 }
 
 class Praxly_not {
-    constructor(value  ){
+    constructor(value  , blockjson){
         this.expression = value;
     }
 

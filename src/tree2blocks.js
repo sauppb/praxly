@@ -34,7 +34,7 @@ function connectStatements(statements) {
 
 export const tree2blocks = (workspace, blockjson) => {
     try{
-        console.log(blockjson.type);
+        // console.log(blockjson.type);
     } catch (error)  {
         // console.error('An error occurred: could not generate block from text', error);
         return 0; 
