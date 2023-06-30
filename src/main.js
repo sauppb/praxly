@@ -18,6 +18,7 @@ import "ace-builds/src-min-noconflict/theme-katzenmilch";
 import { tree2blocks } from './tree2blocks';
 import { errorOutput } from './milestone1';
 import { text2tree } from './milestone2';
+import { generateUrl } from './share';
 
 const output = document.querySelector('.output');
 const praxlyGenerator = makeGenerator();
@@ -218,3 +219,7 @@ editorElement.addEventListener("keydown", function(event) {
     
   }
 });
+
+//share button 
+const shareButton = document.getElementById('share');
+shareButton.addEventListener('click', generateUrl);
