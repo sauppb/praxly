@@ -7,6 +7,8 @@ import { textError } from './milestone1';
 
 export const textEditor = ace.edit("aceCode", {fontSize: 16});
 
+
+
 // Get the underlying DOM element of the Ace editor
 
 export const  indextoAceRange = (startindex, endindex) => {
