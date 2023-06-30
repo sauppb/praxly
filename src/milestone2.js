@@ -418,7 +418,9 @@ class Parser {
         type: tok.token_type,
         blockID: "code",
         startIndex: startIndex, 
-        endIndex: endIndex
+        endIndex: endIndex,
+        beg: startIndex, 
+        end: endIndex
         
       };
     } else if (this.has("String")) {
@@ -428,7 +430,9 @@ class Parser {
           type: 'STRING',
           blockID: "code",
           startIndex: startIndex, 
-          endIndex: endIndex
+          endIndex: endIndex,
+          beg: startIndex, 
+          end: endIndex
         };
     } else if (this.has("char")) {
         this.advance();
@@ -437,7 +441,9 @@ class Parser {
           type: tok.token_type,
           blockID: "code",
           startIndex: startIndex, 
-          endIndex: endIndex
+          endIndex: endIndex,
+          beg: startIndex, 
+          end: endIndex
         };
     } else if (this.has("double")) {
         this.advance();
@@ -446,7 +452,9 @@ class Parser {
           type: tok.token_type,
           blockID: "code",
           startIndex: startIndex, 
-          endIndex: endIndex
+          endIndex: endIndex,
+          beg: startIndex, 
+          end: endIndex
         };
     } else if (this.has("boolean")) {
       this.advance();
@@ -455,7 +463,9 @@ class Parser {
         type: 'BOOLEAN',
         blockID: "code",
         startIndex: startIndex, 
-        endIndex: endIndex
+        endIndex: endIndex,
+        beg: startIndex, 
+        end: endIndex
       };
     
     } else if (this.has("(")) {
@@ -476,7 +486,10 @@ class Parser {
         type: 'VARIABLE',
         blockID: "code",
         startIndex: startIndex, 
-        endIndex: endIndex
+        endIndex: endIndex,
+        beg: startIndex, 
+        end: endIndex 
+        
       };
       
 
@@ -490,9 +503,9 @@ class Parser {
   exponent() {
     let l =this.unary();
     // let l =this.atom();
-    var startIndex = this.tokens[this.i].startIndex;
-    var endIndex = this.tokens[this.i].endIndex;
     while (this.has("EXPONENT")) {
+      var startIndex = this.tokens[this.i].startIndex;
+      var endIndex = this.tokens[this.i].endIndex;
       this.advance();
       const r =this.exponent();
       // l =new Operators.Exponent(left, right);
@@ -501,8 +514,10 @@ class Parser {
               right: r,
               type: "EXPONENT", 
               blockID: "code", 
-              startIndex: startIndex, 
-              endIndex: endIndex
+              beg: l.beg, 
+              end: r.end,
+              endIndex: endIndex,
+              startIndex: startIndex
 
           }
     }
@@ -511,9 +526,9 @@ class Parser {
 
   multiplicitive() {
     let l =this.exponent();
-    var startIndex = this.tokens[this.i].startIndex;
-    var endIndex = this.tokens[this.i].endIndex;
     while (this.has("MULTIPLY") || this.has("DIVIDE") || this.has("MOD")) {
+      var endIndex = this.tokens[this.i].endIndex;
+      var startIndex = this.tokens[this.i].startIndex;
       if (this.has("MULTIPLY")) {
         this.advance();
         const r =this.exponent();
@@ -524,7 +539,9 @@ class Parser {
             type: "MULTIPLY", 
             blockID: "code", 
             startIndex: startIndex, 
-            endIndex: endIndex
+            endIndex: endIndex, 
+            beg: l.beg, 
+            end: r.end,
         }
       } else if (this.has("DIVIDE")) {
         this.advance();
@@ -536,7 +553,9 @@ class Parser {
             type: "DIVIDE", 
             blockID: "code", 
             startIndex: startIndex, 
-            endIndex: endIndex
+            endIndex: endIndex, 
+            beg: l.beg, 
+            end: r.end,
         }
       } else if (this.has("MOD")) {
         this.advance();
@@ -548,7 +567,9 @@ class Parser {
             type: "MOD", 
             blockID: "code", 
             startIndex: startIndex, 
-            endIndex: endIndex
+            endIndex: endIndex, 
+            beg: l.beg, 
+            end: r.end,
         }
       }
     }
@@ -557,9 +578,9 @@ class Parser {
 
   additive() {
     let l =this.multiplicitive();
-    var startIndex = this.tokens[this.i].startIndex;
-    var endIndex = this.tokens[this.i].endIndex;
     while (this.has("ADD") || this.has("SUBTRACT")) {
+      var endIndex = this.tokens[this.i].endIndex;
+      var startIndex = this.tokens[this.i].startIndex;
       if (this.has("SUBTRACT")) {
         this.advance();
         const r =this.multiplicitive();
@@ -570,7 +591,9 @@ class Parser {
             type: "SUBTRACT", 
             blockID: "code", 
             startIndex: startIndex, 
-            endIndex: endIndex
+            endIndex: endIndex, 
+            beg: l.beg, 
+            end: r.end,
         }
       } else if (this.has("ADD")) {
         this.advance();
@@ -582,7 +605,9 @@ class Parser {
             type: "ADD", 
             blockID: "code", 
             startIndex: startIndex, 
-            endIndex: endIndex
+            endIndex: endIndex, 
+            beg: l.beg, 
+            end: r.end,
         }
       }
     }
@@ -593,19 +618,21 @@ class Parser {
     if (!this.has('not') && !this.has('SUBTRACT')){
       return this.atom();
     }
-    var startIndex = this.tokens[this.i].startIndex;
-    var endIndex = this.tokens[this.i].endIndex;
-    var result = {
-      blockID: 'code',
-      startIndex: startIndex, 
-      endIndex: endIndex
-    };
     while (this.has('not')){
+      var endIndex = this.tokens[this.i].endIndex;
+      var startIndex = this.tokens[this.i].startIndex;
+      var result = {
+        blockID: 'code',
+        startIndex: startIndex, 
+        endIndex: endIndex
+      };
       if (this.has('not')){
         this.advance();
         var expression = this.boolean_operation();
         result.type = 'NOT';
         result.value = expression;
+        result.beg = l.beg;
+        result.end = r.end;
       }
     }
     return result;
@@ -613,8 +640,6 @@ class Parser {
 
   comparable() {
     let l =this.additive();
-    var startIndex = this.tokens[this.i].startIndex;
-    var endIndex = this.tokens[this.i].endIndex;
     while (
       this.has("Less_Than_Equal_To") ||
       this.has("Greater_Than_Equal_To") ||
@@ -622,7 +647,9 @@ class Parser {
       this.has("Greater_Than") ||
       this.has("Equals") ||
       this.has("Not_Equal")
-    ) {
+      ) {
+        var startIndex = this.tokens[this.i].startIndex;
+        var endIndex = this.tokens[this.i].endIndex;
       if (this.has("Less_Than_Equal_To")) {
         this.advance();
         const r =this.additive();
@@ -633,7 +660,9 @@ class Parser {
             type: "LESS_THAN_EQUAL", 
             blockID: "code", 
             startIndex: startIndex, 
-            endIndex: endIndex
+            endIndex: endIndex, 
+            beg: l.beg, 
+            end: r.end,
         }
       } else if (this.has("Greater_Than_Equal_To")) {
         this.advance();
@@ -645,7 +674,9 @@ class Parser {
             type: "GREATER_THAN_EQUAL", 
             blockID: "code", 
             startIndex: startIndex, 
-            endIndex: endIndex
+            endIndex: endIndex, 
+            beg: l.beg, 
+            end: r.end,
         }
       } else if (this.has("Less_Than")) {
         this.advance();
@@ -657,7 +688,9 @@ class Parser {
             type: "LESS_THAN", 
             blockID: "code", 
             startIndex: startIndex, 
-            endIndex: endIndex
+            endIndex: endIndex, 
+            beg: l.beg, 
+            end: r.end,
         }
       } else if (this.has("Greater_Than")) {
         this.advance();
@@ -669,7 +702,9 @@ class Parser {
             type: "GREATER_THAN", 
             blockID: "code", 
             startIndex: startIndex, 
-            endIndex: endIndex
+            endIndex: endIndex, 
+            beg: l.beg, 
+            end: r.end,
         }
     } else if (this.has("Equals")) {
         this.advance();
@@ -681,7 +716,9 @@ class Parser {
             type: "EQUALS", 
             blockID: "code", 
             startIndex: startIndex, 
-            endIndex: endIndex
+            endIndex: endIndex, 
+            beg: l.beg, 
+            end: r.end,
         }
     } else if (this.has("Not_Equal")) {
         this.advance();
@@ -693,7 +730,9 @@ class Parser {
             type: "NOT_EQUAL", 
             blockID: "code", 
             startIndex: startIndex, 
-            endIndex: endIndex
+            endIndex: endIndex, 
+            beg: l.beg, 
+            end: r.end,
         }
     }
     
@@ -716,12 +755,12 @@ return l;
 
 boolean_operation() {
   let l =this.comparable();
-  var startIndex = this.tokens[this.i].startIndex;
-  var endIndex = this.tokens[this.i].endIndex;
   while (
     this.has("and") ||
     this.has("or")
-  ) {
+    ) {
+      var startIndex = this.tokens[this.i].startIndex;
+      var endIndex = this.tokens[this.i].endIndex;
     if (this.has("and")) {
       this.advance();
       const r =this.additive();
@@ -732,7 +771,9 @@ boolean_operation() {
           type: "AND", 
           blockID: "code", 
           startIndex: startIndex, 
-          endIndex: endIndex
+          endIndex: endIndex, 
+          beg: l.beg, 
+          end: r.end,
       }
     } else if (this.has("or")) {
       this.advance();
@@ -744,7 +785,9 @@ boolean_operation() {
           type: "OR", 
           blockID: "code", 
           startIndex: startIndex, 
-          endIndex: endIndex
+          endIndex: endIndex, 
+          beg: l.beg, 
+          end: r.end,
       }
     
   }
@@ -787,7 +830,8 @@ statement() {
   let result = {
     blockID: 'code', 
     startIndex: startIndex, 
-    endIndex: endIndex
+    endIndex: endIndex, 
+    beg: startIndex
   };
   if (this.has("if")) {
 
@@ -807,6 +851,7 @@ statement() {
         
       }
       if (this.has('end if')) {
+        result.end = this.tokens[this.i].endIndex;
         this.advance();
         return result;
       }
@@ -835,6 +880,7 @@ statement() {
           this.advance();
           result.statement = this.codeBlock('end for');
           if (this.has('end for')){
+            result.end = this.tokens[this.i].endIndex;
             this.advance();
             return result;
           }
@@ -859,6 +905,7 @@ statement() {
         
       }
       if (this.has('end while')) {
+        result.end = this.tokens[this.i].endIndex;
         this.advance();
         return result;
       }
@@ -874,7 +921,22 @@ statement() {
     }
     if (this.has('while')) {
       this.advance();
+      if (this.hasNot('(')){
+        //error
+        return result;
+      }
+      this.advance();
       result.condition = this.boolean_operation();
+      if (this.hasNot(')')){
+        return result;
+      }
+      this.advance();
+      if (this.hasNot('\n')){
+        return result;
+        //error
+      }
+      this.advance()
+      result.end = this.tokens[this.i].endIndex;
         return result;
       }
   }
@@ -889,7 +951,22 @@ statement() {
     }
     if (this.has('until')) {
       this.advance();
+      if (this.hasNot('(')){
+        //error
+        return result;
+      }
+      this.advance();
       result.condition = this.boolean_operation();
+      if (this.hasNot(')')){
+        return result;
+      }
+      this.advance();
+      if (this.hasNot('\n')){
+        return result;
+        //error
+      }
+      this.advance()
+      result.end = this.tokens[this.i].endIndex;
         return result;
       }
   }
@@ -901,13 +978,15 @@ statement() {
       if (this.has('\n')){
         // this.advance();
         result.type = 'PRINT';
-        result.value = expression; 
+        result.value = expression;
+        result.end = expression.end; 
         return result;
       }
 
   }else if (this.has('comment')){
     result.type = 'COMMENT', 
     result.value = this.tokens[this.i].value;
+    result.end = result.endIndex;
     return result;
   
   }
@@ -919,8 +998,10 @@ statement() {
         result.name = this.tokens[this.i].value;
         this.advance();
         if (this.has('Assignment')){
+          result.startIndex = this.tokens[this.i].startIndex;
           this.advance();
           result.value = this.boolean_operation();
+          result.end = result.value.end;
           result.varType = returnType;
         }
       }
@@ -933,8 +1014,10 @@ statement() {
       result.name = this.tokens[this.i].value;
       this.advance();
       if (this.has('Assignment')){
+        result.startIndex = this.tokens[this.i].startIndex;
         this.advance();
         result.value = this.boolean_operation();
+        result.end = result.value.end;
         result.varType = 'reassignment';
       }
     }

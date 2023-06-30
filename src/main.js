@@ -70,13 +70,11 @@ let turnBlocksToCode = () => {
 
   mainTree = blocks2tree(workspace, praxlyGenerator);
   console.log(mainTree);
-  const text = tree2text(mainTree);
+  const text = tree2text(mainTree, 0, 0);
 
   textEditor.setValue(text, -1);
   
   
-
-
 };
 
 runCode.addEventListener('click', turnCodeToBLocks);
