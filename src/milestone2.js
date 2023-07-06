@@ -19,6 +19,8 @@ function parseParameters(parameterString) {
   return parsedArray;
 }
 
+
+
 // Get the underlying DOM element of the Ace editor
 
 export const  indextoAceRange = (startindex, endindex) => {
