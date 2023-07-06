@@ -6,7 +6,8 @@ import { indextoAceRange } from "./milestone2";
   
 
 export var printBuffer = "";
-var variableList = {};
+// var variableList = {};
+var scopes = {};
 export var errorOutput = "";
 export var blockErrorsBuffer = {};
 
@@ -113,7 +114,13 @@ export const createExecutable = (blockjson) => {
             return new Praxly_codeBlock(result);
 
         case 'PROGRAM':
-            variableList = {};
+            // variableList = {};
+            scopes = {
+                global: {
+                    variableList: {}, 
+
+                }
+            };
             return new Praxly_program(createExecutable( blockjson.value));
             
         case 'STATEMENT':
@@ -221,7 +228,7 @@ class Praxly_comment {
         this.json = blockjson;
         this.value = value;
     }
-    evaluate() {
+    evaluate(environment) {
         return;
     }
 
@@ -232,7 +239,7 @@ class Praxly_int {
         this.json = blockjson;
         this.value = Math.floor(value);
     }
-    evaluate() {
+    evaluate(environment) {
         return this;
     }
 
@@ -261,7 +268,7 @@ class Praxly_boolean {
         this.value = value;
 
     }
-    evaluate() {
+    evaluate(environment) {
         return this;
     }
 
@@ -280,7 +287,7 @@ class Praxly_String {
         this.json = blockjson;
         this.value = value;
     }
-    evaluate() {
+    evaluate(environment) {
         return this;
     }
 }
@@ -291,9 +298,9 @@ class Praxly_print {
         this.json = blockjson;
         this.expression = value;
     }
-    evaluate() {
+    evaluate(environment) {
         
-        printBuffer += (this.expression.evaluate().value.toString()) + '<br>';
+        printBuffer += (this.expression.evaluate(environment).value.toString()) + '<br>';
         return null;
     }
 }
@@ -308,9 +315,9 @@ class Praxly_addition {
         this.b_operand = b;
     }
 
-    evaluate()   {
-        let b = this.b_operand.evaluate();
-        let a = this.a_operand.evaluate();
+    evaluate(environment)   {
+        let b = this.b_operand.evaluate(environment);
+        let a = this.a_operand.evaluate(environment);
         switch (typecheck("ADD", a, b)) {
             case "INT":
                 return new Praxly_int( a.value + b.value); 
@@ -334,9 +341,9 @@ class Praxly_subtraction {
         this.b_operand = b;
     }
     
-    evaluate()   {
-        let b = this.b_operand.evaluate();
-        let a = this.a_operand.evaluate();
+    evaluate(environment)   {
+        let b = this.b_operand.evaluate(environment);
+        let a = this.a_operand.evaluate(environment);
         switch (typecheck("SUBTRACT", a, b)) {
             case "INT":
                 return new Praxly_int( a.value - b.value); 
@@ -360,9 +367,9 @@ class Praxly_multiplication {
         this.b_operand = b;
     }
     
-    evaluate()   {
-        let b = this.b_operand.evaluate();
-        let a = this.a_operand.evaluate();
+    evaluate(environment)   {
+        let b = this.b_operand.evaluate(environment);
+        let a = this.a_operand.evaluate(environment);
         switch (typecheck("MULTIPLY", a, b)) {
             case "INT":
                 return new Praxly_int( a.value * b.value); 
@@ -386,9 +393,9 @@ class Praxly_division {
         this.b_operand = b;
     }
     
-    evaluate()   {
-        let b = this.b_operand.evaluate();
-        let a = this.a_operand.evaluate();
+    evaluate(environment)   {
+        let b = this.b_operand.evaluate(environment);
+        let a = this.a_operand.evaluate(environment);
         switch (typecheck("DIVISION", a, b)) {
             case "INT":
                 return new Praxly_int( a.value / b.value); 
@@ -412,9 +419,9 @@ class Praxly_modulo {
         this.b_operand = b;
     }
     
-    evaluate()   {
-        let b = this.b_operand.evaluate();
-        let a = this.a_operand.evaluate();
+    evaluate(environment)   {
+        let b = this.b_operand.evaluate(environment);
+        let a = this.a_operand.evaluate(environment);
         switch (typecheck("MODULO", a, b)) {
             case "INT":
                 return new Praxly_int( a.value % b.value); 
@@ -438,9 +445,9 @@ class Praxly_exponent {
         this.b_operand = b;
     }
     
-    evaluate()   {
-        let b = this.b_operand.evaluate();
-        let a = this.a_operand.evaluate();
+    evaluate(environment)   {
+        let b = this.b_operand.evaluate(environment);
+        let a = this.a_operand.evaluate(environment);
         switch (typecheck("EXPONENT", a, b)) {
             case "INT":
                 return new Praxly_int( a.value ** b.value); 
@@ -464,9 +471,9 @@ class Praxly_and {
         this.b_operand = b;
     }
 
-    evaluate()   {
+    evaluate(environment)   {
         
-        return new Praxly_boolean( this.a_operand.evaluate().value && this.b_operand.evaluate().value);
+        return new Praxly_boolean( this.a_operand.evaluate(environment).value && this.b_operand.evaluate(environment).value);
     }      
 }
 
@@ -480,8 +487,8 @@ class Praxly_or {
         this.b_operand = b;
     }
 
-    evaluate()   {
-        return new Praxly_boolean( this.a_operand.evaluate().value || this.b_operand.evaluate().value);
+    evaluate(environment)   {
+        return new Praxly_boolean( this.a_operand.evaluate(environment).value || this.b_operand.evaluate(environment).value);
     }      
 }
 
@@ -495,8 +502,8 @@ class Praxly_equals {
         this.b_operand = b;
     }
 
-    evaluate()   {
-        return new Praxly_boolean( this.a_operand.evaluate().value === this.b_operand.evaluate().value);
+    evaluate(environment)   {
+        return new Praxly_boolean( this.a_operand.evaluate(environment).value === this.b_operand.evaluate(environment).value);
     }      
 }
 
@@ -510,8 +517,8 @@ class Praxly_not_equals {
         this.b_operand = b;
     }
 
-    evaluate()   {
-        return new Praxly_boolean( this.a_operand.evaluate().value != this.b_operand.evaluate().value);
+    evaluate(environment)   {
+        return new Praxly_boolean( this.a_operand.evaluate(environment).value != this.b_operand.evaluate(environment).value);
     }      
 }
 
@@ -525,8 +532,8 @@ class Praxly_greater_than {
         this.b_operand = b;
     }
 
-    evaluate()   {
-        return new Praxly_boolean( this.a_operand.evaluate().value > this.b_operand.evaluate().value);
+    evaluate(environment)   {
+        return new Praxly_boolean( this.a_operand.evaluate(environment).value > this.b_operand.evaluate(environment).value);
     }      
 }
 
@@ -540,8 +547,8 @@ class Praxly_less_than {
         this.b_operand = b;
     }
 
-    evaluate()   {
-        return new Praxly_boolean( this.a_operand.evaluate().value < this.b_operand.evaluate().value);
+    evaluate(environment)   {
+        return new Praxly_boolean( this.a_operand.evaluate(environment).value < this.b_operand.evaluate(environment).value);
     }      
 }
 
@@ -555,8 +562,8 @@ class Praxly_greater_than_equal {
         this.b_operand = b;
     }
 
-    evaluate()   {
-        return new Praxly_boolean( this.a_operand.evaluate().value >= this.b_operand.evaluate().value);
+    evaluate(environment)   {
+        return new Praxly_boolean( this.a_operand.evaluate(environment).value >= this.b_operand.evaluate(environment).value);
     }      
 }
 
@@ -570,8 +577,8 @@ class Praxly_less_than_equal {
         this.b_operand = b;
     }
 
-    evaluate()   {
-        return new Praxly_boolean( this.a_operand.evaluate().value <= this.b_operand.evaluate().value);
+    evaluate(environment)   {
+        return new Praxly_boolean( this.a_operand.evaluate(environment).value <= this.b_operand.evaluate(environment).value);
     }      
 }
 
@@ -581,9 +588,9 @@ class Praxly_if {
         this.condition = condition;
         this.code = code;
     }
-    evaluate() {
-        if(this.condition.evaluate().value) {
-            this.code.evaluate();
+    evaluate(environment) {
+        if(this.condition.evaluate(environment).value) {
+            this.code.evaluate(environment);
         }
         return 'success';
     }
@@ -596,11 +603,11 @@ class Praxly_if_else {
         this.code = code;
         this.alternitive = alternitive;
     }
-    evaluate() {
-        if(this.condition.evaluate().value) {
-            this.code.evaluate();
+    evaluate(environment) {
+        if(this.condition.evaluate(environment).value) {
+            this.code.evaluate(environment);
         } else {
-            this.alternitive.evaluate();
+            this.alternitive.evaluate(environment);
         }
         return 'success';
     }
@@ -613,9 +620,9 @@ class Praxly_statement {
     constructor(contents){
         this.contents = contents;
     }
-    evaluate(){
+    evaluate(environment){
         try{
-            return this.contents.evaluate();
+            return this.contents.evaluate(environment);
         } catch (error)  {
             // addError('error from index ');
             console.error('An error occurred: empty statement', error);
@@ -634,7 +641,7 @@ class Praxly_program {
         this.codeBlock = codeblockk;
     }
     evaluate() {
-        return this.codeBlock.evaluate();
+        return this.codeBlock.evaluate(scopes.global);
     }
 }
 
@@ -643,10 +650,10 @@ class Praxly_codeBlock {
         this.praxly_blocks = praxly_blocks;
         console.log(this.praxly_blocks);
     }
-    evaluate() {
+    evaluate(environment) {
         this.praxly_blocks.forEach(element => {
             try{
-                element.evaluate();
+                element.evaluate(environment);
             } catch (error)  {
                 console.error('An error occurred: empty statement', error); 
             }
@@ -661,45 +668,45 @@ class Praxly_codeBlock {
 class Praxly_assignment {
     constructor( json, type, name, expression, blockjson){
         this.json = blockjson;
-        if (type === "reassignment"){
-            console.log(variableList);
-            if (!variableList.hasOwnProperty(name)){
-                console.error(`Error: variable name ${name} not in the variablelist: \n ${variableList}`);
-            }
-  
-            if (variableList[name].evaluate().constructor.name !== expression.evaluate().constructor.name){
-                console.error("Error: varible reassignment does not match declared type:");
-            }
-            
-          
-        } else {
-            if (expression.evaluate().constructor.name !== type){
-                console.error(`Error: varible assignment does not match declared type:\n expression type: ${expression.evaluate().constructor.name} \n type: ${type}`);
-            }
-            variableList[name] = expression;
-                  
-        }
         this.type = type;
         this.name = name;
         this.value = expression;
         
     }
-    evaluate() {
-        variableList[this.name] = this.value.evaluate();
+    evaluate(environment) {
+        // if it is a reassignment, the variable must be in the list and have a matching type. 
+        if (this.type === "reassignment"){
+            // console.log(variableList);
+            if (!environment.variableList.hasOwnProperty(this.name)){
+                console.error(`Error: variable name ${this.name} not in the variablelist: \n ${environment.variableList}`);
+            }
+    
+            if (environment.variableList[this.name].evaluate(environment).constructor.name !== this.value.evaluate(environment).constructor.name){
+                console.error("Error: varible reassignment does not match declared type:");
+            }
+          
+        } else {
+            if (this.value.evaluate(environment).constructor.name !== this.type){
+                console.error(`Error: varible assignment does not match declared type:\n expression type: ${expression.evaluate(environment).constructor.name} \n type: ${type}`);
+            }
+            // environment.variableList[this.name] = this.expression;
+                  
+        }
+        environment.variableList[this.name] = this.value.evaluate(environment);
     }
 }
 
 class Praxly_variable {
     constructor(json, name, blockjson){
         this.json = blockjson;
-        if (!variableList.hasOwnProperty(name)){
+        this.name = name;
+    }
+    evaluate(environment){
+        if (!environment.variableList.hasOwnProperty(this.name)){
             sendRuntimeError('this variable is not recognized by the program. Perhaps you forgot to initialize it?', blockjson);
             console.error("Error: variable name not in the variablelist:");
         }
-        this.name = name;
-    }
-    evaluate(){
-        return variableList[this.name];
+        return environment.variableList[this.name];
     }
 }
 
@@ -711,12 +718,12 @@ class Praxly_for {
         this.incrimentation = incrimentation;
         this.statement = statement;
     }
-    evaluate() {
-        this.initialization.evaluate();
+    evaluate(environment) {
+        this.initialization.evaluate(environment);
         var loopLimit = 0;
-        while (loopLimit < 500 && this.condition.evaluate().value) {
-            this.statement.evaluate();
-            this.incrimentation.evaluate();
+        while (loopLimit < 500 && this.condition.evaluate(environment).value) {
+            this.statement.evaluate(environment);
+            this.incrimentation.evaluate(environment);
 
         }
     }
@@ -728,10 +735,10 @@ class Praxly_while {
         this.condition = condition; 
         this.statement = statement;
     }
-    evaluate() {
+    evaluate(environment) {
         var loopLimit = 0;
-        while (loopLimit < 500 && this.condition.evaluate().value) {
-            this.statement.evaluate();
+        while (loopLimit < 500 && this.condition.evaluate(environment).value) {
+            this.statement.evaluate(environment);
         }
     }
 }
@@ -741,11 +748,11 @@ class Praxly_do_while {
         this.condition = condition; 
         this.statement = statement;
     }
-    evaluate() {
-        this.statement.evaluate();
+    evaluate(environment) {
+        this.statement.evaluate(environment);
         var loopLimit = 0;
-        while (loopLimit < 500 && this.condition.evaluate().value) {
-            this.statement.evaluate();
+        while (loopLimit < 500 && this.condition.evaluate(environment).value) {
+            this.statement.evaluate(environment);
         }
     }
 }
@@ -755,11 +762,11 @@ class Praxly_repeat_until {
         this.condition = condition; 
         this.statement = statement;
     }
-    evaluate() {
+    evaluate(environment) {
         var loopLimit = 0;
-        this.statement.evaluate();
-        while (loopLimit < 500 && ! this.condition.evaluate().value) {
-            this.statement.evaluate();
+        this.statement.evaluate(environment);
+        while (loopLimit < 500 && ! this.condition.evaluate(environment).value) {
+            this.statement.evaluate(environment);
         }
     }
 }
@@ -770,8 +777,8 @@ class Praxly_not {
         this.expression = value;
     }
 
-    evaluate() {
-        return new Praxly_boolean(!this.expression.evaluate().value);
+    evaluate(environment) {
+        return new Praxly_boolean(!this.expression.evaluate(environment).value);
     }
 }
 
@@ -779,7 +786,7 @@ class Praxly_invalid {
     constructor() {
         this.error = 'error\n';
     }
-    evaluate() {
+    evaluate(environment) {
         printBuffer += this.error;
     }
 }

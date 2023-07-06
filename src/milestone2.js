@@ -7,6 +7,18 @@ import { textError } from './milestone1';
 
 export const textEditor = ace.edit("aceCode", {fontSize: 16});
 
+function parseParameters(parameterString) {
+  const parameterArray = parameterString.split(',');
+
+  const parsedArray = [];
+  parameterArray.forEach(parameter => {
+    const [name, type] = parameter.trim().split(' ');
+    parsedArray.push([name, type]);
+  });
+
+  return parsedArray;
+}
+
 // Get the underlying DOM element of the Ace editor
 
 export const  indextoAceRange = (startindex, endindex) => {
@@ -72,8 +84,8 @@ class Token {
       this.i = 0;
       this.length = this.source.length;
       this.token_so_far = "";
-      this.keywords = ["if", "else", "end", "print", "for", "while", 'and', 'or', 'do', 'repeat', 'until', 'not'];
-      this.types = ['int', 'double', 'String', 'char', 'float', 'boolean', 'short'];
+      this.keywords = ["if", "else", "end", "print", "for", "while", 'and', 'or', 'do', 'repeat', 'until', 'not', 'return'];
+      this.types = ['int', 'double', 'String', 'char', 'float', 'boolean', 'short', 'void'];
       this.startToken = 0;
       this.currentLine = 0;
     }
@@ -283,19 +295,40 @@ class Token {
               }
               this.emit_token(this.token_so_far);
             }
+            while (this.has(' ')){
+              //skip unnessecary spaces
+              this.skip();
+            }
+            if (this.has('(') && this.has_ahead(')')){
+              this.skip();
+              this.skip();
+              this.emit_token('function');
+            }
+
+            if (this.has('(')){
+              this.skip();
+              this.emit_token('function');
+              while(this.hasNot(')')){
+                this.capture();
+              }
+              this.skip();
+
+              this.emit_token('params');
+              
+            }
             else if (this.keywords.includes(this.token_so_far)) {
               this.emit_token(this.token_so_far);  
 
             } 
             else if (this.types.includes(this.token_so_far)) {
               this.emit_token('Type');  
-
+           
             } else {
+              if (this.token_so_far !== ''){
+                this.emit_token("Variable");
 
-              if (this.has_ahead('(')){
-                // function call stuff
               }
-              this.emit_token("Variable");
+
             }
           } else if (this.has(";")) {
               this.capture();
@@ -982,6 +1015,19 @@ statement() {
         result.end = expression.end; 
         return result;
       }
+  }
+
+  else if (this.has("return")) {
+    // while (this.has('print')) {
+      this.advance();
+      const expression = this.boolean_operation();
+      if (this.has('\n')){
+        // this.advance();
+        result.type = 'RETURN';
+        result.value = expression;
+        result.end = expression.end; 
+        return result;
+      }
 
   }else if (this.has('comment')){
     result.type = 'COMMENT', 
@@ -990,7 +1036,7 @@ statement() {
     return result;
   
   }
-  else if (this.has_type()){
+  else if (this.has_type() && this.has_ahead('Variable')){
       var returnType = 'Praxly_' + this.tokens[this.i].value;
       this.advance();
       if (this.has("Variable")){
@@ -1024,7 +1070,42 @@ statement() {
     return result;
   }
 
+  else if (this.has_type()&& this.has_ahead('function')){
+    console.log('saw function');
+    //function code here
+    result.type = 'FUNCTION_ASSIGNMENT';
+    result.returnType = this.tokens[this.i].value;
+    this.advance();
+    if (this.hasNot('function')){
+      console.error('no function name here, there is a problem');
+    }
+    result.name = this.tokens[this.i].value;
+    this.advance();
+    if (this.has('params')){
+      var params = parseParameters( this.tokens[this.i].value);
+      
+      console.log("here are the params listed out");
+      console.log(params);
+      result.params = params;
+      result.endindex = this.tokens[this.i].endIndex;
+      this.advance();
+    } else {
+      result.params = null;
+    }
+    var contents = this.codeBlock('end ' + result.name);
+    if (this.hasNot('end ' + result.name)){
+      console.error('missing end function token');
+      return result;
+    }
+    result.contents = contents;
+    result.end = this.tokens[this.i].endIndex;
+    this.advance();
+    
+    return result;
+  }
+
   else {
+    console.log(`the current token is ${this.tokens[this.i].token_type} and the next one is ${this.tokens[this.i + 1].token_type}`)
     let contents = this.boolean_operation();
     if (contents === undefined){
       contents = null;

@@ -30,8 +30,6 @@ function connectStatements(statements) {
 
 
 
-
-
 export const tree2blocks = (workspace, blockjson) => {
     try{
         // console.log(blockjson.type);
