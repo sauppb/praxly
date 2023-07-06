@@ -7,7 +7,8 @@ export function generateUrl() {
     var code = textEditor.getValue();
     let encoded = encodeURIComponent(code);
     console.log(encoded);
-    window.location += `#code=${encoded}`
+    window.location.hash = ''; //this should clear it before repalcing it
+    window.location.hash = `code=${encoded}`
     saveToLocal()
     // encode
     // encodeURIComponent is the function we use by default

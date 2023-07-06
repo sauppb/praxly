@@ -1073,7 +1073,7 @@ statement() {
   }
 
   else if (this.has_type()&& this.has_ahead('function')){
-    console.log('saw function');
+    // console.log('saw function');
     //function code here
     result.type = 'FUNCTION_ASSIGNMENT';
     result.returnType = this.tokens[this.i].value;
