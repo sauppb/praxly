@@ -1092,7 +1092,7 @@ statement() {
     }
     result.name = this.tokens[this.i].value;
     this.advance();
-    var params = [];
+    var args = [];
     if (this.has('(')){
       this.advance();
       // var stopLoop = 0;
@@ -1106,7 +1106,7 @@ statement() {
           param.push(this.tokens[this.i].value);
           this.advance();
         }
-        params.push(param);
+        args.push(param);
         if (this.has(',')){
           this.advance();
         }
@@ -1114,11 +1114,11 @@ statement() {
         
       }
       console.log ('here are the params');
-      console.log(params);
+      console.log(args);
       if(this.has(')')){
         this.advance();
       }
-      result.params = params;
+      result.params = args;
       result.endindex = this.tokens[this.i].endIndex;
       if (this.has('\n')){
         this.advance();
@@ -1141,11 +1141,11 @@ statement() {
     result.type = 'FUNCTION_CALL';
     result.name = this.tokens[this.i].value;
     this.advance();
-    var params = [];
+    var args = [];
     if (this.has('(')){
       this.advance();
       while (this.hasNot(')')) {
-        params.push(this.boolean_operation());
+        args.push(this.boolean_operation());
         if (this.hasNot(',')) {
           console.error('missing comma');
           return;
@@ -1153,10 +1153,10 @@ statement() {
         this.advance();
       }
       console.log('here are the function call params:');
-      console.log(params);
-      result.params = params;
+      console.log(args);
+      result.params = args;
       if (this.hasNot(')')){
-        console.error('didnt detect closing parintheses in the params pf  a function call');
+        console.error('didnt detect closing parintheses in the arguments of  a function call');
       }
       result.endIndex = this.tokens[this.i].endIndex;
       result.end = result.endIndex;

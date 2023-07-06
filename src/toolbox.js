@@ -3,22 +3,47 @@
 // import { ToolboxDefinition } from 'blockly/core/utils/toolbox';
 
 export const toolbox = {
-    'kind': 'categoryToolbox',
-    'contents': [
-      // {
+  'kind': 'categoryToolbox',
+  'contents': [
+    // {
       //   'kind': 'block',
       //   'type': 'controls_repeat_ext',
       //   'inputs': {
-      //     'TIMES': {
-      //       'shadow': {
-      //         'type': 'math_number',
-      //         'fields': {
-      //           'NUM': 5
-      //         }
-      //       }
-      //     }
-      //   }
-      // }, 
+        //     'TIMES': {
+          //       'shadow': {
+            //         'type': 'math_number',
+            //         'fields': {
+              //           'NUM': 5
+              //         }
+              //       }
+              //     }
+              //   }
+              // }, 
+      {
+        "kind": "category",
+        "name": "common",
+        "categorystyle": "comment_blocks",
+        "contents": [
+            {
+                'kind': 'block',
+                'type': 'praxly_comment_block'
+              }, 
+              {
+                'kind': 'block',
+                'type': 'praxly_print_block',
+                'inputs': {
+                  'EXPRESSION' : {
+                    'shadow': {
+                      'type' :'praxly_literal_block', 
+                      'fields' : {
+                        'LITERAL' : '\"hello, world\"',
+                      }
+                    },
+                  }, 
+                }
+              }
+        ]
+      }, 
       {
         "kind": "category",
         "name": "logic",
@@ -241,38 +266,38 @@ export const toolbox = {
         ]
       },
      
-      {
-        "kind": "category",
-        "name": "Arrays",
-        "categorystyle": "array_blocks",
-        "contents": [
-          {
-            'kind': 'block',
-            'type': 'custom_operation_block'
-          },
+      // {
+      //   "kind": "category",
+      //   "name": "arrays",
+      //   "categorystyle": "array_blocks",
+      //   "contents": [
+      //     {
+      //       'kind': 'block',
+      //       'type': 'custom_operation_block'
+      //     },
           
              
-        ]
-      },
-      {
-        "kind": "category",
-        "name": "classes",
-        "categorystyle" : "class_blocks",
-        // "categorystyle": "class_blocks",
-        "contents": [
+      //   ]
+      // },
+      // {
+      //   "kind": "category",
+      //   "name": "classes",
+      //   "categorystyle" : "class_blocks",
+      //   // "categorystyle": "class_blocks",
+      //   "contents": [
           
-              {
-                'kind': 'block',
-                'type': 'praxly_class_block'
-              }
+      //         {
+      //           'kind': 'block',
+      //           'type': 'praxly_class_block'
+      //         }
               
 
-        ]
-      },
+      //   ]
+      // },
      
       {
         "kind": "category",
-        "name": "Variables",
+        "name": "variables",
         "categorystyle": "variable_blocks",
         "contents": [
      
@@ -294,7 +319,7 @@ export const toolbox = {
       }, 
       {
         "kind": "category",
-        "name": "Procedures",
+        "name": "procedures",
         "categorystyle": "procedure_blocks",
         "contents": [
             {
@@ -320,31 +345,6 @@ export const toolbox = {
                 }
               }
 
-        ]
-      }, 
-      {
-        "kind": "category",
-        "name": "common blocks",
-        "categorystyle": "comment_blocks",
-        "contents": [
-            {
-                'kind': 'block',
-                'type': 'praxly_comment_block'
-              }, 
-              {
-                'kind': 'block',
-                'type': 'praxly_print_block',
-                'inputs': {
-                  'EXPRESSION' : {
-                    'shadow': {
-                      'type' :'praxly_literal_block', 
-                      'fields' : {
-                        'LITERAL' : '\"hello, world\"',
-                      }
-                    },
-                  }, 
-                }
-              }
         ]
       }, 
       

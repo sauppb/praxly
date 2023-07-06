@@ -543,7 +543,7 @@ export function definePraxlyBlocks() {
     }, 
     {
       "type": "praxly_print_block",
-      "message0": "Print %1 %2",
+      "message0": "print %1 %2",
       "args0": [
         {
           "type": "input_value",
@@ -568,7 +568,7 @@ export function definePraxlyBlocks() {
         {
           "type": "field_input",
           "name": "LITERAL",
-          "text": "my expression"
+          "text": "value"
         }
       ],
       "output": null,
@@ -583,7 +583,7 @@ export function definePraxlyBlocks() {
         {
           "type": "field_input",
           "name": "LITERAL",
-          "text": "my expression"
+          "text": "name"
         }
       ],
       "output": null,

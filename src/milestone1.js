@@ -216,7 +216,11 @@ export const createExecutable = (blockjson) => {
             return new Praxly_not(createExecutable(blockjson.value), blockjson);
         case 'COMMENT':
             return  new Praxly_comment(blockjson.value, blockjson);
-        
+        case 'FUNCTION_ASSIGNMENT':
+            var contents = createExecutable(blockjson.contents);
+            return new Praxly_function_assignment(blockjson.returnType, blockjson.name, blockjson.params, contents, blockjson);
+        case 'FUNCTION_CALL':
+            return new Praxly_function_call(blockjson.name, blockjson.args, blockjson);
         
 
 
@@ -803,20 +807,39 @@ class Praxly_function_assignment{
     }
     evaluate(environment){
         environment.functionList[this.name] = {
-
-            
+            returnType: this.returnType,
+            params: this.params, 
+            contents: this.contents,    
         }
     }
 }
 
 class Praxly_function_call {
-    constructor(name, params, blockjson){
-        
+    constructor(name, args, blockjson){
+        this.args = args;
+        this.name = name;
     }
     
+    //this one was tricky
     evaluate(environment){
+        var functionParams = environment.functionList[this.name].params;
+        var functionContents = environment.functionList[this.name].contents;
+        if (functionParams.length !== this.args.length){
+            console.error(`incorrect amount of arguments passed, expected ${functionParams.length}, was ${this.args.length}`);
+            return;
+        }
         var newScope = JSON.parse(JSON.stringify(environment));
-        //TODO: copy function params over then run code
+        // copy the new parameters to the duplicate of the global scope
+        for (let i = 0; i < this.args.length; i++){
+            let parameterName = functionParams[i][1];
+            let parameterType = functionParams[i][0];
+            let argument = this.args[i];
+            //TODO: typecheck
+            newScope.variableList[parameterName] = argument;
+        }
+        let result = functionContents.evaluate(newScope);
+        //TODO: tpyecheck that it matches the returnType
+        return result;
     }
 }
 
