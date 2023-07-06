@@ -58,4 +58,8 @@ take in the environment
 take the scope for the function and append it to a copy of the environment
 
 
+functionName: {
+    params: 
+    code: 
     
+}

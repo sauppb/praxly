@@ -118,6 +118,7 @@ export const createExecutable = (blockjson) => {
             scopes = {
                 global: {
                     variableList: {}, 
+                    functionList: {},
 
                 }
             };
@@ -215,6 +216,8 @@ export const createExecutable = (blockjson) => {
             return new Praxly_not(createExecutable(blockjson.value), blockjson);
         case 'COMMENT':
             return  new Praxly_comment(blockjson.value, blockjson);
+        
+        
 
 
             
@@ -788,6 +791,32 @@ class Praxly_invalid {
     }
     evaluate(environment) {
         printBuffer += this.error;
+    }
+}
+
+class Praxly_function_assignment{
+    constructor(returnType, name, params, contents, blockjson){
+        this.returnType = returnType;
+        this.name = name;
+        this.params = params;
+        this.contents = contents;
+    }
+    evaluate(environment){
+        environment.functionList[this.name] = {
+
+            
+        }
+    }
+}
+
+class Praxly_function_call {
+    constructor(name, params, blockjson){
+        
+    }
+    
+    evaluate(environment){
+        var newScope = JSON.parse(JSON.stringify(environment));
+        //TODO: copy function params over then run code
     }
 }
 

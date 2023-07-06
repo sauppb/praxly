@@ -7,17 +7,17 @@ import { textError } from './milestone1';
 
 export const textEditor = ace.edit("aceCode", {fontSize: 16});
 
-function parseParameters(parameterString) {
-  const parameterArray = parameterString.split(',');
+// function parseParameters(parameterString) {
+//   const parameterArray = parameterString.split(',');
 
-  const parsedArray = [];
-  parameterArray.forEach(parameter => {
-    const [name, type] = parameter.trim().split(' ');
-    parsedArray.push([name, type]);
-  });
+//   const parsedArray = [];
+//   parameterArray.forEach(parameter => {
+//     const [name, type] = parameter.trim().split(' ');
+//     parsedArray.push([name, type]);
+//   });
 
-  return parsedArray;
-}
+//   return parsedArray;
+// }
 
 
 
@@ -286,7 +286,7 @@ class Token {
               textError("lexing", 'looks like you didn\'t close your quotes on your String. Remember Strings start and end with a single or double quote mark (\' or \") .',commentStart, this.i);
             }
           } else if (this.has_letter()) {
-            while (this.i < this.length && this.has_letter()) {
+            while (this.i < this.length && (this.has_letter() || this.has_digit())) {
               this.capture();
             }
             if (this.token_so_far === "true" || this.token_so_far === "false") {
@@ -297,41 +297,50 @@ class Token {
               }
               this.emit_token(this.token_so_far);
             }
+            else if (this.keywords.includes(this.token_so_far)) {
+              this.emit_token(this.token_so_far);  
+              
+            } 
+            else if (this.types.includes(this.token_so_far)) {
+              this.emit_token('Type');  
+              
+            }
             while (this.has(' ')){
               //skip unnessecary spaces
               this.skip();
             }
-            if (this.has('(') && this.has_ahead(')')){
-              this.skip();
-              this.skip();
-              this.emit_token('function');
-            }
+            // if (this.has('(') && this.has_ahead(')')){
+            //   this.skip();
+            //   this.skip();
+            //   this.emit_token('function');
+            // }
 
             if (this.has('(')){
-              this.skip();
               this.emit_token('function');
-              while(this.hasNot(')')){
-                this.capture();
-              }
-              this.skip();
-
-              this.emit_token('params');
-              
             }
-            else if (this.keywords.includes(this.token_so_far)) {
-              this.emit_token(this.token_so_far);  
 
-            } 
-            else if (this.types.includes(this.token_so_far)) {
-              this.emit_token('Type');  
-           
-            } else {
+            // if (this.has('(')){
+            //   this.skip();
+            //   this.emit_token('function');
+            //   while(this.hasNot(')')){
+            //     this.capture();
+            //   }
+            //   this.skip();
+            //   //TODO: lex function calls vs definitiosn with parameters
+            //   this.emit_token('params');
+              
+            // }
+             else {
               if (this.token_so_far !== ''){
                 this.emit_token("Variable");
 
               }
 
             }
+          } else if (this.has(",")) {
+            this.capture();
+            this.emit_token(",");
+          
           } else if (this.has(";")) {
               this.capture();
               this.emit_token(";");
@@ -1083,16 +1092,40 @@ statement() {
     }
     result.name = this.tokens[this.i].value;
     this.advance();
-    if (this.has('params')){
-      var params = parseParameters( this.tokens[this.i].value);
-      
-      console.log("here are the params listed out");
+    var params = [];
+    if (this.has('(')){
+      this.advance();
+      // var stopLoop = 0;
+      while (this.hasNot(')') ) {
+        var param = [];
+        if (this.has_type()){
+          param.push(this.tokens[this.i].value);
+          this.advance();
+        }
+        if (this.has('Variable')){
+          param.push(this.tokens[this.i].value);
+          this.advance();
+        }
+        params.push(param);
+        if (this.has(',')){
+          this.advance();
+        }
+        // stopLoop+= 1;
+        
+      }
+      console.log ('here are the params');
       console.log(params);
+      if(this.has(')')){
+        this.advance();
+      }
       result.params = params;
       result.endindex = this.tokens[this.i].endIndex;
-      this.advance();
+      if (this.has('\n')){
+        this.advance();
+      }
     } else {
-      result.params = null;
+      console.error('error, detected function but did not find parinthesees');
+      return;
     }
     var contents = this.codeBlock('end ' + result.name);
     if (this.hasNot('end ' + result.name)){
@@ -1102,12 +1135,38 @@ statement() {
     result.contents = contents;
     result.end = this.tokens[this.i].endIndex;
     this.advance();
-    
     return result;
+  }
+  else if (this.has('function')){
+    result.type = 'FUNCTION_CALL';
+    result.name = this.tokens[this.i].value;
+    this.advance();
+    var params = [];
+    if (this.has('(')){
+      this.advance();
+      while (this.hasNot(')')) {
+        params.push(this.boolean_operation());
+        if (this.hasNot(',')) {
+          console.error('missing comma');
+          return;
+        }
+        this.advance();
+      }
+      console.log('here are the function call params:');
+      console.log(params);
+      result.params = params;
+      if (this.hasNot(')')){
+        console.error('didnt detect closing parintheses in the params pf  a function call');
+      }
+      result.endIndex = this.tokens[this.i].endIndex;
+      result.end = result.endIndex;
+      // this.advance();
+      return result;
+    }
   }
 
   else {
-    console.log(`the current token is ${this.tokens[this.i].token_type} and the next one is ${this.tokens[this.i + 1].token_type}`)
+    // console.log(`the current token is ${this.tokens[this.i].token_type} and the next one is ${this.tokens[this.i + 1].token_type}`)
     let contents = this.boolean_operation();
     if (contents === undefined){
       contents = null;
