@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Praxly: Features</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    h5 {
+      color: #666;
+    }
+
+    .features-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-column-gap: 0px;
+      
+    }
+    
+    .feature-name {
+      font-weight: bold;
+      display: inline-block;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    .feature-description {
+      grid-column: 2 / span 5;
+      border-bottom: 1px dashed #616161;
+    }
+
+    .completed {
+      color: white;
+      background-color: green;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .upgraded {
+      color: white;
+      background-color: blue;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .unlikely-change {
+      color: white;
+      background-color: purple;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .active-development {
+      color: white;
+      background-color: yellow;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .near-future {
+      color: white;
+      background-color: orange;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .uncertain {
+      color: white;
+      background-color: red;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .legend {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 25%;
+    }
+
+    .legend-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .legend-item {
+      display: inline-block;
+      margin-right: 20px;
+    }
+  </style>
+</head>
+<body>
+    
+  <h2>Completed Features</h2>
+  <h5>The following are features that are considered to be working:</h5>
+  <div class="features-container">
+    <div>
+      <div class="feature-name completed">Live Updates block generation</div>
+    </div>
+    <div class="feature-description">whenever you text in the code editor, the blocks will be built in real time. </div>
+    <div>
+      <div class="feature-name upgraded">Share URL</div>
+    </div>
+    <div class="feature-description">There is a share button that can be used to copy the url that can load the blocks/text to anyone with the link</div>
+    <div>
+      <div class="feature-name unlikely-change">Dark Mode</div>
+    </div>
+    <div class="feature-description">dark mode button for ease on the eyes at night.</div>
+  </div>
+
+  <div class="legend">
+    <h3 class="legend-title">Legend:</h3>
+    <div class="legend-item">
+      <span class="completed">Green</span> - Stable but unfinished
+    </div>
+    <div class="legend-item">
+      <span class="upgraded">Blue</span> - Finished but will be upgraded soon
+    </div>
+    <div class="legend-item">
+      <span class="unlikely-change">Purple</span> - Finished and unlikely to change
+    </div>
+  </div>
+
+
+  <h2>Future Features</h2>
+  <h5>The following are features that are planned for the future:</h5>
+  <div class="features-container">
+    <div>
+      <div class="feature-name active-development">Error Messages</div>
+    </div>
+    <div class="feature-description">This is an example description.</div>
+    <div>
+      <div class="feature-name near-future">Example Code</div>
+    </div>
+    <div class="feature-description">This is an example description.</div>
+    <div>
+      <div class="feature-name uncertain">Debugger</div>
+    </div>
+    <div class="feature-description">This is an example description.</div>
+  </div>
+
+  <div class="legend">
+    <h3 class="legend-title">Legend:</h3>
+    <div class="legend-item">
+      <span class="active-development">Yellow</span> - In active development
+    </div>
+    <div class="legend-item">
+      <span class="near-future">Orange</span> - Planned to be added in the near future
+    </div>
+    <div class="legend-item">
+      <span class="uncertain">Red</span> - Feature may or may not happen depending on priority
+    </div>
+  </div>
+</body>
+</html>
