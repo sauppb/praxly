@@ -305,17 +305,17 @@ class Token {
               this.emit_token('Type');  
               
             }
-            while (this.has(' ')){
-              //skip unnessecary spaces
-              this.skip();
-            }
+            // while (this.has(' ')){
+            //   //skip unnessecary spaces
+            //   this.skip();
+            // }
             // if (this.has('(') && this.has_ahead(')')){
             //   this.skip();
             //   this.skip();
             //   this.emit_token('function');
             // }
 
-            if (this.has('(')){
+            else if (this.has('(') || this.has_ahead('(')){
               this.emit_token('function');
             }
 
@@ -1146,9 +1146,9 @@ statement() {
       this.advance();
       while (this.hasNot(')')) {
         args.push(this.boolean_operation());
-        if (this.hasNot(',')) {
-          console.error('missing comma');
-          return;
+        if (this.has(',')) {
+          this.advance();
+          
         }
         this.advance();
       }
