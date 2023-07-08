@@ -75,6 +75,24 @@
       min-width: 160px;
       box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
       z-index: 1;
+      right: 0;
+    }
+
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      white-space: nowrap;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
     }
 
     .dropdown-content a {
@@ -87,16 +105,52 @@
     .dropdown:hover .dropdown-content {
       display: block;
     }
+
+    .run-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: green;
+      color: white;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      position: relative;
+    }
+
+    .run-button:hover {
+      background-color: #00c800;
+    }
+
+    .run-button:hover::before {
+      content: '';
+    }
+
+    .button-text {
+      display: none;
+    }
+
+    .run-button:hover .button-text {
+      display: inline;
+    }
   </style>
-  <script type="module" crossorigin src="/praxly/assets/index-2cd30ba8.js"></script>
-  <link rel="stylesheet" href="/praxly/assets/index-1b4c197f.css">
+  <script type="module" crossorigin src="/praxly/assets/index-fe0a4e8a.js"></script>
+  <link rel="stylesheet" href="/praxly/assets/index-48ce1e24.css">
 </head>
 <body>
   <header class="nav-bar">
     <h1>Praxly beta</h1>
     <img src="/praxly/assets/logo_built_on-bffeaec3.png" alt="built on blockly">
     <ul>
-      <li><button id="runButton">Run Blocks</button></li>
+      <li>
+        <button id="runButton" class="run-button" title="Run Code">
+          <span class="button-text">Run Code</span>
+        </button>
+      </li>
       <li><button id="runCode">Turn Code to Blocks</button></li>
       <li><button id="share">Share</button></li>
       <li><button id="darkMode">Dark Mode</button></li>
@@ -104,8 +158,8 @@
       <li class="dropdown">
         <a href="#">About</a>
         <div class="dropdown-content">
-          <a href="features.html">View Feature List</a>
-          <a href="changelog.html">View Changelog</a>
+          <a href="features.html" target="_blank">View Feature List</a>
+          <a href="changelog.html" target="_blank">View Changelog</a>
         </div>
       </li>
     </ul>

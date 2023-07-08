@@ -71,3 +71,28 @@ main {
     white-space: nowrap; /* Added property */
   }
   
+  .button-text {
+    display: none;
+  }
+  
+  .run-button:hover .button-text {
+    display: inline;
+  }
+
+  .run-button::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 15px solid white;
+    left: 40%; /* Adjusted value */
+    top: 50%;
+    transform: translateY(-50%);
+    transition: none; /* Removed transition property */
+  }
+  
+  .run-button:hover::before {
+    display: none;
+  }
