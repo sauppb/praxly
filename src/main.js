@@ -30,7 +30,7 @@ const praxlyGenerator = makeGenerator();
 
 var mainTree = null;
 const runButton = document.getElementById('runButton');
-const runCode = document.getElementById('runCode');
+// const runCode = document.getElementById('runCode');
 const darkModeButton = document.getElementById('darkMode');
 const blockUpdatesButton = document.getElementById('blockUpdates');
 let darkMode = false;
@@ -80,7 +80,7 @@ let turnBlocksToCode = () => {
   
 };
 
-runCode.addEventListener('click', turnCodeToBLocks);
+// runCode.addEventListener('click', turnCodeToBLocks);
 
 
 definePraxlyBlocks();
