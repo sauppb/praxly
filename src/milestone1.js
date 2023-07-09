@@ -694,7 +694,7 @@ class Praxly_assignment {
           
         } else {
             if (this.value.evaluate(environment).constructor.name !== this.type){
-                console.error(`Error: varible assignment does not match declared type:\n expression type: ${expression.evaluate(environment).constructor.name} \n type: ${type}`);
+                console.error(`Error: varible assignment does not match declared type:\n expression type: ${environment.variableList[this.name].evaluate(environment).constructor.name} \n type: ${type}`);
             }
             // environment.variableList[this.name] = this.expression;
                   
