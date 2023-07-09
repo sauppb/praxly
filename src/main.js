@@ -37,7 +37,7 @@ let darkMode = false;
 let live = true;
 
 runButton.addEventListener('click', () => { 
-  // clearOutput();
+  clearOutput();
   // mainTree = blocks2tree(workspace, praxlyGenerator);
   if (mainTree === null){
     alert('there is nothing to run :( \n try typing some code or dragging some blocks first.');
