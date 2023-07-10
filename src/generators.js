@@ -312,8 +312,8 @@ export const makeGenerator = () => {
     praxlyGenerator['praxly_procedure_block'] = (block)=> {
         var varType = block.getFieldValue('RETURNTYPE');
         console.log(`field input is ${varType}`);
-        var variableName = block.getFieldValue('VARIABLENAME');
-        var expression = block.getInputTargetBlock('EXPRESSION'); 
+        var variableName = block.getFieldValue('prodecureName');
+        const statements = block.getInputTargetBlock("CODEBLOCK"); 
         var value = praxlyGenerator[expression.type](expression);
         return {
             type: 'ASSIGNMENT', 
