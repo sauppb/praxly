@@ -309,6 +309,22 @@ export const makeGenerator = () => {
         };
     }
 
+    praxlyGenerator['praxly_procedure_block'] = (block)=> {
+        var varType = block.getFieldValue('RETURNTYPE');
+        console.log(`field input is ${varType}`);
+        var variableName = block.getFieldValue('VARIABLENAME');
+        var expression = block.getInputTargetBlock('EXPRESSION'); 
+        var value = praxlyGenerator[expression.type](expression);
+        return {
+            type: 'ASSIGNMENT', 
+            name: variableName, 
+            value: value, 
+            blockID: block.id, 
+            varType: 'Praxly_' + varType,
+
+        }
+    }
+
     return praxlyGenerator;
 }
 

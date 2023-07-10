@@ -385,31 +385,31 @@ export function definePraxlyBlocks() {
       "args0": [
         {
           "type": "field_dropdown",
-          "name": "NAME",
+          "name": "RETURNTYPE",
           "options": [
             [
               "int",
-              "OPTIONNAME"
+              "int"
             ],
             [
               "boolean",
-              "OPTIONNAME"
+              "boolean"
             ],
             [
               "double",
-              "OPTIONNAME"
+              "double"
             ],
             [
               "char",
-              "OPTIONNAME"
+              "char"
             ],
             [
               "String",
-              "OPTIONNAME"
+              "String"
             ],
             [
               "float",
-              "OPTIONNAME"
+              "float"
             ]
           ]
         },
