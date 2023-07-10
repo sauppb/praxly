@@ -7,6 +7,7 @@ import { textError } from './milestone1';
 
 export const textEditor = ace.edit("aceCode", {fontSize: 16});
 
+const maxLoop = 100;
 // function parseParameters(parameterString) {
 //   const parameterArray = parameterString.split(',');
 
@@ -454,6 +455,10 @@ class Parser {
       this.eof = true;
       return;
     }
+
+    if (this.has(',')){
+      return;
+    }
     else if (this.has("INT")) {
 
       this.advance();
@@ -539,7 +544,7 @@ class Parser {
 
     } else {
       textError('parsing', `Missing or Unrecognized token: ${this.i} This is likely the result of a lexing error.', startIndex, endIndex`);
-      console.log(`atom problem at this token: ${this.i}`);
+      console.log(`atom problem at this token: ${this.tokens[this.i].token_type}`);
       return;
     }
   }
@@ -1095,8 +1100,8 @@ statement() {
     var args = [];
     if (this.has('(')){
       this.advance();
-      // var stopLoop = 0;
-      while (this.hasNot(')') ) {
+      var stopLoop = 0;
+      while (this.hasNot(')') && stopLoop < maxLoop) {
         var param = [];
         if (this.has_type()){
           param.push(this.tokens[this.i].value);
@@ -1110,7 +1115,7 @@ statement() {
         if (this.has(',')){
           this.advance();
         }
-        // stopLoop+= 1;
+        stopLoop+= 1;
         
       }
       console.log ('here are the params');
@@ -1144,13 +1149,16 @@ statement() {
     var args = [];
     if (this.has('(')){
       this.advance();
-      while (this.hasNot(')')) {
-        args.push(this.boolean_operation());
+      var loopBreak = 0;
+      while (this.hasNot(')') &&  loopBreak < maxLoop) {
+        // this.advance();
+        var param = this.boolean_operation();
+        args.push(param);
         if (this.has(',')) {
           this.advance();
           
         }
-        this.advance();
+        loopBreak++;
       }
       console.log('here are the function call params:');
       console.log(args);
@@ -1160,10 +1168,13 @@ statement() {
       }
       result.endIndex = this.tokens[this.i].endIndex;
       result.end = result.endIndex;
-      // this.advance();
+      this.advance();
       return result;
     }
   }
+  // else if (this.has('/n')){
+  //   return;
+  // }
 
   else {
     // console.log(`the current token is ${this.tokens[this.i].token_type} and the next one is ${this.tokens[this.i + 1].token_type}`)

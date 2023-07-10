@@ -54,7 +54,7 @@ runButton.addEventListener('click', () => {
 
 export const turnCodeToBLocks = () => {
   // I had to wrap this function in a mutex to prevent an infinite loop lol
-  console.log("ace has the lock");
+  // console.log("ace has the lock");
   workspace.removeChangeListener(turnBlocksToCode); 
   clearOutput();
   mainTree = text2tree();
@@ -67,7 +67,7 @@ export const turnCodeToBLocks = () => {
 let turnBlocksToCode = () => {
   // same here with the mutex
 
-  console.log("blockly has the lock");
+  // console.log("blockly has the lock");
   textEditor.removeEventListener("input", turnCodeToBLocks);
   clearOutput();
 

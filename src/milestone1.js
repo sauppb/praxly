@@ -106,8 +106,9 @@ export const createExecutable = (blockjson) => {
                 try {
                     return createExecutable(statement);
                 } catch (error)  {
-                    console.error('An error occurred: empty statement', error);
-                    return null;
+                    // console.error('An error occurred: empty statement', error);
+                    return new Praxly_emptyLine(blockjson);
+                    
                 }
                 
             });
@@ -128,8 +129,8 @@ export const createExecutable = (blockjson) => {
             try {
                 return new Praxly_statement( createExecutable(blockjson.value), blockjson);
             } catch (error)  {
-                console.error('An error occurred: empty statement', error);
-                return  new Praxly_statement(null);
+                // console.error('An error occurred: empty statement', error);
+                return new Praxly_emptyLine(blockjson);
             }
 
         case 'IF':
@@ -139,7 +140,7 @@ export const createExecutable = (blockjson) => {
             catch (error) {
 
                 sendRuntimeError('there is an error with this statement. it is likely empty or has something invalid', blockjson);
-                console.error('An error occurred: empty statement', error);
+                // console.error('An error occurred: empty statement', error);
                 return  new Praxly_statement(null);
             }
         case 'IF_ELSE':
@@ -148,7 +149,7 @@ export const createExecutable = (blockjson) => {
             }
             catch (error) {
                 sendRuntimeError('there is an error with this statement. it is likely empty or has something invalid', blockjson);
-                console.error('An error occurred: empty statement', error);
+                // console.error('An error occurred: empty statement', error);
                 return  new Praxly_statement(null);
             }
         case 'ASSIGNMENT':
@@ -220,7 +221,11 @@ export const createExecutable = (blockjson) => {
             var contents = createExecutable(blockjson.contents);
             return new Praxly_function_assignment(blockjson.returnType, blockjson.name, blockjson.params, contents, blockjson);
         case 'FUNCTION_CALL':
-            return new Praxly_function_call(blockjson.name, blockjson.args, blockjson);
+            var args = [];
+            blockjson.params.forEach((arg) => {
+                args.push(createExecutable(arg));
+            });
+            return new Praxly_function_call(blockjson.name, args, blockjson);
         
 
 
@@ -632,7 +637,7 @@ class Praxly_statement {
             return this.contents.evaluate(environment);
         } catch (error)  {
             // addError('error from index ');
-            console.error('An error occurred: empty statement', error);
+            // console.error('An error occurred: empty statement', error);
             return; 
         }
         
@@ -662,7 +667,7 @@ class Praxly_codeBlock {
             try{
                 element.evaluate(environment);
             } catch (error)  {
-                console.error('An error occurred: empty statement', error); 
+                console.error('An error occurred: empty statement', error);
             }
             
         });
@@ -837,9 +842,22 @@ class Praxly_function_call {
             //TODO: typecheck
             newScope.variableList[parameterName] = argument;
         }
+        console.log(`here is the new scope in the function named ${this.name}`);
+        console.log(newScope);
         let result = functionContents.evaluate(newScope);
         //TODO: tpyecheck that it matches the returnType
         return result;
+    }
+}
+
+class Praxly_emptyLine{
+    constructor(blockjson){
+        this.blockjson = blockjson;
+    }
+    evaluate(environment){
+        console.log('newline detected at ');
+        console.log(this.blockjson);
+        console.log('this should not exist');
     }
 }
 
