@@ -278,22 +278,22 @@
           
              
 //       //   ]
-//       // },
-//       // {
-//       //   "kind": "category",
-//       //   "name": "classes",
-//       //   "categorystyle" : "class_blocks",
-//       //   // "categorystyle": "class_blocks",
-//       //   "contents": [
+      // },
+      // {
+      //   "kind": "category",
+      //   "name": "classes",
+      //   "categorystyle" : "class_blocks",
+      //   // "categorystyle": "class_blocks",
+      //   "contents": [
           
-//       //         {
-//       //           'kind': 'block',
-//       //           'type': 'praxly_class_block'
-//       //         }
+      //         {
+      //           'kind': 'block',
+      //           'type': 'praxly_class_block'
+      //         }
               
 
-//       //   ]
-//       // },
+      //   ]
+      // },
      
 //       {
 //         "kind": "category",
@@ -633,21 +633,20 @@ export const toolbox = {
              
       //   ]
       // },
-      // {
-      //   "kind": "category",
-      //   "name": "classes",
-      //   "categorystyle" : "class_blocks",
-      //   // "categorystyle": "class_blocks",
-      //   "contents": [
+      {
+        "kind": "category",
+        "name": "experimental",
+        "categorystyle" : "class_blocks",
+        // "categorystyle": "class_blocks",
+        "contents": [
           
-      //         {
-      //           'kind': 'block',
-      //           'type': 'praxly_class_block'
-      //         }
-              
-
-      //   ]
-      // },
+              {
+                'kind': 'block',
+                'type': 'praxly_parameter_block', 
+                
+              }, 
+        ]
+      },
      
       {
         "kind": "category",

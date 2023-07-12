@@ -1,7 +1,8 @@
 
 // import { workspace } from "./main";
 
-import { indextoAceRange } from "./milestone2";
+import { highlightError, indextoAceRange } from "./milestone2";
+// import { textEditor } from "./milestone2";
 
   
 
@@ -16,6 +17,7 @@ export var blockErrorsBuffer = {};
 export function textError(type, error, startIndex, endIndex){
     var ranges = indextoAceRange(startIndex, endIndex);
     errorOutput += `${type} error occured on line line ${ranges[0]}:    ${error}<br>`;
+    // highlightError(ranges, error);
 }
 
 
@@ -45,6 +47,17 @@ export function clearOutput() {
     errorOutput = "";
     blockErrorsBuffer = {};
 }
+
+
+
+  
+  
+  
+  
+
+
+
+
 
 
 export const createExecutable = (blockjson) => {

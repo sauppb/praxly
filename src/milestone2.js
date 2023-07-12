@@ -5,20 +5,60 @@ import { clearOutput } from './milestone1';
 import { variables } from 'blockly/blocks';
 import { textError } from './milestone1';
 
+
 export const textEditor = ace.edit("aceCode", {fontSize: 16});
+var AceRange = ace.require('ace/range').Range;
+
 
 const maxLoop = 100;
-// function parseParameters(parameterString) {
-//   const parameterArray = parameterString.split(',');
 
-//   const parsedArray = [];
-//   parameterArray.forEach(parameter => {
-//     const [name, type] = parameter.trim().split(' ');
-//     parsedArray.push([name, type]);
-//   });
 
-//   return parsedArray;
-// }
+// needs tested
+export function highlightError(rangeArray, errorMessage) {
+  // Get the session from the editor
+  var session = textEditor.getSession();
+
+  // Convert the range array to an Ace Range object
+  var range = new AceRange(rangeArray[0], rangeArray[1], rangeArray[2], rangeArray[3]);
+
+  // Create a marker for the error range
+  var marker = session.addMarker(range, "error-marker", "text");
+
+  // Create a div element for the error message tooltip
+  var tooltip = document.createElement('div');
+  tooltip.className = 'error-tooltip';
+  tooltip.textContent = errorMessage;
+
+  // Calculate the line height based on the editor's font size
+  var lineHeight = parseInt(textEditor.renderer.lineHeight, 10);
+
+  // Create the marker element and add the tooltip
+  var markerElement = document.createElement('div');
+  markerElement.className = 'ace_error-marker';
+  markerElement.style.top = range.start.row * lineHeight + 'px';
+  markerElement.style.height = lineHeight + 'px';
+  markerElement.appendChild(tooltip);
+
+  try {
+    // Find the marker layer's parent container
+  var markerLayer = session.getMarkerLayer("error-marker");
+  markerLayer.element.appendChild(markerElement);
+
+  // Add a mouse hover effect to display the error message
+  markerElement.addEventListener('mouseenter', function() {
+    tooltip.style.display = 'block';
+  });
+
+  markerElement.addEventListener('mouseleave', function() {
+    tooltip.style.display = 'none';
+  });
+  }
+  catch(error) {
+    console.log('error adding the hover effect');
+  }
+}
+
+
 
 
 

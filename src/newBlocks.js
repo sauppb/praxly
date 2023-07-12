@@ -381,7 +381,7 @@ export function definePraxlyBlocks() {
           }, 
           {
       "type": "praxly_procedure_block",
-      "message0": "%1 %2 %3 %4 %5 end %6",
+      "message0": "%1 %2 %3 ( %4 ) %5  %6 end %7",
       "args0": [
         {
           "type": "field_dropdown",
@@ -420,6 +420,11 @@ export function definePraxlyBlocks() {
           "type": "field_input",
           "name": "prodecureName",
           "text": "procedureName"
+        },
+        {
+          "type": "input_value",
+          "name": "PARAMS",
+          "text": "params"
         },
         {
           "type": "input_dummy"
@@ -734,6 +739,22 @@ export function definePraxlyBlocks() {
                   "tooltip": "",
                   "helpUrl": ""
                 }, 
+
+                {
+                  "type": "praxly_parameter_block",
+                  "message0": "%1",
+                  "args0": [
+                    {
+                      "type": "field_input",
+                      "name": "LITERAL",
+                      "text": "value"
+                    }
+                  ],
+                  "output": null,
+                  "style": 'expression_blocks',
+                  "tooltip": "",
+                  "helpUrl": ""
+                },   
     
     ]);
 
