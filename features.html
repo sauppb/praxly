@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Praxly: Features</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    h2 {
+      color: #333;
+      flex: 1 100%;
+    }
+
+    h5 {
+      color: #666;
+      flex: 1 100%;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    td {
+      border: 1px solid #dddddd;
+      padding: 8px;
+    }
+
+    .completed {
+      color: white;
+      background-color: green;
+      border-radius: 5px;
+      padding: 3px 6px;
+    }
+
+    .upgraded {
+      color: white;
+      background-color: blue;
+      border-radius: 5px;
+      padding: 3px 6px;
+    }
+
+    .unlikely-change {
+      color: white;
+      background-color: purple;
+      border-radius: 5px;
+      padding: 3px 6px;
+    }
+
+    .active-development {
+      color: white;
+      background-color: rgb(160, 160, 3);
+      border-radius: 5px;
+      padding: 3px 6px;
+    }
+
+    .near-future {
+      color: white;
+      background-color: orange;
+      border-radius: 5px;
+      padding: 3px 6px;
+    }
+
+    .uncertain {
+      color: white;
+      background-color: red;
+      border-radius: 5px;
+      padding: 3px 6px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #c2c2c2;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 100%;
+    }
+
+    .legend-item {
+      display: inline-block;
+      margin-right: 20px;
+    }
+  </style>
+</head>
+<body>
+    
+  <div>
+    <h2>Completed Features</h2>
+    <h5>The following are features that are considered to be working:</h5>
+    <div class="legend">
+      <div class="legend-item">
+        <span class="completed">Green</span> - Stable but unfinished
+      </div>
+      <div class="legend-item">
+        <span class="upgraded">Blue</span> - Finished but will be upgraded soon
+      </div>
+      <div class="legend-item">
+        <span class="unlikely-change">Purple</span> - Finished and unlikely to change
+      </div>
+    </div>
+  </div>
+
+  <table>
+    <tr>
+      <th>Feature Name</th>
+      <th>Feature Description</th>
+    </tr>
+    <tr>
+      <td><span class="completed">Live Updates block generation</span></td>
+      <td>Whenever you text in the code editor, the blocks will be built in real time.</td>
+    </tr>
+    <tr>
+      <td><span class="completed">Text Generation from blocks</span></td>
+      <td>When blocks are dragged onto the blockly section, the corresponding text is generated.</td>
+    </tr>
+    <tr>
+      <td><span class="upgraded">Share URL</span></td>
+      <td>There is a share button that can be used to copy the URL that can load the blocks/text to anyone with the link.</td>
+    </tr>
+    <tr>
+      <td><span class="unlikely-change">Dark Mode</span></td>
+      <td>Dark mode button for ease on the eyes at night. <b>Edit:</b> Oops I changed some stuff and broke it, will fix at some point.</td>
+    </tr>
+    <tr>
+      <td><span class="unlikely-change">if statements</span></td>
+      <td>supports all blocks in the logic category</td>
+    </tr>
+    <tr>
+      <td><span class="upgraded">Loops</span></td>
+      <td>Loops category blcoks work for the most part.</td>
+    </tr>
+  </table>
+
+
+  <div>
+    <h2>Future Features</h2>
+    <h5>The following are features that are planned for the future:</h5>
+    <div class="legend">
+      <div class="legend-item">
+        <span class="active-development">Yellow</span> - In active development
+      </div>
+      <div class="legend-item">
+        <span class="near-future">Orange</span> - Planned to be added in the near future
+      </div>
+      <div class="legend-item">
+        <span class="uncertain">Red</span> - Feature may or may not happen depending on priority
+      </div>
+    </div>
+  </div>
+
+  <table>
+    <tr>
+      <th>Feature Name</th>
+      <th>Feature Description</th>
+    </tr>
+    <tr>
+      <td><span class="active-development">Error Messages</span></td>
+      <td>Detailed Error messages that will describe where the error occured and suggest possible fixes to the code. </td>
+    </tr>
+    <tr>
+      <td><span class="active-development">Functions</span></td>
+      <td>User-defined functions (called procedures) that can be called </td>
+    </tr>
+    <tr>
+      <td><span class="near-future">Example Code</span></td>
+      <td>have links to example code with explanations of how it works</td>
+    </tr>
+    <tr>
+      <td><span class="near-future">Save Drafts</span></td>
+      <td>This have drafts of the last thing you typed that day stored on the browser's localStorage.</td>
+    </tr>
+    <tr>
+      <td><span class="uncertain">Debugger</span></td>
+      <td>Some sort of slower step execution in order to help visualize the running process.</td>
+    </tr>
+  </table>
+</body>
+</html>
