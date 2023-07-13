@@ -5,6 +5,7 @@
   <title>Praxly</title>
   
   
+  <link rel="icon" href="/praxly/jmu.ico" type="image/x-icon">
   <style>
     body {
       display: flex;
@@ -137,8 +138,125 @@
     .run-button:hover .button-text {
       display: inline;
     }
+
+
+    .dark-mode-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAA1CAYAAADh5qNwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAsMSURBVGhDvZpXjNXFF8dnYekYQClSlBYjAkpR2gIiAgkEkPAAPCn1Cd4UHqiGJ3oJJZQHQNwIQdjQSShBw5JQFQgEQjFoDGWpobdl/vM5+zu/zL07d/feC/6/ybnTzsycM3Nm5sz8bk5xcbF1ZCpUqGAUr1+/lpA84hUrVjQ+T3I5obU2zlO+dEA9iHYI/TaB9v/q1SsJNU/5VDYF+TkvXrywWkCjOTk5QiC5E/JVOS3T0K9z//59c/v2bRHk4cOHklbUrl3b1KxZ01SqVMm89957kqa+gr6UVAn6zM3NjfumDPjlQNvJcR1bmFQovzHNV2U1T5VQvkePHplr166Z48ePm8uXL5ujR4+akydPmqdPnxo3aOb58+fCB6pUqSIKVa5c2XTo0MH06NHDNG3a1HTt2tU0atTI1KpVS/joh361P5WBEPhpVVQnR2YKJq2oFZSRin5jvjLXr183f/zxh9mxY4f5888/RREdtUzRvn178/nnn5vBgweLsh9++KHk0x59Q/SdDJVL5SXMefnyZUluhGQm0sIYKUf87t27Zt++fWbz5s2msLDQ3LhxQ+q8DdStW9d069bNDB8+3PTt29e8//77IgOmnKyUKqoyahpmi2LMWHKcUNNOQVfH2iNHjtiRI0fa+vXro/1/Rm692WHDhtn9+/dLv27GYlkIlXw5lUyqAj+PBsGyZcts69atg0KUR/Xq1Qvml0ctW7a0P/74o/SPHL6cyXK7tSthPFOpSBX6/vvvrVvgwY7LIkZ89uzZ9ty5c3bdunX2gw8+CPKVR2PGjBE5sBjkQu6Q7CjJ7lSqAI3JV4UmTJgQ7Cgd6tmzp7Sh6NWrV5AvHcLsAYr5cmtcZU4wPw21EIwfPz7YQbqEUtoW+Oqrr4J86dJ3330r7dCmDr7OmsrPlhkXEEdJFeKHH34INpwJuXNI2gSM8Jdffhnky4RGjx4dt6eyE2pczM8v0F1u+fLlKdeQ8wiEQmXJ5CsF0lXKHdK2atWqwTJoxowZUYs2Nj1mjgmpoGePUyY+j06cOGFWrlyJabr6ifjss8/MTz/9ZFasWGE++eSTKPftokmTJmbOnDlmzZo15tNPP41yE5Gfn2/cdi9xPb/Uo5A1BTFT4N69e3bs2LHB0alevbr95ZdfhA/s2bPHuk6DvErMjM4+KG+jcArZtWvXRtzWFhQUpLSKoUOH2n///Vf41NrQpQIzBJglgKewc+dOiScD3ps3b0YpY/r372+WLl2acjSBtq9w/Uex0mjcuLFZsGCBGTVqVJRjzOPHj0t5Eorffvstni2VX6AzBZwvZ0eMGFFqRHxyHSeMJHADIYdkiN+5OXbVqlX277//ts6tss55DfK988471pl11GIJsARn4kF+pQEDBti//vpL+NGDGROldLfbvXu3dZ5ysLJP8GzcuFHqKHBnmjdvHuSHEK5GjRrBMlwuDmYfbhasW79Bfp/q1Kljt2zZInXU/MSjAO76kNEhi2Lr16+Xuoq5c+cm8DiH1M6fP9+uXr1ayG0udtasWbZz584JfJMnT45aKAEDlI5CSmzx7AUgnilw5coV271792ClVITJ+CM8bdo0ye/UqZM9fPiwdd57VJIIFjdW0aJFC+GfNGlSVGLtgQMH4vx0qU2bNvb06dNSP0Ep7J2zIVSpLMJRZaTxDUmzc3JehICZq2UARld3w+nTp8tMN2vWLKH9dIl1C2hfPApo5syZQeZMaNy4cdKwD3eVtwcPHowXM30xmjqYbPeZWkiIpkyZIm3THlusddtmubteeZTsOdDmokWL7McffyzlzCBQpRhRQnDr1i05n5LbzIS6dOli3XEj7YlSrKdsrwRKR48elQYBmw4XPL8cSwAoowqpcmDbtm0J/JlSrVq17IULF6QtObGePXuW8OKTKb755hvjFneUMuJC/frrr1GqBE74KOYkiK7fGgft2rUzrVq1kng2cAMUP/Dk8kPDoVPbzV4srHYOlNcdqObq1avm66+/lrcF4EzJLFmyROI+/Pa1LfIg0vh7bgkYN6PyLvHRRx9Jme+RaBvnz5+XJzgfKHTnzp2ShGvQFhYW2tzc3HgqlZJP+GRs2rTJVqtWLYGPrTy5HUiv5L75+SFwLpd1MyhnGgseUn6I9QiSz0OlrVu3SrnYAO9zrhLRGG6rNl988UWUCqNjx47yZscbnsKfkXTh5JCQunj+zvWROITnraQmO3DgQJEvGSwjIFxutOUF1AdmtGvXLoljAm6UYlIh9u7da9zi5KyTNNCyVKDcNynfESUfkz527FiUEwZXI+RLhrt/SSia8PTrrhXmwYMHkqlw0ywPlcAXFkFIX7x4UdK8AypYCzxE/vPPP1FOCbQ+dRGeNMRskMdgsU547XUHebwu/X7VCtyZJ6EP2tDXXSrJSw8uD8lsyO1+ctYo5s2bV4oHjwHo+mAtca4RArfhWLf7laqXLrG2T506JW3J3DNtzFa22L59u3FnXZQyZvz48cadU1GqBMnmDXTkgfPdxJSzBetazU9m6m14FHl5efGogydPntjFixcHPQp/tgCz7Ey2VJuZEB5FUVGRtPd/9/1QBoeXELBt84wWai8TSvD91F/jooVdhiqURVwMOTemTp0q6bK8dPpSZQBeur4Dcv1AsGyfpxO8dDWBbO5T3Hu4/yj0+sF9igO9rPuUOy7im7IezICngkw3Le5TZ86ckfoMXLx6GzRoIN+InEcQ5ZQNnsoWLlwoLpKCD2qAj298TOvTp48cpHw51E3BzY4pKChIOIvcNT+KGXl0YXt2dzT5kJcO3E06/p4l/TBdaoLpvlHwLPb7779LHQWuUqrPOzytlfWAwozxeOODNxAeeUL8PvlvFKwpLE+UUhNM5zUJ4Xjl8YFCqUyGmyy3al6TsHtel0J8KOY8lKjFEmCK5d2z/Nck1SVWihDgpDpTDDaA4D///LPwKRjRhg0bBvkhrusKdiYukyE+iMeWQ4cORdwl4KKZ6vn53XffjZ1pnSWsTg5f7BDXBfTr188MGjRI4slwdRPs342kmThxonz7TResl1Rwi10ObmcJUU7JWk9Vp3fv3iIvQP5YD11T/nbrFrFt27ZtcHQYzQ0bNsgIpnMF59lZQR9lzZQSXyvz8/NlraR6KvPXIXIr0YcopYehrxh3m9AdC+I8S/flKRulIEy9rK099NVDQ26MYo+qECFp8Da+T2WrVFnkf59SRZCdENnl8NXZ0rgqCN7k0yiEx6Cgwzd1ifQTqW4MKrOfFqXIUGW0QPPBmyjm737gTZRK/uYLITekcSYnVgqFfFIlCUG2X+d5emPbPXv2rHyl52t9iK88UmdZTQ7yZVfliItSyqSZPumaA/yPAj8r1Gl5VLdu3WB+eRT6HwVyEmrcl50wYUuHlNlPEzJCgEdLzCBbbzpdYkaHDx8e/+MleVMIKaPl8i8yB9eOaykK/RspefotldsrZf/lf5N4JeIfZbwB8t8kDl9kcAKLHE45kUFlJA18meO/xnFqq1IKGCmjMccXN8pf24D/LzJCCOWzAf8cg4YMGSK3BfW66Rcgm3oW/uCHZE74v18yU0gphCYEGvJHRRTkynHp0iUJ+Zucu9LLy6kzCeED/v/9eDfMy8szzjsw7jqe8H8/+vFlUTkA+RDyAQ1jPVCKBiThCGZGBAaNQ8lKaTkmqSMIyEfJoqIi4dV/ZsILyvpnJjxKKiBlpInrrAFVED4AH/3JEnERFlmQibiGlCuf8vid0iBxysnPBNQFtOu36cuiAmu+ykUIiNN3cXGx+R9CuwI6F8581QAAAABJRU5ErkJggg==");
+      color: white;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      position: relative;
+    }
+
+    .dark-mode-button:hover {
+      background-image: none;
+      background-color: #333333;
+    }
+
+    .dark-mode-button:hover .button-text {
+      display: inline;
+    }
+
+    .dark-mode-button:hover::before {
+      content: '';
+    }
+
+    .dark-mode-button:hover::before {
+      opacity: 1;
+    }
+
+    .dark-mode-button-icon {
+      font-size: 30px;
+    }
+
+    .share-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-image: url('/praxly/assets/sharebuttonicon-a50f7264.png');
+      color: white;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      position: relative;
+    }
+    
+    .share-button:hover {
+      background-image: none;
+      background-color: #0077ff; /* Lighter blue color */
+    }
+    
+    .share-button:hover .button-text {
+      display: inline;
+    }
+    
+    .share-button:hover::before {
+      content: '';
+    }
+    
+    .share-button:hover::before {
+      opacity: 1;
+    }
+    
+    .share-button-icon {
+      font-size: 30px;
+    }
+
+    .help-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAA1CAYAAADh5qNwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAAGYktHRAD/AP8A/6C9p5MAAAdFSURBVGhDzZp9aE1/HMc/O9gwY7TNQ5FiT8jIH/yH5Cn8oUhkK1NajVaLEP6T1VATGZKHEkJRHhZp+0+KzUMWm8I0lGfm+dnre79n3bt7zr33nPO9v59Xndb57t5zzvv7/Xw+38/nc27K77+IQe7fvy93796Vhw8fyrNnz+T169fy8eNH+fHjh3Tr1k169+4t/fv3l0GDBsnw4cMlPz9fxowZo79tBiOi6uvrpa6uThobGyUtLU26d++uDkRYliUpKSn6kyLc7tevX/Lz5091fP/+Xb58+SKFhYUye/ZsmTdvnv6kfwKJqq2tldOnTysBPXv2lB49ekQISBQegZX8+vWrfPr0SWbMmCErV66UPn366E94w5eo/fv3y9GjR9VNe/Xq5UuIGzwO4t6+fSuzZs2SdevW6f8kjidRLS0tsnr1anXj9PR0o2K6wj0wS1Zuw4YNMmXKFP2f+CQsavfu3XLy5EnJyspSvvJfgf+9efNGJk6cKJs3b9ajsUlIFPb94MEDycjISOrqxIIVI3IeP35cj7gTV9TSpUulo6ND+c7/zbdv39RBcCIouRFTFII+fPigItu/AlHy8+fPcv78eT0SjaX/RoHJsUImBDFv9r6Ej8QxjpjY28fChQv1SDSOoggK+JBfk+OhiVzv37+XV69eqfBMcElNTVXh+uXLl/Lu3Tv1GT8CMT3MkEjsRJT5EbbLysokJyfHc1DgUqREZAkzZ85UYXjs2LFqdrvS3NysTOjixYuSmZkZ00fcIAWrqKiQOXPm6JEQUaJIU1her2Ebs2JFVqxYIQsWLNCj8cEky8vL5cmTJ2rv8wKP/uLFC7l8+bJKx2wizI9MgQ96FcR3CCiXLl3yJAi41549e1TuRwDwApbUr18/2bhxox4JESGK1MfrbAEXZ6ZIav1SXV2tBLJyXsBPr169qlbaplMUs0Uu53dzZWOsqanRZ/4g4rLJeoHnxSd37NihR8J8isyYOsevKMB8Jk+eLJWVlXpE5ObNm9La2qrMk5vPnTtXza4b06ZNU6mYl+dAwvPnz+XcuXOhnBRRDQ0NsnXrVunbt6/+mD+4OI575swZFdkOHjyozNIuSQgmhHIyAh7ciSVLlqjo6dWvWeH58+fLsmXLQuZ34cIFI5ssD56dnS2LFi2SY8eOqZXhYPYwT8wbazhy5Ij+RjR8XhuPJyhO0QFKFBWrn33CCYSx4ogID7M2jLFxusGM+3EBVpZsHkuw6Cmg0s+F3Ih1LR56woQJ+iwaopjTZCQC1tbU1CQWTRKnHT8ZkEvSaCEYOHHr1i31LH4nmO/eu3dPrEePHiVdFD5CDjhp0iTZuXOnHo1m165dymz9gg66WNbTp089Rxov2BGRHG3Tpk16NBqKv/b29kC+jQ70WCSFfm04EcgH16xZo/YnN8jd9u3bF3hLwWzZDiyyapNBIhxugA/Rz3PjwIEDsmXLFrUVmHgOrmFRSSYLMgw2Qzeoh06cOGFMkI2VLH/ClygIx48fr0ciQRCRis3WtKVYRBs/O3g8uKZbxo+YGzdu+O7AxoL7WqQt5GSm4eJujn/9+vVAodsN7onlWYMHD/ZcwySKW1RlEpMRnNDB25SUU6dO/T58+LDxmePB2QxLS0sjaiTKjitXrqgehal80wYfnjp1qqTcuXPnN05LWWwahDkVfeSapgUB2xOFpjV69Gjfrap4YH4EC/udFavEeTIEASs1bty4UOkxatQo1fk0DStFzscbQyrrgoICdZ4MH+ZeTN7AgQNDle/Zs2dl7969RkOsbXqHDh2KqHKZTdrZYHKPZKOfPn16yPwYoNfHA5g0QYq17du3R5XtzCZCyTlN3o8eiN2e64y5dFSZRROwSuxR5H1O4FdFRUXGTJ4cc+TIkSqcQ6couqRk1CZmD58ZOnSoPnNm2LBhxnyLnv2qVav0WZgo/IlsmkgYFHylra1NnzlDMWfCp1ilESNGRPxsoVMUrF27VvkW5hMEQjl7BvmdE7z1YPMNWnFjVUTTqqoqPRIiQhTQl6YrExR8av369erHIuHQdCTLGDBgQOBUiZ5HSUmJaruFE/XWAxB2+/btwKkTK46f4l+5ubny+PFj1a1FUNBqmzYbWRAN0644ioLFixeraBirRZwIXJ6AwIEPcQRdIa5FCHd7IeEqCugrJCtP8wurj0/+TcTVijsR0wboiRMNiTD/AqwQgmhbuwmCmKKITjT6MRmvL8RMgw9hcqzQkCFD9KgzCXkrzZG8vDzjqU0icD82V6IpPhRrhWxi+lRXeKuwbds2FXUIIMmoXsPB7NmHiouLZfny5Xo0Pp5EAY5KyOeVJJ0ggohpcYhhdcgU2Fi77kPx8CzKhrcTvJK8du2a+s0SUTJI2sNksYXgNySn5HJ+f7HpW5QN6RA+h2mSifA6hQDD4bYncUtEkKVzIIZJoVKgfLCzbb8EFhUONRTvh+jrkbDSrMeUwoVxO7IJ+ze0VMOU4FSsZhD5A8LP5YVHcMS0AAAAAElFTkSuQmCC');
+      color: white;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      position: relative;
+    }
+    
+    .help-button:hover {
+      background-image: none;
+      background-color: #9e9e9e; /* Lighter blue color */
+    }
+    
+    .help-button:hover .button-text {
+      display: inline;
+    }
+    
+    .help-button:hover::before {
+      content: '';
+    }
+    
+    .help-button:hover::before {
+      opacity: 1;
+    }
+    
+    .help-button-icon {
+      font-size: 30px;
+    }
+
+
+
+
+
   </style>
-  <script type="module" crossorigin src="/praxly/assets/index-2aa20eda.js"></script>
+  <script type="module" crossorigin src="/praxly/assets/index-4d03d5c5.js"></script>
   <link rel="stylesheet" href="/praxly/assets/index-48ce1e24.css">
 </head>
 <body>
@@ -151,9 +269,16 @@
           <span class="button-text">Run Code</span>
         </button>
       </li>
-      <li><button id="runCode">Turn Code to Blocks</button></li>
-      <li><button id="share">Share</button></li>
-      <li><button id="darkMode">Dark Mode</button></li>
+      <li><button id="help" class="help-button" title="Help">
+        <span class="button-text">Help</span>
+      </button></li>
+      <li><button id="share" class="share-button" title="Share">
+        <span class="button-text">Share</span>
+      </button></li>
+      <li><button id="darkMode" class="dark-mode-button" title="Dark Mode">
+          <span class="button-text">Dark Mode</span>
+        </button>
+      </li>
       <li><button id="blockUpdates">Block Updates: On Save</button></li>
       <li class="dropdown">
         <a href="#">About</a>
