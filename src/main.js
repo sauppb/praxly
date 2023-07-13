@@ -23,6 +23,7 @@ import { generateUrl, loadFromUrl } from './share';
 
 
 const output = document.querySelector('.output');
+const stdError = document.querySelector('.error');
 const praxlyGenerator = makeGenerator();
 
 
@@ -30,7 +31,6 @@ const praxlyGenerator = makeGenerator();
 
 var mainTree = null;
 const runButton = document.getElementById('runButton');
-// const runCode = document.getElementById('runCode');
 const darkModeButton = document.getElementById('darkMode');
 const blockUpdatesButton = document.getElementById('blockUpdates');
 let darkMode = false;
@@ -47,13 +47,15 @@ runButton.addEventListener('click', () => {
   console.log(executable);
   executable.evaluate();
   output.innerHTML = printBuffer;
+  stdError.innerHTML = errorOutput;
+  
   
 
 });
 
-
+// this function gets called every time a charater is typed in the editor.
 export const turnCodeToBLocks = () => {
-  // I had to wrap this function in a mutex to prevent an infinite loop lol
+  
   // console.log("ace has the lock");
   workspace.removeChangeListener(turnBlocksToCode); 
   clearOutput();
@@ -61,22 +63,23 @@ export const turnCodeToBLocks = () => {
   workspace.clear();
   tree2blocks(workspace, mainTree);
   workspace.render();
+  stdError.innerHTML = errorOutput;
 
 }
 
+// this function gets called whenever the blocks are modified. 
 let turnBlocksToCode = () => {
-  // same here with the mutex
 
   // console.log("blockly has the lock");
   textEditor.removeEventListener("input", turnCodeToBLocks);
-  clearOutput();
+  // clearOutput();
 
   mainTree = blocks2tree(workspace, praxlyGenerator);
   console.log(mainTree);
   const text = tree2text(mainTree, 0, 0);
 
   textEditor.setValue(text, -1);
-  
+  stdError.innerHTML = errorOutput;
   
 };
 
@@ -192,7 +195,7 @@ editorElement.addEventListener("keydown", function(event) {
     // Prevent the default save action (e.g., opening the save dialog)
     event.preventDefault();
     const output = document.querySelector('.output');
-    const error = document.querySelector('.error');
+    // const error = document.querySelector('.error');
     output.innerHTML = "";
     // clearOutput();
     
@@ -213,7 +216,7 @@ editorElement.addEventListener("keydown", function(event) {
 
       
     output.innerHTML = printBuffer;
-    error.innerHTML = errorOutput;
+    stdError.innerHTML = errorOutput;
     // console.log('error message below');
     // console.log(errorOutput);
     console.log(trees);

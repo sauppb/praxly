@@ -4,7 +4,7 @@
 import { highlightError, indextoAceRange } from "./milestone2";
 // import { textEditor } from "./milestone2";
 
-  
+
 
 export var printBuffer = "";
 // var variableList = {};

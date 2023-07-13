@@ -16,7 +16,7 @@ const maxLoop = 100;
 // needs tested
 export function highlightError(rangeArray, errorMessage) {
   // Get the session from the editor
-  var session = textEditor.getSession();
+  var session = textEditor?.getSession();
 
   // Convert the range array to an Ace Range object
   var range = new AceRange(rangeArray[0], rangeArray[1], rangeArray[2], rangeArray[3]);
@@ -30,7 +30,7 @@ export function highlightError(rangeArray, errorMessage) {
   tooltip.textContent = errorMessage;
 
   // Calculate the line height based on the editor's font size
-  var lineHeight = parseInt(textEditor.renderer.lineHeight, 10);
+  var lineHeight = parseInt(textEditor?.renderer?.lineHeight, 10);
 
   // Create the marker element and add the tooltip
   var markerElement = document.createElement('div');
@@ -42,7 +42,7 @@ export function highlightError(rangeArray, errorMessage) {
   try {
     // Find the marker layer's parent container
   var markerLayer = session.getMarkerLayer("error-marker");
-  markerLayer.element.appendChild(markerElement);
+  markerLayer?.element.appendChild(markerElement);
 
   // Add a mouse hover effect to display the error message
   markerElement.addEventListener('mouseenter', function() {
@@ -65,7 +65,7 @@ export function highlightError(rangeArray, errorMessage) {
 // Get the underlying DOM element of the Ace editor
 
 export const  indextoAceRange = (startindex, endindex) => {
-  let code = textEditor.getValue();
+  let code = textEditor?.getValue();
   var startLine = 0;
   var startLineIndex = 0;
   var endLine = 0; 
@@ -96,14 +96,14 @@ export const  indextoAceRange = (startindex, endindex) => {
 
 
 export const text2tree = () => {
-  let code = textEditor.getValue();
+  let code = textEditor?.getValue();
 
     console.log(code);
     let lexer = new Lexer(code);
-    let tokens = lexer.lex();
+    let tokens = lexer?.lex();
     console.log(tokens);
     let parser = new Parser(tokens);
-    let textjson = parser.parse();
+    let textjson = parser?.parse();
     console.log(textjson);
     return textjson;
 }
@@ -476,12 +476,7 @@ class Parser {
     // return this.boolean_operation();
   }
 
-  // primitiveOnly_parse() {
-  //   if (this.length > 1) {
-  //     throw new Error("AttributeError");
-  //   }
-  //   return this.atom();
-  // }
+
 
   atom() {
     
@@ -583,7 +578,7 @@ class Parser {
       
 
     } else {
-      textError('parsing', `Missing or Unrecognized token: ${this.i} This is likely the result of a lexing error.', startIndex, endIndex`);
+      textError('parsing', `Missing or Unrecognized token: ${this.i} This is likely the result of a lexing error?.', startIndex, endIndex`);
       console.log(`atom problem at this token: ${this.tokens[this.i].token_type}`);
       return;
     }
@@ -603,8 +598,8 @@ class Parser {
               right: r,
               type: "EXPONENT", 
               blockID: "code", 
-              beg: l.beg, 
-              end: r.end,
+              beg: l?.beg, 
+              end: r?.end,
               endIndex: endIndex,
               startIndex: startIndex
 
@@ -629,8 +624,8 @@ class Parser {
             blockID: "code", 
             startIndex: startIndex, 
             endIndex: endIndex, 
-            beg: l.beg, 
-            end: r.end,
+            beg: l?.beg, 
+            end: r?.end,
         }
       } else if (this.has("DIVIDE")) {
         this.advance();
@@ -643,8 +638,8 @@ class Parser {
             blockID: "code", 
             startIndex: startIndex, 
             endIndex: endIndex, 
-            beg: l.beg, 
-            end: r.end,
+            beg: l?.beg, 
+            end: r?.end,
         }
       } else if (this.has("MOD")) {
         this.advance();
@@ -657,8 +652,8 @@ class Parser {
             blockID: "code", 
             startIndex: startIndex, 
             endIndex: endIndex, 
-            beg: l.beg, 
-            end: r.end,
+            beg: l?.beg, 
+            end: r?.end,
         }
       }
     }
@@ -681,8 +676,8 @@ class Parser {
             blockID: "code", 
             startIndex: startIndex, 
             endIndex: endIndex, 
-            beg: l.beg, 
-            end: r.end,
+            beg: l?.beg, 
+            end: r?.end,
         }
       } else if (this.has("ADD")) {
         this.advance();
@@ -695,8 +690,8 @@ class Parser {
             blockID: "code", 
             startIndex: startIndex, 
             endIndex: endIndex, 
-            beg: l.beg, 
-            end: r.end,
+            beg: l?.beg, 
+            end: r?.end,
         }
       }
     }
@@ -720,8 +715,8 @@ class Parser {
         var expression = this.boolean_operation();
         result.type = 'NOT';
         result.value = expression;
-        result.beg = l.beg;
-        result.end = r.end;
+        result.beg = l?.beg;
+        result.end = r?.end;
       }
     }
     return result;
@@ -750,8 +745,8 @@ class Parser {
             blockID: "code", 
             startIndex: startIndex, 
             endIndex: endIndex, 
-            beg: l.beg, 
-            end: r.end,
+            beg: l?.beg, 
+            end: r?.end,
         }
       } else if (this.has("Greater_Than_Equal_To")) {
         this.advance();
@@ -764,8 +759,8 @@ class Parser {
             blockID: "code", 
             startIndex: startIndex, 
             endIndex: endIndex, 
-            beg: l.beg, 
-            end: r.end,
+            beg: l?.beg, 
+            end: r?.end,
         }
       } else if (this.has("Less_Than")) {
         this.advance();
@@ -778,8 +773,8 @@ class Parser {
             blockID: "code", 
             startIndex: startIndex, 
             endIndex: endIndex, 
-            beg: l.beg, 
-            end: r.end,
+            beg: l?.beg, 
+            end: r?.end,
         }
       } else if (this.has("Greater_Than")) {
         this.advance();
@@ -792,8 +787,8 @@ class Parser {
             blockID: "code", 
             startIndex: startIndex, 
             endIndex: endIndex, 
-            beg: l.beg, 
-            end: r.end,
+            beg: l?.beg, 
+            end: r?.end,
         }
     } else if (this.has("Equals")) {
         this.advance();
@@ -806,8 +801,8 @@ class Parser {
             blockID: "code", 
             startIndex: startIndex, 
             endIndex: endIndex, 
-            beg: l.beg, 
-            end: r.end,
+            beg: l?.beg, 
+            end: r?.end,
         }
     } else if (this.has("Not_Equal")) {
         this.advance();
@@ -820,8 +815,8 @@ class Parser {
             blockID: "code", 
             startIndex: startIndex, 
             endIndex: endIndex, 
-            beg: l.beg, 
-            end: r.end,
+            beg: l?.beg, 
+            end: r?.end,
         }
     }
     
@@ -861,8 +856,8 @@ boolean_operation() {
           blockID: "code", 
           startIndex: startIndex, 
           endIndex: endIndex, 
-          beg: l.beg, 
-          end: r.end,
+          beg: l?.beg, 
+          end: r?.end,
       }
     } else if (this.has("or")) {
       this.advance();
@@ -875,8 +870,8 @@ boolean_operation() {
           blockID: "code", 
           startIndex: startIndex, 
           endIndex: endIndex, 
-          beg: l.beg, 
-          end: r.end,
+          beg: l?.beg, 
+          end: r?.end,
       }
     
   }
@@ -1068,7 +1063,7 @@ statement() {
         // this.advance();
         result.type = 'PRINT';
         result.value = expression;
-        result.end = expression.end; 
+        result.end = expression?.end; 
         return result;
       }
   }
