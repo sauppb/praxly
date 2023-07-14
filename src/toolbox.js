@@ -643,6 +643,10 @@ export const toolbox = {
               {
                 'kind': 'block',
                 'type': 'praxly_parameter_block', 
+                'extraState': {
+                  'arity': 3, 
+
+                }
                 
               }, 
         ]
@@ -677,7 +681,15 @@ export const toolbox = {
         "contents": [
             {
                 'kind': 'block',
-                'type': 'praxly_procedure_block'
+                'type': 'praxly_procedure_block',
+                'inputs': {
+                  'PARAMS':{
+                    'shadow': {
+                      'type': 'praxly_parameter_block', 
+                    }
+                  }
+                  
+                }
               }, 
               {
                 'kind': 'block',
@@ -696,7 +708,9 @@ export const toolbox = {
                     },
                   }, 
                 }
-              }
+              },
+
+
 
         ]
       }, 

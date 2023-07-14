@@ -1,9 +1,9 @@
 
 // import { workspace } from "./main";
 
-import { highlightError, indextoAceRange } from "./milestone2";
+// import { highlightError, indextoAceRange } from "./milestone2";
 // import { textEditor } from "./milestone2";
-
+import { sendRuntimeError } from "./milestone2";
 
 
 export var printBuffer = "";
@@ -14,33 +14,6 @@ export var blockErrorsBuffer = {};
 
 
 
-export function textError(type, error, startIndex, endIndex){
-    var ranges = indextoAceRange(startIndex, endIndex);
-    errorOutput += `${type} error occured on line line ${ranges[0]}:    ${error}<br>`;
-    // highlightError(ranges, error);
-}
-
-
-
-export function addBlockErrors(workspace){
-    for (var key in blockErrorsBuffer){
-        var block = workspace.getBlockById(key);
-        block.setWarningText(blockErrorsBuffer[key]);
-
-    }
-
-}
-
-export function sendRuntimeError(errormessage, blockjson){
-    if (typeof(blockjson.startIndex !== 'undefined') && typeof(blockjson.endIndex !== 'undefined')){
-        textError('runtime', errormessage, blockjson.startIndex, blockjson.endIndex);
-    }
-    if (typeof(blockjson.blockid !== 'undefined')){
-        blockErrorsBuffer[blockjson.blockid] = errormessage + '<br>';
-    }
-
-
-}
 
 export function clearOutput() {
     printBuffer = "";

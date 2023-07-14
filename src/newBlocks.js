@@ -1,6 +1,28 @@
-import Blockly from 'blockly';
+import Blockly, { Block } from 'blockly';
 
 export function definePraxlyBlocks() {
+
+  let callbacks = {
+    saveExtraState: () => {}, 
+    loadExtraState: function(state) {
+      console.log(this);
+      this.appendValueInput('A');
+      this.appendValueInput('B');
+      this.appendValueInput('C');
+      console.log('code ran');
+    }
+  };
+  Blockly.Extensions.registerMutator('praxly_arity', callbacks);
+  Blockly.Extensions.register('addParams', function() {
+    let plusButton = this.getField('PLUS_BUTTON');
+    plusButton.setOnClickHandler(()=> {
+      console.log('plus has been clicked!');
+    });
+  })
+
+
+
+
     Blockly.common.defineBlocksWithJsonArray([
         {
             "type": "praxly_if_block",
@@ -742,21 +764,37 @@ export function definePraxlyBlocks() {
 
                 {
                   "type": "praxly_parameter_block",
-                  "message0": "%1",
+                  "message0": "%1 %2",
                   "args0": [
+                    {
+                      'type': 'field_image', 
+                      'src': 'images/white_plus.jpg', 
+                      'name': 'PLUS_BUTTON',
+                      'width': 15, 
+                      'height': 15, 
+                      'alt': '*', 
+                      
+                    },
                     {
                       "type": "field_input",
                       "name": "LITERAL",
-                      "text": "value"
+                      "text": "parameterName"
                     }
                   ],
                   "output": null,
                   "style": 'expression_blocks',
                   "tooltip": "",
-                  "helpUrl": ""
+                  "helpUrl": "", 
+                  'mutator': 'praxly_arity',
+                  'extensions': ['addParams'],
+                  "inputsInline": true,
                 },   
+
     
     ]);
 
+ 
+    
+    
     
 }
