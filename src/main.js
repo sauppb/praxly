@@ -19,6 +19,7 @@ import { tree2blocks } from './tree2blocks';
 import { errorOutput } from './milestone1';
 import { text2tree } from './milestone2';
 import { generateUrl, loadFromUrl } from './share';
+import { colour } from 'blockly/blocks';
 
 
 
@@ -134,23 +135,45 @@ function resizeHandler(e) {
   leftPane.style.flex = leftPaneWidth;
   rightPane.style.flex = rightPaneWidth;
 }
+var toolboxstylesheet = document.getElementById("ToolboxCss");
+
+function setDark(){
+  workspace.setTheme(PraxlyDark);
+  textEditor.setTheme("ace/theme/twilight");
+  var bodyElement = document.body;
+  bodyElement.style.backgroundColor = "black";
+  var elements = document.querySelectorAll(".output, .error, .nav-bar");
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].style.backgroundColor = "#303030";
+    elements[i].style.color = "white";
+  }
+  toolboxstylesheet.href = "darkThemeToolbox.css";
+}
+
+function setLight(){
+  workspace.setTheme(praxlyDefaultTheme);
+  textEditor.setTheme('ace/theme/katzenmilch');
+  var bodyElement = document.body;
+  bodyElement.style.backgroundColor = "white";
+  var elements = document.querySelectorAll(".output, .error, .nav-bar");
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].style.backgroundColor = "#e3e6e4";
+    elements[i].style.color = "black";
+  }
+  toolboxstylesheet.href = "toolbox.css";
+}
 
 
 darkModeButton.addEventListener('click', ()=> {
-  var stylesheet = document.getElementById("ToolboxCss");
 
   if (!darkMode) {
-    workspace.setTheme(PraxlyDark);
-    stylesheet.setAttribute("href", 'public/darkThemeToolbox.css');
-    textEditor.setTheme("ace/theme/twilight");
     darkMode = true;
-    // textEditor.setTheme("ace/theme/dracula");
+    setDark();
     
   } else {
-    workspace.setTheme(praxlyDefaultTheme);
+    setLight();
     darkMode = false;
-    stylesheet.setAttribute("href", '/toolbox.css');
-    textEditor.setTheme('ace/theme/katzenmilch');
+
   }
 }
 );
