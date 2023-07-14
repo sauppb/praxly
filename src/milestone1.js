@@ -4,30 +4,22 @@
 // import { highlightError, indextoAceRange } from "./milestone2";
 // import { textEditor } from "./milestone2";
 import { sendRuntimeError } from "./milestone2";
+import { printBuffer } from "./milestone2";
 
 
-export var printBuffer = "";
-// var variableList = {};
 var scopes = {};
-export var errorOutput = "";
-export var blockErrorsBuffer = {};
+// export var printBuffer = "";
+// export var errorOutput = "";
+// export var blockErrorsBuffer = {};
 
 
 
 
-export function clearOutput() {
-    printBuffer = "";
-    errorOutput = "";
-    blockErrorsBuffer = {};
-}
-
-
-
-  
-  
-  
-  
-
+// export function clearOutput() {
+//     printBuffer = "";
+//     errorOutput = "";
+//     blockErrorsBuffer = {};
+// }
 
 
 

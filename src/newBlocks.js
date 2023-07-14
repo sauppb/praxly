@@ -764,12 +764,21 @@ export function definePraxlyBlocks() {
 
                 {
                   "type": "praxly_parameter_block",
-                  "message0": "%1 %2",
+                  "message0": "%1 %2 %3",
                   "args0": [
                     {
                       'type': 'field_image', 
-                      'src': 'images/white_plus.jpg', 
+                      'src': 'images/white-plus-icon-14.jpg', 
                       'name': 'PLUS_BUTTON',
+                      'width': 19, 
+                      'height': 19, 
+                      'alt': '*', 
+                      
+                    },
+                    {
+                      'type': 'field_image', 
+                      'src': 'images/minus.png', 
+                      'name': 'MINUS_BUTTON',
                       'width': 15, 
                       'height': 15, 
                       'alt': '*', 

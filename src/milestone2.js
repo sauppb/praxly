@@ -12,6 +12,16 @@ var AceRange = ace.require('ace/range').Range;
 
 const maxLoop = 100;
 
+export var printBuffer = "";
+export var errorOutput = "";
+export var blockErrorsBuffer = {};
+
+
+export function clearOutput() {
+  printBuffer = "";
+  errorOutput = "";
+  blockErrorsBuffer = {};
+}
 
 
 export function textError(type, error, startIndex, endIndex){
