@@ -16,6 +16,10 @@ export var printBuffer = "";
 export var errorOutput = "";
 export var blockErrorsBuffer = {};
 
+export function addToPrintBuffer (message){
+  printBuffer += message;
+}
+
 
 export function clearOutput() {
   printBuffer = "";

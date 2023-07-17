@@ -39,7 +39,11 @@ export function definePraxlyBlocks() {
     });
   });
   
-
+  // function updateEndProcedureName(event) {
+  //   var newValue = event.newValue;
+  //   this.sourceBlock_.setFieldValue(newValue, 'END_PROCEDURE_NAME');
+  // }
+  
   
 
 
@@ -431,30 +435,12 @@ export function definePraxlyBlocks() {
                 "type": "field_dropdown",
                 "name": "RETURNTYPE",
                 "options": [
-                  [
-                    "int",
-                    "int"
-                  ],
-                  [
-                    "boolean",
-                    "boolean"
-                  ],
-                  [
-                    "double",
-                    "double"
-                  ],
-                  [
-                    "char",
-                    "char"
-                  ],
-                  [
-                    "String",
-                    "String"
-                  ],
-                  [
-                    "float",
-                    "float"
-                  ]
+                  ["int", "int"],
+                  ["boolean", "boolean"],
+                  ["double", "double"],
+                  ["char", "char"],
+                  ["String", "String"],
+                  ["float", "float"]
                 ]
               },
               {
@@ -463,7 +449,10 @@ export function definePraxlyBlocks() {
               {
                 "type": "field_input",
                 "name": "PROCEDURE_NAME",
-                "text": "procedureName"
+                "text": "procedureName",
+                // "changeHandler": () => {
+                //   console.log('change aknowleged');
+                // }
               },
               {
                 "type": "input_value",
@@ -481,7 +470,7 @@ export function definePraxlyBlocks() {
                 "type": "field_input",
                 "name": "END_PROCEDURE_NAME",
                 "text": "procedureName"
-              },
+              }
             ],
             "inputsInline": true,
             "previousStatement": null,
@@ -489,8 +478,11 @@ export function definePraxlyBlocks() {
             "style": "procedure_blocks",
             "tooltip": "test",
             "helpUrl": "",
-        
+            'onchange': function() {
+              console.log('something changed');
+            }
           },
+          
     {
 "type": "praxly_assignment_block",
 "message0": "%1%2 = %3 %4",

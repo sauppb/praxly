@@ -5,6 +5,7 @@
 // import { textEditor } from "./milestone2";
 import { sendRuntimeError } from "./milestone2";
 import { printBuffer } from "./milestone2";
+import { addToPrintBuffer } from "./milestone2";
 
 
 var scopes = {};
@@ -290,7 +291,7 @@ class Praxly_print {
     }
     evaluate(environment) {
         
-        printBuffer += (this.expression.evaluate(environment).value.toString()) + '<br>';
+        addToPrintBuffer((this.expression.evaluate(environment).value.toString()) + '<br>');
         return null;
     }
 }
@@ -777,7 +778,7 @@ class Praxly_invalid {
         this.error = 'error\n';
     }
     evaluate(environment) {
-        printBuffer += this.error;
+        addToPrintBuffer( this.error);
     }
 }
 
