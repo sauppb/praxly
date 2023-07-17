@@ -3,6 +3,7 @@
 
 // import { highlightError, indextoAceRange } from "./milestone2";
 // import { textEditor } from "./milestone2";
+// import { block } from "blockly/core/tooltip";
 import { sendRuntimeError } from "./milestone2";
 import { printBuffer } from "./milestone2";
 import { addToPrintBuffer } from "./milestone2";
@@ -216,6 +217,7 @@ export const createExecutable = (blockjson) => {
 
 class Praxly_comment {
     constructor(value, blockjson) {
+        this.jsonType = 'Praxly_comment';
         this.json = blockjson;
         this.value = value;
     }
@@ -227,6 +229,7 @@ class Praxly_comment {
 
 class Praxly_int {
     constructor( value, blockjson ) {
+        this.jsonType = 'Praxly_int';
         this.json = blockjson;
         this.value = Math.floor(value);
     }
@@ -238,6 +241,7 @@ class Praxly_int {
 
 class Praxly_double {
     constructor( value , blockjson ) {
+        this.jsonType = 'Praxly_double';
         this.json = blockjson;
         this.value = value;
 
@@ -247,6 +251,7 @@ class Praxly_double {
 
 class Praxly_float {
     constructor( value  , blockjson) {
+        this.jsonType = 'Praxly_float';
         this.json = blockjson;
         this.value = Math.floor(value);
 
@@ -255,7 +260,9 @@ class Praxly_float {
 }
 
 class Praxly_boolean {
-    constructor( value  ) {
+    constructor( value  , blockjson) {
+        this.json = blockjson;
+        this.jsonType = 'Praxly_boolean';
         this.value = value;
 
     }
@@ -266,8 +273,10 @@ class Praxly_boolean {
 }
 
 class Praxly_char {
-    constructor( value  ) {
+    constructor( value  , blockjson) {
         this.value = value;
+        this.json = blockjson;
+        this.jsonType = 'Praxly_char';
 
     }
 
@@ -275,6 +284,7 @@ class Praxly_char {
 
 class Praxly_String {
     constructor( value  , blockjson) {
+        this.jsonType = 'Praxly_String';
         this.json = blockjson;
         this.value = value;
     }
@@ -672,13 +682,13 @@ class Praxly_assignment {
                 console.error(`Error: variable name ${this.name} not in the variablelist: \n ${environment.variableList}`);
             }
     
-            if (environment.variableList[this.name].evaluate(environment).constructor.name !== this.value.evaluate(environment).constructor.name){
+            if (environment.variableList[this.name].evaluate(environment).jsonType !== this.value.evaluate(environment).jsonType){
                 console.error("Error: varible reassignment does not match declared type:");
             }
           
         } else {
-            if (this.value.evaluate(environment).constructor.name !== this.type){
-                console.error(`Error: varible assignment does not match declared type:\n expression type: ${environment.variableList[this.name].evaluate(environment).constructor.name} \n type: ${type}`);
+            if (this.value.evaluate(environment).jsonType !== this.type){
+                console.error(`Error: varible assignment does not match declared type:\n expression type: ${environment.variableList[this.name].evaluate(environment).jsonType} \n type: ${type}`);
             }
             // environment.variableList[this.name] = this.expression;
                   
