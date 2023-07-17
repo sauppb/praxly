@@ -3,22 +3,44 @@ import Blockly, { Block } from 'blockly';
 export function definePraxlyBlocks() {
 
   let callbacks = {
-    saveExtraState: () => {}, 
+    saveExtraState: function() {
+      return {
+        params: this.params,
+      };
+    },
     loadExtraState: function(state) {
-      console.log(this);
-      this.appendValueInput('A');
-      this.appendValueInput('B');
-      this.appendValueInput('C');
-      console.log('code ran');
+      // Restore the state of the mutator
+      this.params = state.params || [];
+      for (let i = 0; i < this.params.length; i++) {
+        this.appendValueInput(`PARAM_${i}`);
+      }
     }
   };
+  
   Blockly.Extensions.registerMutator('praxly_arity', callbacks);
+  
   Blockly.Extensions.register('addParams', function() {
+    let minusButton = this.getField('MINUS_BUTTON');
     let plusButton = this.getField('PLUS_BUTTON');
-    plusButton.setOnClickHandler(()=> {
-      console.log('plus has been clicked!');
+    this.params = [];
+  
+    plusButton.setOnClickHandler(() => {
+      const paramCount = this.params.length;
+      this.appendValueInput(`PARAM_${paramCount}`);
+      this.params.push(`PARAM_${paramCount}`);
     });
-  })
+  
+    minusButton.setOnClickHandler(() => {
+      const paramCount = this.params.length;
+      if (paramCount > 0) {
+        const paramName = this.params.pop();
+        this.removeInput(`PARAM_${paramCount - 1}`);
+      }
+    });
+  });
+  
+
+  
 
 
 
@@ -402,72 +424,73 @@ export function definePraxlyBlocks() {
             "helpUrl": ""
           }, 
           {
-      "type": "praxly_procedure_block",
-      "message0": "%1 %2 %3 ( %4 ) %5  %6 end %7",
-      "args0": [
-        {
-          "type": "field_dropdown",
-          "name": "RETURNTYPE",
-          "options": [
-            [
-              "int",
-              "int"
+            "type": "praxly_procedure_block",
+            "message0": "%1 %2 %3 ( %4 ) %5  %6 end %7",
+            "args0": [
+              {
+                "type": "field_dropdown",
+                "name": "RETURNTYPE",
+                "options": [
+                  [
+                    "int",
+                    "int"
+                  ],
+                  [
+                    "boolean",
+                    "boolean"
+                  ],
+                  [
+                    "double",
+                    "double"
+                  ],
+                  [
+                    "char",
+                    "char"
+                  ],
+                  [
+                    "String",
+                    "String"
+                  ],
+                  [
+                    "float",
+                    "float"
+                  ]
+                ]
+              },
+              {
+                "type": "input_dummy"
+              },
+              {
+                "type": "field_input",
+                "name": "PROCEDURE_NAME",
+                "text": "procedureName"
+              },
+              {
+                "type": "input_value",
+                "name": "PARAMS",
+                "text": "params"
+              },
+              {
+                "type": "input_dummy"
+              },
+              {
+                "type": "input_statement",
+                "name": "CONTENTS"
+              },
+              {
+                "type": "field_input",
+                "name": "END_PROCEDURE_NAME",
+                "text": "procedureName"
+              },
             ],
-            [
-              "boolean",
-              "boolean"
-            ],
-            [
-              "double",
-              "double"
-            ],
-            [
-              "char",
-              "char"
-            ],
-            [
-              "String",
-              "String"
-            ],
-            [
-              "float",
-              "float"
-            ]
-          ]
-        },
-        {
-          "type": "input_dummy"
-        },
-        {
-          "type": "field_input",
-          "name": "prodecureName",
-          "text": "procedureName"
-        },
-        {
-          "type": "input_value",
-          "name": "PARAMS",
-          "text": "params"
-        },
-        {
-          "type": "input_dummy"
-        },
-        {
-          "type": "input_statement",
-          "name": "class"
-        },
-        {
-          "type": "field_input",
-          "name": "prodecureName",
-          "text": "procedureName"
-        }
-      ],
-      "inputsInline": true,
-      "previousStatement": null,
-      "nextStatement": null,
-      "style": 'procedure_blocks',
-      "tooltip": "",
-      "helpUrl": ""
-    }, 
+            "inputsInline": true,
+            "previousStatement": null,
+            "nextStatement": null,
+            "style": "procedure_blocks",
+            "tooltip": "test",
+            "helpUrl": "",
+        
+          },
     {
 "type": "praxly_assignment_block",
 "message0": "%1%2 = %3 %4",
@@ -764,7 +787,7 @@ export function definePraxlyBlocks() {
 
                 {
                   "type": "praxly_parameter_block",
-                  "message0": "%1 %2 %3",
+                  "message0": "%1 %2",
                   "args0": [
                     {
                       'type': 'field_image', 
@@ -775,6 +798,11 @@ export function definePraxlyBlocks() {
                       'alt': '*', 
                       
                     },
+                    // {
+                    //   "type": "field_input",
+                    //   "name": "LITERAL",
+                    //   "text": "parameterName"
+                    // },
                     {
                       'type': 'field_image', 
                       'src': 'images/minus.png', 
@@ -784,12 +812,7 @@ export function definePraxlyBlocks() {
                       'alt': '*', 
                       
                     },
-                    {
-                      "type": "field_input",
-                      "name": "LITERAL",
-                      "text": "parameterName"
-                    }
-                  ],
+                    ],
                   "output": null,
                   "style": 'expression_blocks',
                   "tooltip": "",

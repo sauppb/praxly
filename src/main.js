@@ -102,7 +102,6 @@ export const workspace = Blockly.inject('blocklyDiv', {
 
 
 
-
 const resizeBar = document.querySelector('.resizeBar');
 const leftPane = document.querySelector('#blocklyDiv');
 const rightPane = document.querySelector('#aceCode');
