@@ -1,5 +1,5 @@
 
-import { textEditor } from "./milestone2";
+import { textEditor } from "./lexer-parser";
 
 export function generateUrl() {
     // yank the text in ace

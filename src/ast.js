@@ -4,15 +4,13 @@
 // import { highlightError, indextoAceRange } from "./milestone2";
 // import { textEditor } from "./milestone2";
 // import { block } from "blockly/core/tooltip";
-import { sendRuntimeError } from "./milestone2";
-import { printBuffer } from "./milestone2";
-import { addToPrintBuffer } from "./milestone2";
+import { sendRuntimeError } from "./lexer-parser";
+import { printBuffer } from "./lexer-parser";
+import { addToPrintBuffer } from "./lexer-parser";
 
 
 var scopes = {};
-// export var printBuffer = "";
-// export var errorOutput = "";
-// export var blockErrorsBuffer = {};
+
 
 
 

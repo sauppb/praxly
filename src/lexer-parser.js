@@ -1,9 +1,5 @@
 import ace from 'ace-builds';
-// import { createExecutable } from './milestone1';
-// import { printBuffer } from './milestone1';
-// import { clearOutput } from './milestone1';
-// import { variables } from 'blockly/blocks';
-// import { textError } from './milestone1';
+
 
 
 export const textEditor = ace.edit("aceCode", {fontSize: 16});
@@ -28,11 +24,54 @@ export function clearOutput() {
 }
 
 
-export function textError(type, error, startIndex, endIndex){
-  var ranges = indextoAceRange(startIndex, endIndex);
-  errorOutput += `${type} error occured on line line ${ranges[0]}:    ${error}<br>`;
-  // highlightError(ranges, error);
-}
+// export function textError(type, error, startIndex, endIndex){
+  
+//   if (endIndex ?? 0  < startIndex){
+//     endIndex = textEditor?.getValue().length - 1;
+//   }
+//   var ranges = indextoAceRange(startIndex, endIndex);
+//   errorOutput += `${type} error occured on line line ${ranges[0]}:  ${error}<br>`;
+//   var range = new AceRange(rangeArray[0], rangeArray[1], rangeArray[2], rangeArray[3]);
+//   highlightError(range);
+// }
+
+
+// export function highlightError(range) {
+//   const marker = document.createElement('div');
+//   marker.className = 'ace_error';
+//   marker.style.position = 'absolute';
+//   marker.style.borderBottom = '1px solid red';
+//   marker.style.pointerEvents = 'none';
+//   marker.style.width = '100%';
+//   marker.style.marginBottom = '-1px';
+//   marker.style.zIndex = '1';
+
+//   const session = textEditor?.getSession();
+//   const line = range.start.row;
+//   const rowHeight = session.getRowLength(line) * session.getScreenLineHeight(line);
+//   marker.style.height = rowHeight + 'px';
+
+//   const markerLayer = session.getMarkerLayer('ace_error');
+//   markerLayer.drawSingleLineMarker(marker, range.start, range.end, session);
+
+//   textEditor?.renderer.scrollCursorIntoView({ row: line, column: 0 }, 0.5);
+// }
+
+// export function textError(type, error, startIndex, endIndex) {
+//   const editorValue = textEditor?.getValue();
+//   if (!editorValue || !startIndex || !endIndex) {
+//     console.error('Invalid parameters');
+//     return;
+//   }
+
+//   const range = new AceRange(
+//     startIndex.row || 0,
+//     startIndex.column || 0,
+//     endIndex.row || editorValue.length - 1,
+//     endIndex.column || editorValue.length - 1
+//   );
+//   highlightError(range);
+// }
 
 
 
@@ -46,62 +85,18 @@ export function addBlockErrors(workspace){
 }
 
 export function sendRuntimeError(errormessage, blockjson){
-  if (typeof(blockjson.startIndex !== 'undefined') && typeof(blockjson.endIndex !== 'undefined')){
-      textError('runtime', errormessage, blockjson.startIndex, blockjson.endIndex);
-  }
+  textError('runtime', errormessage, blockjson.startIndex, blockjson.endIndex);
   if (typeof(blockjson.blockid !== 'undefined')){
       blockErrorsBuffer[blockjson.blockid] = errormessage + '<br>';
   }
 
 
+
 }
 
 
 
-// needs tested
-export function highlightError(rangeArray, errorMessage) {
-  // Get the session from the editor
-  var session = textEditor?.getSession();
 
-  // Convert the range array to an Ace Range object
-  var range = new AceRange(rangeArray[0], rangeArray[1], rangeArray[2], rangeArray[3]);
-
-  // Create a marker for the error range
-  var marker = session.addMarker(range, "error-marker", "text");
-
-  // Create a div element for the error message tooltip
-  var tooltip = document.createElement('div');
-  tooltip.className = 'error-tooltip';
-  tooltip.textContent = errorMessage;
-
-  // Calculate the line height based on the editor's font size
-  var lineHeight = parseInt(textEditor?.renderer?.lineHeight, 10);
-
-  // Create the marker element and add the tooltip
-  var markerElement = document.createElement('div');
-  markerElement.className = 'ace_error-marker';
-  markerElement.style.top = range.start.row * lineHeight + 'px';
-  markerElement.style.height = lineHeight + 'px';
-  markerElement.appendChild(tooltip);
-
-  try {
-    // Find the marker layer's parent container
-  var markerLayer = session.getMarkerLayer("error-marker");
-  markerLayer?.element.appendChild(markerElement);
-
-  // Add a mouse hover effect to display the error message
-  markerElement.addEventListener('mouseenter', function() {
-    tooltip.style.display = 'block';
-  });
-
-  markerElement.addEventListener('mouseleave', function() {
-    tooltip.style.display = 'none';
-  });
-  }
-  catch(error) {
-    console.log('error adding the hover effect');
-  }
-}
 
 
 

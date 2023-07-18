@@ -1,4 +1,4 @@
-import { textEditor } from "./milestone2";
+import { textEditor } from "./lexer-parser";
 
 
 

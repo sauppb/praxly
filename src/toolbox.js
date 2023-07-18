@@ -400,6 +400,82 @@ export const toolbox = {
       }, 
       {
         "kind": "category",
+        "name": "expressions",
+        "categorystyle": "expression_blocks",
+        "contents": [
+          {
+            'kind': 'block',
+            'type': 'praxly_literal_block'
+          },
+          // {
+          //   'kind': 'block',
+          //   'type': 'praxly_String_block'
+          // },
+          {
+            'kind': 'block',
+            'type': 'praxly_arithmetic_block',
+            'inputs': {
+              'A_OPERAND' : {
+                'shadow': {
+                  'type' :'praxly_literal_block', 
+                  'fields' : {
+                    'LITERAL' : 1,
+                  }
+                },
+              }, 
+              'B_OPERAND' : {
+                'shadow': {
+                  'type' :'praxly_literal_block', 
+                  'fields' : {
+                    'LITERAL' : 1,
+                  }
+                },
+              }
+
+              
+            }
+            
+          }, 
+          
+          {
+            'kind': 'block',
+            'type': 'praxly_null_block'
+          }, 
+          {
+            'kind': 'block',
+            'type': 'praxly_true_block'
+          }, 
+          {
+            'kind': 'block',
+            'type': 'praxly_false_block'
+          }
+        ]
+      },
+      {
+        "kind": "category",
+        "name": "variables",
+        "categorystyle": "variable_blocks",
+        "contents": [
+     
+              {
+                'kind': 'block',
+                'type': 'praxly_assignment_block'
+              }, 
+              {
+                'kind': 'block',
+                'type': 'praxly_reassignment_block'
+              }, 
+              {
+                'kind': 'block',
+                'type': 'praxly_variable_block'
+              }, 
+
+             
+              
+        ]
+      }, 
+      {
+        "kind": "category",
         "name": "logic",
         "categorystyle": "logic_blocks",
         "contents": [
@@ -566,59 +642,7 @@ export const toolbox = {
               }
         ]
       },
-      {
-        "kind": "category",
-        "name": "expressions",
-        "categorystyle": "expression_blocks",
-        "contents": [
-          {
-            'kind': 'block',
-            'type': 'praxly_literal_block'
-          },
-          // {
-          //   'kind': 'block',
-          //   'type': 'praxly_String_block'
-          // },
-          {
-            'kind': 'block',
-            'type': 'praxly_arithmetic_block',
-            'inputs': {
-              'A_OPERAND' : {
-                'shadow': {
-                  'type' :'praxly_literal_block', 
-                  'fields' : {
-                    'LITERAL' : 1,
-                  }
-                },
-              }, 
-              'B_OPERAND' : {
-                'shadow': {
-                  'type' :'praxly_literal_block', 
-                  'fields' : {
-                    'LITERAL' : 1,
-                  }
-                },
-              }
-
-              
-            }
-            
-          }, 
-          
-          {
-            'kind': 'block',
-            'type': 'praxly_null_block'
-          }, 
-          {
-            'kind': 'block',
-            'type': 'praxly_true_block'
-          }, 
-          {
-            'kind': 'block',
-            'type': 'praxly_false_block'
-          }
-        ]
-      },
+      
      
       // {
       //   "kind": "category",
@@ -657,29 +681,7 @@ export const toolbox = {
         ]
       },
      
-      {
-        "kind": "category",
-        "name": "variables",
-        "categorystyle": "variable_blocks",
-        "contents": [
-     
-              {
-                'kind': 'block',
-                'type': 'praxly_assignment_block'
-              }, 
-              {
-                'kind': 'block',
-                'type': 'praxly_reassignment_block'
-              }, 
-              {
-                'kind': 'block',
-                'type': 'praxly_variable_block'
-              }, 
-
-             
-              
-        ]
-      }, 
+      
       {
         "kind": "category",
         "name": "procedures",

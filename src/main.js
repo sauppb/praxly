@@ -3,21 +3,21 @@ import Blockly from 'blockly';
 import {praxlyDefaultTheme } from "./theme"
 import { PraxlyDark } from './theme';
 import {toolbox} from './toolbox';
-import { textEditor } from './milestone2';
+import { textEditor } from './lexer-parser';
 
 import { tree2text } from './tree2text';
 import {definePraxlyBlocks} from './newBlocks';
 import { makeGenerator } from './generators';
 import { blocks2tree } from './generators';
-import { createExecutable } from './milestone1';
-import { printBuffer } from './milestone2';
-import { clearOutput } from './milestone2';
+import { createExecutable } from './ast';
+import { printBuffer } from './lexer-parser';
+import { clearOutput } from './lexer-parser';
 import ace from 'ace-builds';
 import "ace-builds/src-min-noconflict/theme-twilight";
 import "ace-builds/src-min-noconflict/theme-katzenmilch";
 import { tree2blocks } from './tree2blocks';
-import { errorOutput } from './milestone2';
-import { text2tree } from './milestone2';
+import { errorOutput } from './lexer-parser';
+import { text2tree } from './lexer-parser';
 import { generateUrl, loadFromUrl } from './share';
 import { colour } from 'blockly/blocks';
 
@@ -37,7 +37,7 @@ const blockUpdatesButton = document.getElementById('blockUpdates');
 let darkMode = false;
 let live = true;
 
-runButton.addEventListener('click', () => { 
+runButton.addEventListener('mouseup', () => { 
   clearOutput();
   // mainTree = blocks2tree(workspace, praxlyGenerator);
   if (mainTree === null){
@@ -178,21 +178,23 @@ darkModeButton.addEventListener('click', ()=> {
 );
 
 blockUpdatesButton.innerText = 'block updates: live ';
-workspace.addChangeListener( turnBlocksToCode);
+workspace.addChangeListener( turnBlocksToCode); 
 textEditor.addEventListener("input", turnCodeToBLocks);
 
 
 blockUpdatesButton.addEventListener('click', () => {
   
   if (!live){
+    runButton.removeEventListener('mousedown', turnCodeToBLocks);
     blockUpdatesButton.innerText = 'block updates: live ';
     workspace.addChangeListener( turnBlocksToCode);
     textEditor.addEventListener("input", turnCodeToBLocks);
     live = true;
   } else {
+    blockUpdatesButton.innerText = 'block updates: on run (not implimented yet)';
     workspace.removeChangeListener(turnBlocksToCode);
-    blockUpdatesButton.innerText = 'block updates: on save (not implimented yet)';
     textEditor.removeEventListener("input", turnCodeToBLocks);
+    runButton.addEventListener('mousedown', turnCodeToBLocks);
     live = false;
   }
 });
