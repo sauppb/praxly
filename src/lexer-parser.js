@@ -24,54 +24,14 @@ export function clearOutput() {
 }
 
 
-// export function textError(type, error, startIndex, endIndex){
+export function textError(type, error, startIndex, endIndex){
   
-//   if (endIndex ?? 0  < startIndex){
-//     endIndex = textEditor?.getValue().length - 1;
-//   }
-//   var ranges = indextoAceRange(startIndex, endIndex);
-//   errorOutput += `${type} error occured on line line ${ranges[0]}:  ${error}<br>`;
-//   var range = new AceRange(rangeArray[0], rangeArray[1], rangeArray[2], rangeArray[3]);
-//   highlightError(range);
-// }
-
-
-// export function highlightError(range) {
-//   const marker = document.createElement('div');
-//   marker.className = 'ace_error';
-//   marker.style.position = 'absolute';
-//   marker.style.borderBottom = '1px solid red';
-//   marker.style.pointerEvents = 'none';
-//   marker.style.width = '100%';
-//   marker.style.marginBottom = '-1px';
-//   marker.style.zIndex = '1';
-
-//   const session = textEditor?.getSession();
-//   const line = range.start.row;
-//   const rowHeight = session.getRowLength(line) * session.getScreenLineHeight(line);
-//   marker.style.height = rowHeight + 'px';
-
-//   const markerLayer = session.getMarkerLayer('ace_error');
-//   markerLayer.drawSingleLineMarker(marker, range.start, range.end, session);
-
-//   textEditor?.renderer.scrollCursorIntoView({ row: line, column: 0 }, 0.5);
-// }
-
-// export function textError(type, error, startIndex, endIndex) {
-//   const editorValue = textEditor?.getValue();
-//   if (!editorValue || !startIndex || !endIndex) {
-//     console.error('Invalid parameters');
-//     return;
-//   }
-
-//   const range = new AceRange(
-//     startIndex.row || 0,
-//     startIndex.column || 0,
-//     endIndex.row || editorValue.length - 1,
-//     endIndex.column || editorValue.length - 1
-//   );
-//   highlightError(range);
-// }
+  if (endIndex ?? 0  < startIndex){
+    endIndex = textEditor?.getValue().length - 1;
+  }
+  var ranges = indextoAceRange(startIndex, endIndex);
+  errorOutput += `${type} error occured on line line ${ranges[0]}:  ${error}<br>`;
+}
 
 
 
@@ -96,7 +56,27 @@ export function sendRuntimeError(errormessage, blockjson){
 
 
 
+// needs tested
+function highlightError(textEditor, startRow, startColumn, endRow, endColumn) {
+  var markerRange = new ace.Range(startRow, startColumn, endRow, endColumn);
 
+  // Create a new marker with the specified CSS class
+  var marker = document.createElement("div");
+  marker.className = "error-marker";
+
+  // Add the marker to the editor session
+  var markerId = textEditor.session.addMarker(markerRange, "error-highlight", "text");
+
+  // Add a CSS rule for the error-marker class to display a red squiggly line
+  var style = document.createElement("style");
+  style.type = "text/css";
+  style.innerHTML = ".error-marker { position: absolute; border-bottom: 1px solid red; }";
+  document.head.appendChild(style);
+
+  // Store the marker ID for later removal
+  textEditor.errorMarkers = textEditor.errorMarkers || [];
+  textEditor.errorMarkers.push(markerId);
+}
 
 
 
