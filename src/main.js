@@ -87,7 +87,6 @@ let turnBlocksToCode = () => {
 // runCode.addEventListener('click', turnCodeToBLocks);
 
 
-definePraxlyBlocks();
 
 
 export const workspace = Blockly.inject('blocklyDiv', {
@@ -100,6 +99,7 @@ export const workspace = Blockly.inject('blocklyDiv', {
 });
 
 
+definePraxlyBlocks(workspace);
 
 
 const resizeBar = document.querySelector('.resizeBar');

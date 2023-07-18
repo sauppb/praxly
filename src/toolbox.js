@@ -649,6 +649,11 @@ export const toolbox = {
                 }
                 
               }, 
+              {
+                'kind': 'block',
+                'type': 'praxly_singular_param_block'
+              },
+         
         ]
       },
      
@@ -670,6 +675,7 @@ export const toolbox = {
                 'kind': 'block',
                 'type': 'praxly_variable_block'
               }, 
+
              
               
         ]

@@ -320,7 +320,7 @@ export const makeGenerator = () => {
             type: 'FUNCTION_ASSIGNMENT', 
             name: variableName, 
             returnType: returnType,
-            value: value, 
+            value: statements, 
             blockID: block.id, 
             varType: 'Praxly_' + varType,
 

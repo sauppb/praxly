@@ -1,6 +1,8 @@
 import Blockly, { Block } from 'blockly';
 
-export function definePraxlyBlocks() {
+export function definePraxlyBlocks(workspace) {
+
+
 
   let callbacks = {
     saveExtraState: function() {
@@ -16,6 +18,14 @@ export function definePraxlyBlocks() {
       }
     }
   };
+
+  //this doesnt work
+  function appendparameter(id, str){
+    const oldblock = workspace.getBlockById(id);
+    var newblock = workspace.newBlock('praxly_literal_block');
+    oldblock.getInput(str).connection.connect(newblock.outputConnection);
+    newblock.initSvg();
+  }
   
   Blockly.Extensions.registerMutator('praxly_arity', callbacks);
   
@@ -26,7 +36,12 @@ export function definePraxlyBlocks() {
   
     plusButton.setOnClickHandler(() => {
       const paramCount = this.params.length;
-      this.appendValueInput(`PARAM_${paramCount}`);
+      let inputname = `PARAM_${paramCount}`;
+      let blockid = this.id;
+      let newinput = this.appendValueInput(`PARAM_${paramCount}`);
+      setTimeout(() => {
+        // appendparameter(blockid, inputname);
+      }, 0);
       this.params.push(`PARAM_${paramCount}`);
     });
   
@@ -43,6 +58,14 @@ export function definePraxlyBlocks() {
   //   var newValue = event.newValue;
   //   this.sourceBlock_.setFieldValue(newValue, 'END_PROCEDURE_NAME');
   // }
+  function updateProcedureName(event) {
+    var block = event.getEventWorkspace().getBlockById(event.blockId);
+    var procedureNameField = block.getField("PROCEDURE_NAME");
+    var endProcedureNameField = block.getField("END_PROCEDURE_NAME");
+    
+    var procedureName = procedureNameField.getText();
+    endProcedureNameField.setValue(procedureName);
+  }
   
   
 
@@ -429,7 +452,7 @@ export function definePraxlyBlocks() {
           }, 
           {
             "type": "praxly_procedure_block",
-            "message0": "%1 %2 %3 ( %4 ) %5  %6 end %7",
+            "message0": "%1 %2 %3 ( %4 ) %5 %6 end %7",
             "args0": [
               {
                 "type": "field_dropdown",
@@ -449,10 +472,7 @@ export function definePraxlyBlocks() {
               {
                 "type": "field_input",
                 "name": "PROCEDURE_NAME",
-                "text": "procedureName",
-                // "changeHandler": () => {
-                //   console.log('change aknowleged');
-                // }
+                "text": "procedureName"
               },
               {
                 "type": "input_value",
@@ -478,11 +498,8 @@ export function definePraxlyBlocks() {
             "style": "procedure_blocks",
             "tooltip": "test",
             "helpUrl": "",
-            'onchange': function() {
-              console.log('something changed');
-            }
+            "onchange": "updateProcedureName"
           },
-          
     {
 "type": "praxly_assignment_block",
 "message0": "%1%2 = %3 %4",
@@ -813,8 +830,57 @@ export function definePraxlyBlocks() {
                   'extensions': ['addParams'],
                   "inputsInline": true,
                 },   
-
-    
+                {
+                  "type": "praxly_singular_param_block",
+              
+                  "message0": "%1%2",
+                  "args0": [
+                    {
+                      "type": "field_dropdown",
+                      "name": "VARTYPE",
+                      "options": [
+                        [
+                          "int",
+                          "int"
+                        ],
+                        [
+                          "boolean",
+                          "boolean"
+                        ],
+                        [
+                          "double",
+                          "double"
+                        ],
+                        [
+                          "char",
+                          "char"
+                        ],
+                        [
+                          "String",
+                          "String"
+                        ],
+                        [
+                          "float",
+                          "float"
+                        ]
+                      ]
+                    },
+                  
+                    {
+                      "type": "field_input",
+                      "name": "VARIABLENAME",
+                      "text": "i"
+                    },
+                   
+                  
+                  
+                  ],
+                        "inputsInline": true,
+                        "output": null,
+                        "style": 'variable_blocks',
+                        "tooltip": "",
+                        "helpUrl": ""
+                      }, 
     ]);
 
  
