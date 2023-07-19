@@ -3,7 +3,7 @@ import ace from 'ace-builds';
 
 
 export const textEditor = ace.edit("aceCode", {fontSize: 16});
-var AceRange = ace.require('ace/range').Range;
+// var AceRange = ace.require('ace/range').Range;
 
 
 const maxLoop = 100;
@@ -18,6 +18,7 @@ export function addToPrintBuffer (message){
 
 
 export function clearOutput() {
+  clearErrorAnnotations(textEditor);
   printBuffer = "";
   errorOutput = "";
   blockErrorsBuffer = {};
@@ -29,8 +30,9 @@ export function textError(type, error, startIndex, endIndex){
   if (endIndex ?? 0  < startIndex){
     endIndex = textEditor?.getValue().length - 1;
   }
-  var ranges = indextoAceRange(startIndex, endIndex);
-  errorOutput += `${type} error occured on line line ${ranges[0]}:  ${error}<br>`;
+  var ranges = indextoAceRange(startIndex ?? 0, endIndex);
+  errorOutput += `<pre>${type} error occured on line line ${ranges[0]}:  ${error} \n\t (highlighting index ${startIndex} to ${endIndex})</pre><br>`;
+  highlightError(ranges[0], ranges[1], ranges[2], ranges[3]);
 }
 
 
@@ -49,34 +51,57 @@ export function sendRuntimeError(errormessage, blockjson){
   if (typeof(blockjson.blockid !== 'undefined')){
       blockErrorsBuffer[blockjson.blockid] = errormessage + '<br>';
   }
-
-
-
+  console.log('here are the block errors');
+  console.log(blockErrorsBuffer);
 }
 
 
 
 // needs tested
-function highlightError(textEditor, startRow, startColumn, endRow, endColumn) {
-  var markerRange = new ace.Range(startRow, startColumn, endRow, endColumn);
+// function highlightError( startRow, startColumn, endRow, endColumn) {
+//   var errorRange = new ace.Range(startRow, startColumn, endRow, endColumn);
+//   var errorText = "Error"; // The error message to display
 
-  // Create a new marker with the specified CSS class
-  var marker = document.createElement("div");
-  marker.className = "error-marker";
+//   // Create the annotation object
+//   var annotation = {
+//     row: errorRange.start.row,
+//     column: errorRange.start.column,
+//     text: errorText,
+//     type: "error"
+//   };
 
-  // Add the marker to the editor session
-  var markerId = textEditor.session.addMarker(markerRange, "error-highlight", "text");
+//   // Add the annotation to the editor session
+//   textEditor.session.setAnnotations([annotation]);
 
-  // Add a CSS rule for the error-marker class to display a red squiggly line
-  var style = document.createElement("style");
-  style.type = "text/css";
-  style.innerHTML = ".error-marker { position: absolute; border-bottom: 1px solid red; }";
-  document.head.appendChild(style);
+// }
 
-  // Store the marker ID for later removal
-  textEditor.errorMarkers = textEditor.errorMarkers || [];
-  textEditor.errorMarkers.push(markerId);
+//this doesnt work
+function highlightError( startRow, startColumn, endRow, endColumn) {
+  var session = textEditor.session;
+  var Range = ace.require('ace/range').Range;
+
+  var errorRange = new Range(startRow, startColumn, endRow, endColumn);
+  var markerId = session.addMarker(errorRange, 'error-marker', 'text');
+
+  var markerCss = `
+    .error-marker {
+      position: absolute;
+      z-index: 1;
+      background-color: rgba(255, 0, 0, 0.2);
+      border-bottom: 2px solid red;
+    }
+  `;
+
+  var styleElement = document.createElement('style');
+  styleElement.appendChild(document.createTextNode(markerCss));
+  document.head.appendChild(styleElement);
+
+  return markerId;
 }
+
+
+
+
 
 
 
@@ -334,6 +359,7 @@ class Token {
           } else if (this.has(" ")) {
             this.skip();
           } else if (this.has("\"") || this.has("\'") ){
+            var stringStart = this.i;
             this.skip();
             while (this.i < this.length && !this.has("\"") && !this.has("\'")) {
                 this.capture();
@@ -344,7 +370,7 @@ class Token {
               
             }
             else {
-              textError("lexing", 'looks like you didn\'t close your quotes on your String. Remember Strings start and end with a single or double quote mark (\' or \") .',commentStart, this.i);
+              textError("lexing", 'looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\' or \").',stringStart, this.i);
             }
           } else if (this.has_letter()) {
             while (this.i < this.length && (this.has_letter() || this.has_digit())) {
@@ -421,7 +447,7 @@ class Token {
             this.skip();
           } 
           else {
-            textError('lexing', `invalid character ${this.source[this.i] }`, this.i, this.i);
+            textError('lexing', `invalid character <b>\"${this.source[this.i] }\"</b>`, this.i, this.i);
 
             console.log("invalid character at index ", this.i);
             return 0;
@@ -596,9 +622,12 @@ class Parser {
         
       };
       
-
+    }else if (this.has("\n")){
+      // this.advance();
+      return;
+    
     } else {
-      textError('parsing', `Missing or Unrecognized token: ${this.i} This is likely the result of a lexing error?.', startIndex, endIndex`);
+      // textError('parsing', `Missing or Unrecognized token: ${this.i} This is likely the result of a lexing error?.', startIndex, endIndex`);
       console.log(`atom problem at this token: ${this.tokens[this.i].token_type}`);
       return;
     }

@@ -7,6 +7,9 @@
   <link id="ToolboxCss" rel="stylesheet" href="toolbox.css">
   <link rel="icon" href="/jmu.ico" type="image/x-icon">
   <style>
+
+    
+
     body {
       display: flex;
       flex-direction: column;
@@ -19,7 +22,14 @@
       background: #e3e6e4;
       margin: 10px;
       height: 10vh;
+      font-size: large;
       border-radius: 10px;
+      overflow: auto; /* Add this */
+      max-height: 200px; /* Adjust the value as needed */
+    }
+
+    .error {
+      color: red;
     }
 
     main {

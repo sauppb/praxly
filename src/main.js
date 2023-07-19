@@ -3,7 +3,7 @@ import Blockly from 'blockly';
 import {praxlyDefaultTheme } from "./theme"
 import { PraxlyDark } from './theme';
 import {toolbox} from './toolbox';
-import { textEditor } from './lexer-parser';
+import { addBlockErrors, textEditor } from './lexer-parser';
 
 import { tree2text } from './tree2text';
 import {definePraxlyBlocks} from './newBlocks';
@@ -49,7 +49,8 @@ runButton.addEventListener('mouseup', () => {
   executable.evaluate();
   output.innerHTML = printBuffer;
   stdError.innerHTML = errorOutput;
-  
+  //might have to remove
+  addBlockErrors(workspace);
   
 
 });

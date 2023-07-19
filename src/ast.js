@@ -158,7 +158,7 @@ export const createExecutable = (blockjson) => {
                 return new Praxly_for(initialization, condition, incrimentation, statement, blockjson);
             }
             catch (error) {
-                console.error('An error occurred: empty statement', error);
+                console.error( error);
                 return  new Praxly_statement(null);
             }
         case 'WHILE':
@@ -168,7 +168,7 @@ export const createExecutable = (blockjson) => {
                 return new Praxly_while(condition, statement, blockjson);
             }
             catch (error) {
-                console.error('An error occurred: empty statement', error);
+                console.error( error);
                 return  new Praxly_statement(null);
             }
         case 'DO_WHILE':
