@@ -12,6 +12,7 @@ export var printBuffer = "";
 export var errorOutput = "";
 export var blockErrorsBuffer = {};
 export var annotationsBuffer = [];
+export var markersBuffer = [];
 
 export function addToPrintBuffer (message){
   printBuffer += message;
@@ -23,6 +24,9 @@ export function clearOutput() {
   printBuffer = "";
   errorOutput = "";
   blockErrorsBuffer = {};
+  markersBuffer.forEach((markerId)=> {
+    textEditor.session.removeMarker(markerId);
+  });
 }
 
 
@@ -34,7 +38,7 @@ export function textError(type, error, startIndex, endIndex){
   var ranges = indextoAceRange(startIndex, endIndex);
   errorOutput += `<pre>${type} error occured on line ${ranges[0]}:  ${error} \n\t (highlighting index ${startIndex} to ${endIndex})</pre><br>`;
   appendAnnotation(error, startIndex, endIndex);
-  highlightError(ranges[0], ranges[1], ranges[2], ranges[3]);
+  // highlightError(ranges[0], ranges[1], ranges[2], ranges[3]);
 }
 
 
@@ -69,14 +73,16 @@ export function appendAnnotation(errorMessage, startindex, endindex) {
     type: "error"
   };
   annotationsBuffer.push(annotation);
+  highlightError(ranges[0], ranges[1], ranges[2], ranges[3]);
+
 }
 
 // this doesnt work
-function highlightError( startRow, startColumn, endRow, endColumn) {
+function highlightError(startRow, startColumn, endRow, endColumn) {
   var session = textEditor.session;
   var Range = ace.require('ace/range').Range;
 
-  var errorRange = new Range(startRow, startColumn, endRow, endColumn);
+  var errorRange = new Range(startRow - 1, startColumn, endRow, endColumn);
   var markerId = session.addMarker(errorRange, 'error-marker', 'text');
 
   var markerCss = `
@@ -88,12 +94,24 @@ function highlightError( startRow, startColumn, endRow, endColumn) {
     }
   `;
 
-  var styleElement = document.createElement('style');
-  styleElement.appendChild(document.createTextNode(markerCss));
-  document.head.appendChild(styleElement);
+  // Check if the style tag already exists
+  var existingStyleTag = document.getElementById('custom-style');
+  if (!existingStyleTag) {
+    // If it doesn't exist, create a new style tag and set its ID
+    console.error(`couldn\'t find the stylesheet`);
+    existingStyleTag = document.createElement('style');
+    existingStyleTag.setAttribute('id', 'custom-style');
+    document.head.appendChild(existingStyleTag);
+  }
+
+  // Append the error-marker rules to the existing style tag
+  existingStyleTag.appendChild(document.createTextNode(markerCss));
+
   console.log('attempted to highlight');
+  markersBuffer.push(markerId);
   return markerId;
 }
+
 
 
 
@@ -271,9 +289,10 @@ class Token {
             }
           } 
           else {
-            appendAnnotation('looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.',commentStart, this.i);
+            textError('lexing', 'looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.',commentStart, this.i);
+            // appendAnnotation('looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.',commentStart, this.i);
             this.i -= 1;
-            this.emit_token('comment');
+            this.emit_token();
   
           }
           
@@ -377,7 +396,7 @@ class Token {
               
             }
             else {
-              appendAnnotation( 'looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\' or \").',stringStart, this.i);
+              textError('lexing', 'looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\' or \").',stringStart, this.i);
               this.i -= 1;
               this.emit_token("String");
             }
@@ -435,7 +454,7 @@ class Token {
             this.skip();
           } 
           else {
-            appendAnnotation( `invalid character <b>\"${this.source[this.i] }\"</b>`, this.i, this.i);
+            textError('lexing',  `invalid character \"${this.source[this.i] }\"`, this.i- 1, this.i);
 
             console.log("invalid character at index ", this.i);
             return 0;
@@ -591,7 +610,7 @@ class Parser {
       if (this.has(")")) {
         this.advance();
       } else {
-        appendAnnotation( 'did not detect closing parentheses', startIndex, endIndex);
+        textError('parsing', 'did not detect closing parentheses', startIndex, endIndex);
         // console.log("did not detect closing parentheses");
       }
       return expression;
@@ -751,8 +770,8 @@ class Parser {
         var expression = this.boolean_operation();
         result.type = 'NOT';
         result.value = expression;
-        result.beg = l?.beg;
-        result.end = r?.end;
+        result.beg = startIndex;
+        result.end = endIndex;
       }
     }
     return result;

@@ -118,7 +118,7 @@ export function turnCodeToBLocks (){
   workspace.clear();
   tree2blocks(workspace, mainTree);
   workspace.render();
-  stdError.innerHTML = errorOutput;
+  // stdError.innerHTML = errorOutput;
   textEditor.session.setAnnotations(annotationsBuffer);
   addBlockErrors(workspace);
 }
@@ -135,7 +135,7 @@ function turnBlocksToCode() {
   const text = tree2text(mainTree, 0, 0);
   
   textEditor.setValue(text, -1);
-  stdError.innerHTML = errorOutput;
+  // stdError.innerHTML = errorOutput;
   
 };
 

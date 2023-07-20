@@ -653,11 +653,11 @@ class Praxly_codeBlock {
     }
     evaluate(environment) {
         this.praxly_blocks.forEach(element => {
-            try{
+            // try{
                 element.evaluate(environment);
-            } catch (error)  {
-                console.error('An error occurred: empty statement', error);
-            }
+            // } catch (error)  {
+            //     console.error('An error occurred: empty statement', error);
+            // }
             
         });
         return "Exit_Success";
@@ -683,6 +683,8 @@ class Praxly_assignment {
             }
     
             if (environment.variableList[this.name].evaluate(environment).jsonType !== this.value.evaluate(environment).jsonType){
+                sendRuntimeError(`Error: varible reassignment does not match declared type: \n\t Expected:`
+                + `${environment.variableList[this.name].evaluate(environment).jsonType.slice(7)}, \n\t Actual: ${this.value.evaluate(environment).jsonType.slice(7)}`, this.json);
                 console.error("Error: varible reassignment does not match declared type:");
             }
           
@@ -799,6 +801,7 @@ class Praxly_function_assignment{
         this.name = name;
         this.params = params;
         this.contents = contents;
+        this.json = blockjson;
     }
     evaluate(environment){
         environment.functionList[this.name] = {
@@ -813,6 +816,7 @@ class Praxly_function_call {
     constructor(name, args, blockjson){
         this.args = args;
         this.name = name;
+        this.json = blockjson;
     }
     
     //this one was tricky
@@ -820,8 +824,9 @@ class Praxly_function_call {
         var functionParams = environment.functionList[this.name].params;
         var functionContents = environment.functionList[this.name].contents;
         if (functionParams.length !== this.args.length){
-            console.error(`incorrect amount of arguments passed, expected ${functionParams.length}, was ${this.args.length}`);
-            return;
+            sendRuntimeError(`incorrect amount of arguments passed, expected ${functionParams.length}, was ${this.args.length}`, this.json);
+            console.log(`incorrect amount of arguments passed, expected ${functionParams.length}, was ${this.args.length}`);
+            return new Praxly_invalid();
         }
         var newScope = JSON.parse(JSON.stringify(environment));
         // copy the new parameters to the duplicate of the global scope
