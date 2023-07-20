@@ -1,9 +1,8 @@
 import Blockly from 'blockly';
-// import ace from 'ace-builds';
 import {praxlyDefaultTheme } from "./theme"
 import { PraxlyDark } from './theme';
 import {toolbox} from './toolbox';
-import { addBlockErrors, textEditor } from './lexer-parser';
+import { addBlockErrors, annotationsBuffer, textEditor } from './lexer-parser';
 
 import { tree2text } from './tree2text';
 import {definePraxlyBlocks} from './newBlocks';
@@ -19,25 +18,65 @@ import { tree2blocks } from './tree2blocks';
 import { errorOutput } from './lexer-parser';
 import { text2tree } from './lexer-parser';
 import { generateUrl, loadFromUrl } from './share';
-import { colour } from 'blockly/blocks';
 
 
 
-const output = document.querySelector('.output');
-const stdError = document.querySelector('.error');
 const praxlyGenerator = makeGenerator();
-
-
-
-
-var mainTree = null;
+export const workspace = Blockly.inject('blocklyDiv', {
+  toolbox: toolbox,
+  scrollbars: false,
+  horizontalLayout: false,
+  toolboxPosition: "start",
+  theme: praxlyDefaultTheme,
+  renderer: 'zelos'
+});
 const runButton = document.getElementById('runButton');
+const shareButton = document.getElementById('share');
 const darkModeButton = document.getElementById('darkMode');
 const blockUpdatesButton = document.getElementById('blockUpdates');
+const resizeBar = document.querySelector('.resizeBar');
+const leftPane = document.querySelector('#blocklyDiv');
+const rightPane = document.querySelector('#aceCode');
+const stdError = document.querySelector('.error');
+const stdOut = document.querySelector('.output');
+const editorElement = textEditor.container;
+
+var mainTree = null;
 let darkMode = false;
 let live = true;
+let isResizing = false;
 
-runButton.addEventListener('mouseup', () => { 
+runButton.addEventListener('mouseup', runTasks);
+darkModeButton.addEventListener('click', ()=> {darkMode ? setLight() : setDark();});
+definePraxlyBlocks(workspace);
+blockUpdatesButton.innerText = 'block updates: live ';
+workspace.addChangeListener( turnBlocksToCode); 
+textEditor.addEventListener("input", turnCodeToBLocks);
+
+//resizing things with the purple bar
+resizeBar.addEventListener('mousedown', function(e) {
+  isResizing = true;
+  document.addEventListener('mousemove', resizeHandler);
+});
+document.addEventListener('mouseup', function(e) {
+  isResizing = false;
+  document.removeEventListener('mousemove', resizeHandler);
+  Blockly.svgResize(workspace);
+  textEditor.resize();
+});
+
+// these make it so that the blocks and text take turns. 
+leftPane.addEventListener('click', () => {
+  workspace.removeChangeListener(turnBlocksToCode); 
+  workspace.addChangeListener( turnBlocksToCode);
+});
+rightPane.addEventListener('click', () => {
+  textEditor.removeEventListener("input", turnCodeToBLocks);
+  textEditor.addEventListener("input", turnCodeToBLocks);
+});
+
+
+function runTasks() {
   clearOutput();
   // mainTree = blocks2tree(workspace, praxlyGenerator);
   if (mainTree === null){
@@ -47,16 +86,30 @@ runButton.addEventListener('mouseup', () => {
   const executable = createExecutable(mainTree);
   console.log(executable);
   executable.evaluate();
-  output.innerHTML = printBuffer;
+  stdOut.innerHTML = printBuffer;
   stdError.innerHTML = errorOutput;
+  textEditor.session.setAnnotations(annotationsBuffer);
   //might have to remove
   addBlockErrors(workspace);
-  
+}
 
-});
+
 
 // this function gets called every time a charater is typed in the editor.
-export const turnCodeToBLocks = () => {
+// export const turnCodeToBLocks = () => {
+  
+//   // console.log("ace has the lock");
+//   workspace.removeChangeListener(turnBlocksToCode); 
+//   clearOutput();
+//   mainTree = text2tree();
+//   workspace.clear();
+//   tree2blocks(workspace, mainTree);
+//   workspace.render();
+//   stdError.innerHTML = errorOutput;
+
+// }
+
+export function turnCodeToBLocks (){
   
   // console.log("ace has the lock");
   workspace.removeChangeListener(turnBlocksToCode); 
@@ -66,63 +119,46 @@ export const turnCodeToBLocks = () => {
   tree2blocks(workspace, mainTree);
   workspace.render();
   stdError.innerHTML = errorOutput;
-
+  textEditor.session.setAnnotations(annotationsBuffer);
+  addBlockErrors(workspace);
 }
 
-// this function gets called whenever the blocks are modified. 
-let turnBlocksToCode = () => {
 
+function turnBlocksToCode() {
+  
   // console.log("blockly has the lock");
   textEditor.removeEventListener("input", turnCodeToBLocks);
   // clearOutput();
-
+  
   mainTree = blocks2tree(workspace, praxlyGenerator);
   console.log(mainTree);
   const text = tree2text(mainTree, 0, 0);
-
+  
   textEditor.setValue(text, -1);
   stdError.innerHTML = errorOutput;
   
 };
 
-// runCode.addEventListener('click', turnCodeToBLocks);
+
+// this function gets called whenever the blocks are modified. 
+// let turnBlocksToCode = () => {
+
+//   // console.log("blockly has the lock");
+//   textEditor.removeEventListener("input", turnCodeToBLocks);
+//   // clearOutput();
+
+//   mainTree = blocks2tree(workspace, praxlyGenerator);
+//   console.log(mainTree);
+//   const text = tree2text(mainTree, 0, 0);
+
+//   textEditor.setValue(text, -1);
+//   stdError.innerHTML = errorOutput;
+  
+// };
 
 
 
 
-export const workspace = Blockly.inject('blocklyDiv', {
-  toolbox: toolbox,
-  scrollbars: false,
-  horizontalLayout: false,
-  toolboxPosition: "start",
-  theme: praxlyDefaultTheme,
-  renderer: 'zelos'
-});
-
-
-definePraxlyBlocks(workspace);
-
-
-const resizeBar = document.querySelector('.resizeBar');
-const leftPane = document.querySelector('#blocklyDiv');
-const rightPane = document.querySelector('#aceCode');
-
-let isResizing = false;
-
-resizeBar.addEventListener('mousedown', function(e) {
-  isResizing = true;
-
-  document.addEventListener('mousemove', resizeHandler);
-});
-
-document.addEventListener('mouseup', function(e) {
-  isResizing = false;
-
-  document.removeEventListener('mousemove', resizeHandler);
-
-  Blockly.svgResize(workspace);
-  textEditor.resize();
-});
 
 function resizeHandler(e) {
   if (!isResizing) return;
@@ -138,6 +174,7 @@ function resizeHandler(e) {
 var toolboxstylesheet = document.getElementById("ToolboxCss");
 
 function setDark(){
+  darkMode = true;
   workspace.setTheme(PraxlyDark);
   textEditor.setTheme("ace/theme/twilight");
   var bodyElement = document.body;
@@ -151,6 +188,7 @@ function setDark(){
 }
 
 function setLight(){
+  darkMode = false;
   workspace.setTheme(praxlyDefaultTheme);
   textEditor.setTheme('ace/theme/katzenmilch');
   var bodyElement = document.body;
@@ -164,54 +202,31 @@ function setLight(){
 }
 
 
-darkModeButton.addEventListener('click', ()=> {
-
-  if (!darkMode) {
-    darkMode = true;
-    setDark();
-    
-  } else {
-    setLight();
-    darkMode = false;
-
-  }
-}
-);
-
-blockUpdatesButton.innerText = 'block updates: live ';
-workspace.addChangeListener( turnBlocksToCode); 
-textEditor.addEventListener("input", turnCodeToBLocks);
 
 
-blockUpdatesButton.addEventListener('click', () => {
+
+
+
+// blockUpdatesButton.addEventListener('click', () => {
   
-  if (!live){
-    runButton.removeEventListener('mousedown', turnCodeToBLocks);
-    blockUpdatesButton.innerText = 'block updates: live ';
-    workspace.addChangeListener( turnBlocksToCode);
-    textEditor.addEventListener("input", turnCodeToBLocks);
-    live = true;
-  } else {
-    blockUpdatesButton.innerText = 'block updates: on run (not implimented yet)';
-    workspace.removeChangeListener(turnBlocksToCode);
-    textEditor.removeEventListener("input", turnCodeToBLocks);
-    runButton.addEventListener('mousedown', turnCodeToBLocks);
-    live = false;
-  }
-});
+//   if (!live){
+//     runButton.removeEventListener('mousedown', turnCodeToBLocks);
+//     blockUpdatesButton.innerText = 'block updates: live ';
+//     workspace.addChangeListener( turnBlocksToCode);
+//     textEditor.addEventListener("input", turnCodeToBLocks);
+//     live = true;
+//   } else {
+//     blockUpdatesButton.innerText = 'block updates: on run (not implimented yet)';
+//     workspace.removeChangeListener(turnBlocksToCode);
+//     textEditor.removeEventListener("input", turnCodeToBLocks);
+//     runButton.addEventListener('mousedown', turnCodeToBLocks);
+//     live = false;
+//   }
+// });
 
-//solution: clicking will force disable/enable
-leftPane.addEventListener('click', () => {
-  workspace.removeChangeListener(turnBlocksToCode); 
-  workspace.addChangeListener( turnBlocksToCode);
-});
 
-rightPane.addEventListener('click', () => {
-  textEditor.removeEventListener("input", turnCodeToBLocks);
-  textEditor.addEventListener("input", turnCodeToBLocks);
-});
 
-const editorElement = textEditor.container;
+
 
 // Attach a keydown event listener to the editor's DOM element
 editorElement.addEventListener("keydown", function(event) {
@@ -222,28 +237,14 @@ editorElement.addEventListener("keydown", function(event) {
     const output = document.querySelector('.output');
     // const error = document.querySelector('.error');
     output.innerHTML = "";
-    // clearOutput();
-    
-    // Log the current text typed in the editor to the console
-    // let code = textEditor.getValue();
 
-    
-    
-    // console.log(code);
-    // let lexer = new Lexer(code);
-    // let tokens = lexer.lex();
-    // console.log(tokens);
-    // let parser = new Parser(tokens);
-    // let textjson = parser.parse();
-    // console.log(textjson);
     const trees = createExecutable(mainTree);
     trees.evaluate();
 
       
     output.innerHTML = printBuffer;
     stdError.innerHTML = errorOutput;
-    // console.log('error message below');
-    // console.log(errorOutput);
+
     console.log(trees);
     
     
@@ -251,7 +252,6 @@ editorElement.addEventListener("keydown", function(event) {
 });
 
 //share button 
-const shareButton = document.getElementById('share');
 shareButton.addEventListener('click', generateUrl);
 
 loadFromUrl(turnCodeToBLocks);

@@ -4,9 +4,10 @@
 // import { highlightError, indextoAceRange } from "./milestone2";
 // import { textEditor } from "./milestone2";
 // import { block } from "blockly/core/tooltip";
-import { sendRuntimeError } from "./lexer-parser";
+import { appendAnnotation, sendRuntimeError } from "./lexer-parser";
 import { printBuffer } from "./lexer-parser";
 import { addToPrintBuffer } from "./lexer-parser";
+
 
 
 var scopes = {};
@@ -146,7 +147,7 @@ export const createExecutable = (blockjson) => {
             } 
             catch (error) {
                 sendRuntimeError('assignment error', blockjson);
-                console.error('assignment error: ', error);
+                // console.error('assignment error: ', error);
                 return null;
             }
         case 'FOR':
@@ -206,7 +207,8 @@ export const createExecutable = (blockjson) => {
             return new Praxly_function_call(blockjson.name, args, blockjson);
         
 
-
+        default: 
+        
             
 
     }
@@ -702,8 +704,8 @@ class Praxly_variable {
     }
     evaluate(environment){
         if (!environment.variableList.hasOwnProperty(this.name)){
-            sendRuntimeError('this variable is not recognized by the program. Perhaps you forgot to initialize it?', blockjson);
-            console.error("Error: variable name not in the variablelist:");
+            sendRuntimeError(`the variable \'${this.name}\' is not recognized by the program. Perhaps you forgot to initialize it?`, this.json);
+            return new Praxly_invalid();
         }
         return environment.variableList[this.name];
     }
@@ -783,10 +785,11 @@ class Praxly_not {
 
 class Praxly_invalid {
     constructor() {
-        this.error = 'error\n';
+        this.value = 'error';
+        
     }
     evaluate(environment) {
-        addToPrintBuffer( this.error);
+        
     }
 }
 

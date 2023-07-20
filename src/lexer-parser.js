@@ -11,6 +11,7 @@ const maxLoop = 100;
 export var printBuffer = "";
 export var errorOutput = "";
 export var blockErrorsBuffer = {};
+export var annotationsBuffer = [];
 
 export function addToPrintBuffer (message){
   printBuffer += message;
@@ -18,7 +19,7 @@ export function addToPrintBuffer (message){
 
 
 export function clearOutput() {
-  clearErrorAnnotations(textEditor);
+  annotationsBuffer = [];
   printBuffer = "";
   errorOutput = "";
   blockErrorsBuffer = {};
@@ -30,11 +31,11 @@ export function textError(type, error, startIndex, endIndex){
   if (endIndex ?? 0  < startIndex){
     endIndex = textEditor?.getValue().length - 1;
   }
-  var ranges = indextoAceRange(startIndex ?? 0, endIndex);
-  errorOutput += `<pre>${type} error occured on line line ${ranges[0]}:  ${error} \n\t (highlighting index ${startIndex} to ${endIndex})</pre><br>`;
+  var ranges = indextoAceRange(startIndex, endIndex);
+  errorOutput += `<pre>${type} error occured on line ${ranges[0]}:  ${error} \n\t (highlighting index ${startIndex} to ${endIndex})</pre><br>`;
+  appendAnnotation(error, startIndex, endIndex);
   highlightError(ranges[0], ranges[1], ranges[2], ranges[3]);
 }
-
 
 
 export function addBlockErrors(workspace){
@@ -48,34 +49,29 @@ export function addBlockErrors(workspace){
 
 export function sendRuntimeError(errormessage, blockjson){
   textError('runtime', errormessage, blockjson.startIndex, blockjson.endIndex);
-  if (typeof(blockjson.blockid !== 'undefined')){
-      blockErrorsBuffer[blockjson.blockid] = errormessage + '<br>';
-  }
+  // if (typeof(blockjson.blockid !== 'undefined')){
+      blockErrorsBuffer[blockjson.blockID] = errormessage + '<br>';
+  // }
+  appendAnnotation(`the variable \'${blockjson.name}\' is not recognized by the program. Perhaps you forgot to initialize it?`, blockjson.startIndex, blockjson.endIndex);
   console.log('here are the block errors');
   console.log(blockErrorsBuffer);
 }
 
 
 
-// needs tested
-// function highlightError( startRow, startColumn, endRow, endColumn) {
-//   var errorRange = new ace.Range(startRow, startColumn, endRow, endColumn);
-//   var errorText = "Error"; // The error message to display
+export function appendAnnotation(errorMessage, startindex, endindex) {
+  endindex = endindex ?? (0 < startindex ? textEditor.getValue().length - 1 : endindex);
+  var ranges = indextoAceRange(startindex, endindex);
+  var annotation = {
+    row: ranges[0] - 1, // no idea why the rows start with zero here but start with 1 everywhere else, but okay
+    column: ranges[1],
+    text: errorMessage,
+    type: "error"
+  };
+  annotationsBuffer.push(annotation);
+}
 
-//   // Create the annotation object
-//   var annotation = {
-//     row: errorRange.start.row,
-//     column: errorRange.start.column,
-//     text: errorText,
-//     type: "error"
-//   };
-
-//   // Add the annotation to the editor session
-//   textEditor.session.setAnnotations([annotation]);
-
-// }
-
-//this doesnt work
+// this doesnt work
 function highlightError( startRow, startColumn, endRow, endColumn) {
   var session = textEditor.session;
   var Range = ace.require('ace/range').Range;
@@ -95,7 +91,7 @@ function highlightError( startRow, startColumn, endRow, endColumn) {
   var styleElement = document.createElement('style');
   styleElement.appendChild(document.createTextNode(markerCss));
   document.head.appendChild(styleElement);
-
+  console.log('attempted to highlight');
   return markerId;
 }
 
@@ -109,34 +105,42 @@ function highlightError( startRow, startColumn, endRow, endColumn) {
 
 // Get the underlying DOM element of the Ace editor
 
-export const  indextoAceRange = (startindex, endindex) => {
+export const indextoAceRange = (startindex, endindex) => {
   let code = textEditor?.getValue();
   var startLine = 0;
   var startLineIndex = 0;
-  var endLine = 0; 
+  var endLine = 0;
   var endLineIndex = 0;
-  var currentLine = 1; 
+  var currentLine = 0; // Change to 0 to represent zero-based line numbers
   var currentLineIndex = 0;
-  for (let i = 0; i < code.length - 1; i++) {
-    if (i === startindex){
+
+  for (let i = 0; i < code.length; i++) { // Remove -1 from loop condition
+    if (i === startindex) {
       startLine = currentLine;
       startLineIndex = currentLineIndex;
     }
-    if (i === endindex){
-      endLineIndex = currentLineIndex;
+    if (i === endindex) {
       endLine = currentLine;
+      endLineIndex = currentLineIndex;
+      break; // Once endindex is found, exit the loop
     }
-    if (code[i] === '\n'){
-      currentLineIndex = 0;
+    if (code[i] === '\n') {
       currentLine += 1;
-    } else{
+      currentLineIndex = 0;
+    } else {
       currentLineIndex += 1;
     }
   }
-  var start = { row: startLine, column: startLineIndex};
-  var end = {row: endLine, column: endLineIndex};
-  return [startLine, startLineIndex, endLine, endLineIndex];
-}
+
+  // Add 1 to both row and column values to represent one-based line numbers and column numbers
+  var start = { row: startLine + 1, column: startLineIndex + 1 };
+  var end = { row: endLine + 1, column: endLineIndex + 1 };
+
+  console.log("Start:", start);
+  console.log("End:", end);
+
+  return [start.row, start.column, end.row, end.column];
+};
 
 
 
@@ -267,7 +271,10 @@ class Token {
             }
           } 
           else {
-            textError("lexing", 'looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.',commentStart, this.i);
+            appendAnnotation('looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.',commentStart, this.i);
+            this.i -= 1;
+            this.emit_token('comment');
+  
           }
           
         } else if (this.has("-")) {
@@ -370,7 +377,9 @@ class Token {
               
             }
             else {
-              textError("lexing", 'looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\' or \").',stringStart, this.i);
+              appendAnnotation( 'looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\' or \").',stringStart, this.i);
+              this.i -= 1;
+              this.emit_token("String");
             }
           } else if (this.has_letter()) {
             while (this.i < this.length && (this.has_letter() || this.has_digit())) {
@@ -390,33 +399,12 @@ class Token {
             } 
             else if (this.types.includes(this.token_so_far)) {
               this.emit_token('Type');  
-              
             }
-            // while (this.has(' ')){
-            //   //skip unnessecary spaces
-            //   this.skip();
-            // }
-            // if (this.has('(') && this.has_ahead(')')){
-            //   this.skip();
-            //   this.skip();
-            //   this.emit_token('function');
-            // }
 
             else if (this.has('(') || this.has_ahead('(')){
               this.emit_token('function');
             }
 
-            // if (this.has('(')){
-            //   this.skip();
-            //   this.emit_token('function');
-            //   while(this.hasNot(')')){
-            //     this.capture();
-            //   }
-            //   this.skip();
-            //   //TODO: lex function calls vs definitiosn with parameters
-            //   this.emit_token('params');
-              
-            // }
              else {
               if (this.token_so_far !== ''){
                 this.emit_token("Variable");
@@ -447,7 +435,7 @@ class Token {
             this.skip();
           } 
           else {
-            textError('lexing', `invalid character <b>\"${this.source[this.i] }\"</b>`, this.i, this.i);
+            appendAnnotation( `invalid character <b>\"${this.source[this.i] }\"</b>`, this.i, this.i);
 
             console.log("invalid character at index ", this.i);
             return 0;
@@ -519,7 +507,6 @@ class Parser {
     }
     return this.program();
     
-    // return this.boolean_operation();
   }
 
 
@@ -604,8 +591,8 @@ class Parser {
       if (this.has(")")) {
         this.advance();
       } else {
-        textError('parsing', 'did not detect closing parentheses', startIndex, endIndex);
-        console.log("did not detect closing parentheses");
+        appendAnnotation( 'did not detect closing parentheses', startIndex, endIndex);
+        // console.log("did not detect closing parentheses");
       }
       return expression;
 
@@ -1204,8 +1191,13 @@ statement() {
       }
       console.log ('here are the params');
       console.log(args);
+ 
       if(this.has(')')){
         this.advance();
+      } else {
+          console.error('missing closing parinthesees');
+          appendAnnotation("didnt detect closing parintheses in the arguments of  a function definition", this.tokens[this.i].startIndex, this.tokens[this.i].endIndex);
+    
       }
       result.params = args;
       result.endindex = this.tokens[this.i].endIndex;
@@ -1248,7 +1240,8 @@ statement() {
       console.log(args);
       result.params = args;
       if (this.hasNot(')')){
-        console.error('didnt detect closing parintheses in the arguments of  a function call');
+        appendAnnotation("didnt detect closing parintheses in the arguments of  a function call", this.tokens[this.i].startIndex, this.tokens[this.i].endIndex);
+        // console.error('didnt detect closing parintheses in the arguments of  a function call');
       }
       result.endIndex = this.tokens[this.i].endIndex;
       result.end = result.endIndex;
