@@ -263,12 +263,25 @@
       font-size: 30px;
     }
 
+    .toast {
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      padding: 15px;
+      background-color: #333;
+      color: #fff;
+      border-radius: 5px;
+      transform: translateX(-50%);
+    }
+    
 
 
 
 
   </style>
-  <script type="module" crossorigin src="/praxly/assets/index-37e5e922.js"></script>
+  <div id="toast" class="toast">URL copied to clipboard</div>
+  <script type="module" crossorigin src="/praxly/assets/index-0a58de3d.js"></script>
   <link rel="stylesheet" href="/praxly/assets/index-63e4e76c.css">
 </head>
 <body>
@@ -291,7 +304,7 @@
           <span class="button-text">Dark Mode</span>
         </button>
       </li>
-      <li><button id="blockUpdates">Block Updates: On Save</button></li>
+      <li><button id="blockUpdates">Load</button></li>
       <li class="dropdown">
         <a href="#">About</a>
         <div class="dropdown-content">
@@ -301,6 +314,8 @@
       </li>
     </ul>
   </header>
+  
+
 
   <main>
     <div id="blocklyDiv"></div>
