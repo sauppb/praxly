@@ -627,6 +627,43 @@ class Parser {
         end: endIndex 
         
       };
+
+    } else if (this.has('function')){
+        let result = {
+          blockID: 'code', 
+          startIndex: startIndex, 
+          endIndex: endIndex, 
+          beg: startIndex
+        };
+        result.type = 'FUNCTION_CALL';
+        result.name = this.tokens[this.i].value;
+        this.advance();
+        var args = [];
+        if (this.has('(')){
+          this.advance();
+          var loopBreak = 0;
+          while (this.hasNot(')') &&  loopBreak < maxLoop) {
+            // this.advance();
+            var param = this.boolean_operation();
+            args.push(param);
+            if (this.has(',')) {
+              this.advance();
+              
+            }
+            loopBreak++;
+          }
+          console.log('here are the function call params:');
+          console.log(args);
+          result.params = args;
+          if (this.hasNot(')')){
+            appendAnnotation("didnt detect closing parintheses in the arguments of  a function call", this.tokens[this.i].startIndex, this.tokens[this.i].endIndex);
+            // console.error('didnt detect closing parintheses in the arguments of  a function call');
+          }
+          result.endIndex = this.tokens[this.i].endIndex;
+          result.end = result.endIndex;
+          this.advance();
+          return result;
+        }
       
     }else if (this.has("\n")){
       // this.advance();
@@ -1237,40 +1274,43 @@ statement() {
     this.advance();
     return result;
   }
-  else if (this.has('function')){
-    result.type = 'FUNCTION_CALL';
-    result.name = this.tokens[this.i].value;
-    this.advance();
-    var args = [];
-    if (this.has('(')){
-      this.advance();
-      var loopBreak = 0;
-      while (this.hasNot(')') &&  loopBreak < maxLoop) {
-        // this.advance();
-        var param = this.boolean_operation();
-        args.push(param);
-        if (this.has(',')) {
-          this.advance();
+  //this will need ot be moved to the atom precidence methinks. 
+  // else if (this.has('function')){
+  //   result.type = 'FUNCTION_CALL';
+  //   result.name = this.tokens[this.i].value;
+  //   this.advance();
+  //   var args = [];
+  //   if (this.has('(')){
+  //     this.advance();
+  //     var loopBreak = 0;
+  //     while (this.hasNot(')') &&  loopBreak < maxLoop) {
+  //       // this.advance();
+  //       var param = this.boolean_operation();
+  //       args.push(param);
+  //       if (this.has(',')) {
+  //         this.advance();
           
-        }
-        loopBreak++;
-      }
-      console.log('here are the function call params:');
-      console.log(args);
-      result.params = args;
-      if (this.hasNot(')')){
-        appendAnnotation("didnt detect closing parintheses in the arguments of  a function call", this.tokens[this.i].startIndex, this.tokens[this.i].endIndex);
-        // console.error('didnt detect closing parintheses in the arguments of  a function call');
-      }
-      result.endIndex = this.tokens[this.i].endIndex;
-      result.end = result.endIndex;
-      this.advance();
-      return result;
-    }
-  }
-  // else if (this.has('/n')){
-  //   return;
+  //       }
+  //       loopBreak++;
+  //     }
+  //     console.log('here are the function call params:');
+  //     console.log(args);
+  //     result.params = args;
+  //     if (this.hasNot(')')){
+  //       appendAnnotation("didnt detect closing parintheses in the arguments of  a function call", this.tokens[this.i].startIndex, this.tokens[this.i].endIndex);
+  //       // console.error('didnt detect closing parintheses in the arguments of  a function call');
+  //     }
+  //     result.endIndex = this.tokens[this.i].endIndex;
+  //     result.end = result.endIndex;
+  //     this.advance();
+  //     return result;
+  //   }
   // }
+  // expressions can be statements too, might cause bugs
+  else if (this.has('/n')){
+
+    return;
+  }
 
   else {
     // console.log(`the current token is ${this.tokens[this.i].token_type} and the next one is ${this.tokens[this.i + 1].token_type}`)

@@ -33,7 +33,7 @@ export const workspace = Blockly.inject('blocklyDiv', {
 const runButton = document.getElementById('runButton');
 const shareButton = document.getElementById('share');
 const darkModeButton = document.getElementById('darkMode');
-const blockUpdatesButton = document.getElementById('blockUpdates');
+// const blockUpdatesButton = document.getElementById('blockUpdates');
 const resizeBar = document.querySelector('.resizeBar');
 const leftPane = document.querySelector('#blocklyDiv');
 const rightPane = document.querySelector('#aceCode');
@@ -49,7 +49,7 @@ let isResizing = false;
 runButton.addEventListener('mouseup', runTasks);
 darkModeButton.addEventListener('click', ()=> {darkMode ? setLight() : setDark();});
 definePraxlyBlocks(workspace);
-blockUpdatesButton.innerText = 'block updates: live ';
+// blockUpdatesButton.innerText = 'block updates: live ';
 workspace.addChangeListener( turnBlocksToCode); 
 textEditor.addEventListener("input", turnCodeToBLocks);
 

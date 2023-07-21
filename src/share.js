@@ -9,11 +9,30 @@ export function generateUrl() {
     console.log(encoded);
     window.location.hash = ''; //this should clear it before repalcing it
     window.location.hash = `code=${encoded}`
-    saveToLocal()
+    saveToLocal();
     // encode
     // encodeURIComponent is the function we use by default
     //update the url
     //future: automatically copy to clipboard
+    // const dummyInput = document.createElement('input');
+    // document.body.appendChild(dummyInput);
+    // dummyInput.value = url;
+    // dummyInput.select();
+    // document.execCommand('copy');
+    // document.body.removeChild(dummyInput);
+    var dummy = document.createElement('input'),
+    text = window.location.href;
+
+    document.body.appendChild(dummy);
+    dummy.value = text;
+    dummy.select();
+    document.execCommand('copy');
+    document.body.removeChild(dummy);
+    const toast = document.getElementById('toast');
+    toast.style.display = 'block';
+    setTimeout(function() {
+    toast.style.display = 'none';
+  }, 3000); // Hide the toast after 3 seconds (adjust as needed)
 
 }
 

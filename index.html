@@ -263,11 +263,24 @@
       font-size: 30px;
     }
 
+    .toast {
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      padding: 15px;
+      background-color: #333;
+      color: #fff;
+      border-radius: 5px;
+      transform: translateX(-50%);
+    }
+    
 
 
 
 
   </style>
+  <div id="toast" class="toast">URL copied to clipboard</div>
 </head>
 <body>
   <header class="nav-bar">
@@ -289,7 +302,7 @@
           <span class="button-text">Dark Mode</span>
         </button>
       </li>
-      <li><button id="blockUpdates">Block Updates: On Save</button></li>
+      <li><button id="blockUpdates">Load</button></li>
       <li class="dropdown">
         <a href="#">About</a>
         <div class="dropdown-content">
@@ -299,6 +312,8 @@
       </li>
     </ul>
   </header>
+  
+
 
   <main>
     <div id="blocklyDiv"></div>

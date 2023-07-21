@@ -205,7 +205,9 @@ export const createExecutable = (blockjson) => {
                 args.push(createExecutable(arg));
             });
             return new Praxly_function_call(blockjson.name, args, blockjson);
-        
+        case 'RETURN':
+            return new Praxly_return(createExecutable(blockjson.value), blockjson);
+
 
         default: 
         
@@ -300,9 +302,23 @@ class Praxly_print {
         this.expression = value;
     }
     evaluate(environment) {
-        
+        // console.log(this.expression.evaluate(environment));
         addToPrintBuffer((this.expression.evaluate(environment).value.toString()) + '<br>');
         return null;
+    }
+}
+
+
+class Praxly_return {
+      
+    constructor(value  , blockjson){
+        this.json = blockjson;
+        this.expression = value;
+        this.isreturn = true;
+    }
+    evaluate(environment) {
+        // console.log(this.expression.evaluate(environment));
+        return this.expression.evaluate(environment);
     }
 }
 
@@ -652,16 +668,22 @@ class Praxly_codeBlock {
         console.log(this.praxly_blocks);
     }
     evaluate(environment) {
-        this.praxly_blocks.forEach(element => {
-            // try{
-                element.evaluate(environment);
-            // } catch (error)  {
-            //     console.error('An error occurred: empty statement', error);
-            // }
-            
-        });
+        // let exitLoop = false;
+      
+        for (let i = 0; i < this.praxly_blocks.length; i++) {
+          const element = this.praxly_blocks[i];
+        
+          //aborts if it detects a return statement. Hopefully this doesn't cause problems later ahaha
+          if (element?.isreturn) {
+            return element.evaluate(environment);       
+        } else {
+            element.evaluate(environment);
+        }
+        }
+      
         return "Exit_Success";
-    }
+      }
+
 }
 
 
@@ -676,26 +698,28 @@ class Praxly_assignment {
     }
     evaluate(environment) {
         // if it is a reassignment, the variable must be in the list and have a matching type. 
+        let valueEvaluated = this.value.evaluate(environment);
         if (this.type === "reassignment"){
+            let currentStoredVariableEvaluated = environment.variableList[this.name].evaluate(environment);
             // console.log(variableList);
             if (!environment.variableList.hasOwnProperty(this.name)){
                 console.error(`Error: variable name ${this.name} not in the variablelist: \n ${environment.variableList}`);
             }
     
-            if (environment.variableList[this.name].evaluate(environment).jsonType !== this.value.evaluate(environment).jsonType){
+            if (currentStoredVariableEvaluated.jsonType !== valueEvaluated.jsonType){
                 sendRuntimeError(`Error: varible reassignment does not match declared type: \n\t Expected:`
-                + `${environment.variableList[this.name].evaluate(environment).jsonType.slice(7)}, \n\t Actual: ${this.value.evaluate(environment).jsonType.slice(7)}`, this.json);
+                + `${currentStoredVariableEvaluated.jsonType.slice(7)}, \n\t Actual: ${valueEvaluated.jsonType.slice(7)}`, this.json);
                 console.error("Error: varible reassignment does not match declared type:");
             }
           
         } else {
-            if (this.value.evaluate(environment).jsonType !== this.type){
-                console.error(`Error: varible assignment does not match declared type:\n expression type: ${environment.variableList[this.name].evaluate(environment).jsonType} \n type: ${type}`);
+            if (valueEvaluated.jsonType !== this.type){
+                console.error(`Error: varible assignment does not match declared type:\n expression type: ${currentStoredVariableEvaluated.jsonType} \n type: ${type}`);
             }
             // environment.variableList[this.name] = this.expression;
                   
         }
-        environment.variableList[this.name] = this.value.evaluate(environment);
+        environment.variableList[this.name] = valueEvaluated;
     }
 }
 
@@ -823,24 +847,29 @@ class Praxly_function_call {
     evaluate(environment){
         var functionParams = environment.functionList[this.name].params;
         var functionContents = environment.functionList[this.name].contents;
+        var returnType = environment.functionList[this.name].returnType;
         if (functionParams.length !== this.args.length){
             sendRuntimeError(`incorrect amount of arguments passed, expected ${functionParams.length}, was ${this.args.length}`, this.json);
             console.log(`incorrect amount of arguments passed, expected ${functionParams.length}, was ${this.args.length}`);
             return new Praxly_invalid();
         }
-        var newScope = JSON.parse(JSON.stringify(environment));
         // copy the new parameters to the duplicate of the global scope
+        var newScope = JSON.parse(JSON.stringify(environment));
         for (let i = 0; i < this.args.length; i++){
             let parameterName = functionParams[i][1];
             let parameterType = functionParams[i][0];
             let argument = this.args[i];
             //TODO: typecheck
-            newScope.variableList[parameterName] = argument;
+            newScope.variableList[parameterName] = argument.evaluate(environment);
         }
         console.log(`here is the new scope in the function named ${this.name}`);
         console.log(newScope);
         let result = functionContents.evaluate(newScope);
         //TODO: tpyecheck that it matches the returnType
+        if ((result === "Exit_Success" && returnType !== 'void') || (returnType !== (result?.jsonType?.slice(7) ?? "void"))){
+            sendRuntimeError(`this function has an invalid return type.\n\t Expected: ${returnType}\n\t Actual: ${result?.jsonType?.slice(7) ?? "void"} `, this.json);
+            console.error(`invalid return type: ${returnType} `);
+        }
         return result;
     }
 }
