@@ -701,6 +701,18 @@ export const toolbox = {
               }, 
               {
                 'kind': 'block',
+                'type': 'praxly_function_call_block',
+                'inputs': {
+                  'PARAMS':{
+                    'shadow': {
+                      'type': 'praxly_parameter_block', 
+                    }
+                  }
+                  
+                }
+              }, 
+              {
+                'kind': 'block',
                 'type': 'praxly_return_block'
               },
               {

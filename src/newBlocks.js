@@ -500,6 +500,30 @@ export function definePraxlyBlocks(workspace) {
             "helpUrl": "",
             "onchange": "updateProcedureName"
           },
+          {
+            "type": "praxly_function_call_block",
+            "message0": "%1 (%2)",
+            "args0": [
+             
+              {
+                "type": "field_input",
+                "name": "PROCEDURE_NAME",
+                "text": "procedureName"
+              },
+              {
+                "type": "input_value",
+                "name": "PARAMS",
+                "text": "params"
+              },
+            
+            ],
+            "inputsInline": true,
+            "output": null,
+            "style": "procedure_blocks",
+            "tooltip": "test",
+            "helpUrl": "",
+            "onchange": "updateProcedureName"
+          },
     {
 "type": "praxly_assignment_block",
 "message0": "%1%2 = %3 %4",
