@@ -198,7 +198,49 @@ export const tree2blocks = (workspace, blockjson) => {
             var child = tree2blocks(workspace, blockjson?.value);
             result.getInput('EXPRESSION').connection.connect(child?.outputConnection);
             break;
-             
+            
+        case 'RETURN':
+            var result = workspace.newBlock('praxly_return_block');
+            var child = tree2blocks(workspace, blockjson?.value);
+            result.getInput('EXPRESSION').connection.connect(child?.outputConnection);
+            break;
+
+        case 'FUNCTION_CALL':
+            var result = workspace.newBlock('praxly_function_call_block');
+            var params = workspace.newBlock('praxly_parameter_block');
+            result.setFieldValue(blockjson?.name, 'PROCEDURE_NAME');
+            
+            result.getInput('PARAMS').connection.connect(params?.outputConnection);
+            var argsList = blockjson?.params;
+            for (var i = 0; i < ( argsList?.length ?? 0); i++){
+                params.appendValueInput(`PARAM_${i}`);
+                var argument = tree2blocks(workspace, argsList[i]);
+                params.getInput(`PARAM_${i}`).connection.connect(argument?.outputConnection);
+            }
+
+            params.initSvg();
+            break;
+
+        case 'FUNCTION_ASSIGNMENT':
+            var argsList = blockjson?.params;
+            var result = workspace.newBlock('praxly_procedure_block');
+            var params = workspace.newBlock('praxly_parameter_block');
+            result.setFieldValue(blockjson?.name, 'PROCEDURE_NAME');
+            result.setFieldValue(blockjson?.name, 'END_PROCEDURE_NAME');
+            result.getInput('PARAMS').connection.connect(params?.outputConnection);
+            var contents = tree2blocks(workspace, blockjson?.contents);
+            result.getInput('CONTENTS').connection.connect(contents[0]?.previousConnection);
+            for (var i = 0; i < ( argsList?.length ?? 0); i++){
+                params.appendValueInput(`PARAM_${i}`);
+                var parameterBlock = workspace.newBlock('praxly_singular_param_block');
+                parameterBlock.setFieldValue(argsList[i][0], "VARTYPE"); 
+                parameterBlock.setFieldValue( argsList[i][1], 'VARIABLENAME');
+                params.getInput(`PARAM_${i}`).connection.connect(parameterBlock?.outputConnection);
+                parameterBlock.initSvg();
+            }
+            params.initSvg();
+            break;
+            
         case 'FOR':
 
             var result = workspace.newBlock('praxly_for_loop_block');

@@ -692,7 +692,7 @@ export const toolbox = {
                 'type': 'praxly_procedure_block',
                 'inputs': {
                   'PARAMS':{
-                    'shadow': {
+                    'block': {
                       'type': 'praxly_parameter_block', 
                     }
                   }
@@ -704,7 +704,7 @@ export const toolbox = {
                 'type': 'praxly_function_call_block',
                 'inputs': {
                   'PARAMS':{
-                    'shadow': {
+                    'block': {
                       'type': 'praxly_parameter_block', 
                     }
                   }
@@ -728,6 +728,10 @@ export const toolbox = {
                     },
                   }, 
                 }
+              },
+              {
+                'kind': 'block',
+                'type': 'praxly_singular_param_block'
               },
 
 

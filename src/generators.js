@@ -312,20 +312,58 @@ export const makeGenerator = () => {
     praxlyGenerator['praxly_procedure_block'] = (block)=> {
         var returnType = block.getFieldValue('RETURNTYPE');
         // console.log(`field input is ${varType}`);
-        var args = block.getFieldValue('PARAMS');
-        var variableName = block.getFieldValue('prodecureName');
-        const statements = block.getInputTargetBlock("CODEBLOCK"); 
+        var args = block.getInputTargetBlock('PARAMS');
+        var argschildren = args.getChildren(true);
+        var argsList = [];
+        argschildren.forEach(element => {
+            var param = [];
+            param[0] = (element.getFieldValue('VARTYPE'));
+            param[1] = element.getFieldValue('VARIABLENAME');
+            argsList.push(param);
+        });
+        var procedureName = block.getFieldValue('PROCEDURE_NAME');
+        const statements = block.getInputTargetBlock("CONTENTS"); 
+        block.setFieldValue(procedureName, 'END_PROCEDURE_NAME');
+
         
         return {
             type: 'FUNCTION_ASSIGNMENT', 
-            name: variableName, 
+            name: procedureName, 
+            params: argsList,
             returnType: returnType,
-            value: statements, 
+            contents: statements, 
             blockID: block.id, 
-            varType: 'Praxly_' + varType,
+            
 
         }
     }
+
+    praxlyGenerator['praxly_function_call_block'] = (block) => {
+        var procedureName = block.getFieldValue('PROCEDURE_NAME');
+        var args = block.getInputTargetBlock('PARAMS');
+        var argschildren = args.getChildren(true);
+        var argsList = [];
+        argschildren.forEach(element => {
+            
+            argsList.push(praxlyGenerator[element.type](element));
+        });
+        return {
+            blockID: block.id, 
+            type: 'FUNCTION_ASSIGNMENT', 
+            name: procedureName, 
+            params: argsList, 
+        }
+    }
+
+    praxlyGenerator['praxly_return_block'] = (block) => {
+        const expression = block.getInputTargetBlock('EXPRESSION'); 
+        return {
+            blockID: block.id,
+            type: 'RETURN', 
+            value: praxlyGenerator[expression.type](expression),
+        }
+    }
+
 
     return praxlyGenerator;
 }

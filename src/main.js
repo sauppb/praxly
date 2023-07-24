@@ -24,10 +24,19 @@ import { generateUrl, loadFromUrl } from './share';
 const praxlyGenerator = makeGenerator();
 export const workspace = Blockly.inject('blocklyDiv', {
   toolbox: toolbox,
-  scrollbars: false,
+  // scrollbars: false,
   horizontalLayout: false,
   toolboxPosition: "start",
   theme: praxlyDefaultTheme,
+  zoom:
+         {controls: true,
+          wheel: true,
+          startScale: 1.0,
+          maxScale: 3,
+          minScale: 0.3,
+          scaleSpeed: 1.2,
+          pinch: true},
+
   renderer: 'zelos'
 });
 const runButton = document.getElementById('runButton');
@@ -255,3 +264,6 @@ editorElement.addEventListener("keydown", function(event) {
 shareButton.addEventListener('click', generateUrl);
 
 loadFromUrl(turnCodeToBLocks);
+
+
+

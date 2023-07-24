@@ -15,17 +15,19 @@ export function definePraxlyBlocks(workspace) {
       this.params = state.params || [];
       for (let i = 0; i < this.params.length; i++) {
         this.appendValueInput(`PARAM_${i}`);
+ 
       }
     }
   };
 
   //this doesnt work
-  function appendparameter(id, str){
-    const oldblock = workspace.getBlockById(id);
-    var newblock = workspace.newBlock('praxly_literal_block');
-    oldblock.getInput(str).connection.connect(newblock.outputConnection);
-    newblock.initSvg();
-  }
+  // function appendparameter(str){
+  //   // const oldblock = workspace.getBlockById(id);
+  //   var newblock = workspace.newBlock('praxly_literal_block');
+  //   this.getInput(str).connection.connect(newblock.outputConnection);
+  //   newblock.initSvg();
+
+  // }
   
   Blockly.Extensions.registerMutator('praxly_arity', callbacks);
   
@@ -38,11 +40,14 @@ export function definePraxlyBlocks(workspace) {
       const paramCount = this.params.length;
       let inputname = `PARAM_${paramCount}`;
       let blockid = this.id;
-      let newinput = this.appendValueInput(`PARAM_${paramCount}`);
-      setTimeout(() => {
-        // appendparameter(blockid, inputname);
-      }, 0);
-      this.params.push(`PARAM_${paramCount}`);
+      let newinput = this.appendValueInput(inputname);
+      
+      
+      // var newblock = workspace.newBlock('praxly_literal_block');
+      // inputname.connection.connect(newblock.outputConnection);
+      // newblock.initSvg();
+      
+      this.params.push(inputname);
     });
   
     minusButton.setOnClickHandler(() => {
@@ -615,7 +620,7 @@ export function definePraxlyBlocks(workspace) {
       "args0": [
         {
           "type": "input_value",
-          "name": "NAME"
+          "name": "EXPRESSION"
         }
       ],
       "inputsInline": true,
