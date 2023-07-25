@@ -331,7 +331,7 @@ export const makeGenerator = () => {
             name: procedureName, 
             params: argsList,
             returnType: returnType,
-            contents: statements, 
+            contents: praxlyGenerator['codeBLockJsonBuilder'](statements), 
             blockID: block.id, 
             
 
@@ -349,7 +349,7 @@ export const makeGenerator = () => {
         });
         return {
             blockID: block.id, 
-            type: 'FUNCTION_ASSIGNMENT', 
+            type: 'FUNCTION_CALL', 
             name: procedureName, 
             params: argsList, 
         }

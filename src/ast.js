@@ -148,7 +148,7 @@ export const createExecutable = (blockjson) => {
             catch (error) {
                 sendRuntimeError('assignment error', blockjson);
                 // console.error('assignment error: ', error);
-                return null;
+                return;
             }
         case 'FOR':
             try{
@@ -714,7 +714,8 @@ class Praxly_assignment {
           
         } else {
             if (valueEvaluated.jsonType !== this.type){
-                console.error(`Error: varible assignment does not match declared type:\n expression type: ${currentStoredVariableEvaluated.jsonType} \n type: ${type}`);
+                
+                sendRuntimeError(`varible assignment does not match declared type:\n\texpected type: ${this.type.slice(7)} \n\texpression type: ${valueEvaluated.jsonType}`, this.json);
             }
             // environment.variableList[this.name] = this.expression;
                   
@@ -730,7 +731,7 @@ class Praxly_variable {
     }
     evaluate(environment){
         if (!environment.variableList.hasOwnProperty(this.name)){
-            sendRuntimeError(`the variable \'${this.name}\' is not recognized by the program. Perhaps you forgot to initialize it?`, this.json);
+            sendRuntimeError(`the variable \'${this.name}\' is not recognized by the program. \n\tPerhaps you forgot to initialize it?`, this.json);
             return new Praxly_invalid();
         }
         return environment.variableList[this.name];
