@@ -437,6 +437,26 @@ export function definePraxlyBlocks(workspace) {
             "helpUrl": ""
           }, 
           {
+            "type": "praxly_single_line_comment_block",
+            "message0": "// %1 %2",
+            "args0": [
+              {
+                "type": "input_dummy"
+              },
+              {
+                "type": "field_input",
+                "name": "COMMENT",
+                "text": "comment"
+              }
+            ],
+            "inputsInline": true,
+            "previousStatement": null,
+            "nextStatement": null,
+            "style": 'comment_blocks',
+            "tooltip": "",
+            "helpUrl": ""
+          }, 
+          {
             "type": "praxly_class_block",
             "message0": "class %1 %2 end class",
             "args0": [

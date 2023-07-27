@@ -32,11 +32,11 @@ export function clearOutput() {
 
 export function textError(type, error, startIndex, endIndex){
   
-  // if (endIndex ?? 0  < startIndex){
-  //   console.error('invalid index for error');
+  if (endIndex ?? 0  < startIndex){
+    console.error('invalid index for error');
 
-  //   endIndex = textEditor?.getValue().length - 1;
-  // }
+    endIndex = textEditor?.getValue().length - 1;
+  }
 
   var ranges = indextoAceRange(startIndex, endIndex);
   errorOutput += `<pre>${type} error occured on line ${ranges[0]}:  ${error} \n\t (highlighting index ${startIndex} to ${endIndex})</pre>`;
@@ -129,6 +129,7 @@ function highlightError(startRow, startColumn, endRow, endColumn) {
 
 export const indextoAceRange = (startindex, endindex) => {
   let code = textEditor?.getValue();
+  console.log(`the length is ${code.length} and the endIndex is ${endindex}`);
   var startLine = 0;
   var startLineIndex = 0;
   var endLine = 0;
@@ -344,6 +345,12 @@ class Token {
          } else if (this.has("≠")) {
             this.capture();
             this.emit_token("Not_Equal");
+         } else if (this.has('/') && this.has_ahead('/')){
+          while(this.hasNot('\n')){
+            this.capture();
+          }
+          this.emit_token("single_line_comment");
+
         } else if (this.has("/")) {
             this.capture();
             this.emit_token("DIVIDE");
@@ -404,7 +411,7 @@ class Token {
               
             }
             else {
-              textError('lexing', 'looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\' or \").',stringStart, this.i );
+              textError('lexing', 'looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\' or \").',stringStart, this.i - 1);
               this.i -= 1;
               this.emit_token();
             }
@@ -428,7 +435,7 @@ class Token {
               this.emit_token('Type');  
             }
 
-            else if (this.has('(') || this.has_ahead('(')){
+            else if (this.has('(') || this.has_ahead(')')){
               this.emit_token('function');
             }
 
@@ -462,7 +469,7 @@ class Token {
             this.skip();
           } 
           else {
-            textError('lexing',  `invalid character \"${this.source[this.i] }\"`, this.i- 1, this.i);
+            textError('lexing',  `invalid character \"${this.source[this.i] }\"`, this.i, this.i + 1);
 
             console.log("invalid character at index ", this.i);
             return 0;
@@ -667,8 +674,8 @@ class Parser {
             appendAnnotation("didnt detect closing parintheses in the arguments of  a function call", this.tokens[this.i].startIndex, this.tokens[this.i].endIndex);
             // console.error('didnt detect closing parintheses in the arguments of  a function call');
           }
-          result.endIndex = this.tokens[this.i].endIndex;
-          result.end = result.endIndex;
+          result.endIndex = this.tokens[this.i]?.endIndex;
+          result.end = result?.endIndex;
           this.advance();
           return result;
         }
@@ -1186,7 +1193,14 @@ statement() {
     result.end = result.endIndex;
     return result;
   
+  } else if (this.has('single_line_comment')){
+    result.type = 'SINGLE_LINE_COMMENT', 
+    result.value = this.tokens[this.i].value;
+    result.end = result.endIndex;
+    return result;
+  
   }
+  
   else if (this.has_type() && this.has_ahead('Variable')){
       var returnType = 'Praxly_' + this.tokens[this.i].value;
       this.advance();
@@ -1279,7 +1293,7 @@ statement() {
       return result;
     }
     result.contents = contents;
-    result.end = this.tokens[this.i].endIndex;
+    result.end = this.tokens[this.i]?.endIndex;
     this.advance();
     return result;
   }

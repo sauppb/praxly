@@ -56,7 +56,32 @@ export const tree2text = (blockjson, startIndex, indentation) => {
             catch (error){
                 return " ";
             }
-        
+        case 'COMMENT':
+            try {
+                var result = '/*' + blockjson.value + '*/';
+                blockjson.startIndex = startIndex;
+                blockjson.endIndex = startIndex + result.length;
+                blockjson.beg = startIndex;
+                blockjson.end = startIndex + result.length;
+                return  result;
+                
+            }
+            catch (error){
+                return " ";
+            }
+        case 'SINGLE_LINE_COMMENT':
+            try {
+                var result = '// ' + blockjson.value;
+                blockjson.startIndex = startIndex;
+                blockjson.endIndex = startIndex + result.length;
+                blockjson.beg = startIndex;
+                blockjson.end = startIndex + result.length;
+                return  result;
+                
+            }
+            catch (error){
+                return " ";
+            }
         case 'ADD':
             blockjson.beg = startIndex;
             var a_operand = tree2text(blockjson.left, startIndex, indentation);
@@ -264,9 +289,9 @@ export const tree2text = (blockjson, startIndex, indentation) => {
                 try {
                     blockjson.beg = startIndex;
                     var varname = blockjson.varType.toString().substring(7) + ' ' + blockjson.name.toString();
-                    blockjson.startIndex = startIndex + varname.length;
+                    blockjson.startIndex = startIndex + varname.length + 1;
                     var operator = ' = ';
-                    blockjson.endIndex = blockjson.startIndex + operator.length;
+                    blockjson.endIndex = blockjson.startIndex + 1;
                     var expression = tree2text(blockjson.value, blockjson.endIndex, indentation) + '\n';
                     blockjson.end = blockjson.endIndex + expression.length;
                     return '\t'.repeat(indentation) + varname + operator + expression;

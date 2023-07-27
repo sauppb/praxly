@@ -196,6 +196,8 @@ export const createExecutable = (blockjson) => {
             return new Praxly_not(createExecutable(blockjson.value), blockjson);
         case 'COMMENT':
             return  new Praxly_comment(blockjson.value, blockjson);
+        case 'SINGLE_LINE_COMMENT':
+            return  new Praxly_single_line_comment(blockjson.value, blockjson);
         case 'FUNCTION_ASSIGNMENT':
             var contents = createExecutable(blockjson.contents);
             return new Praxly_function_assignment(blockjson.returnType, blockjson.name, blockjson.params, contents, blockjson);
@@ -213,6 +215,18 @@ export const createExecutable = (blockjson) => {
         
             
 
+    }
+}
+
+class Praxly_single_line_comment {
+    constructor(value, blockjson){
+        this.jsonType = 'Praxly_single_line_comment';
+        this.json = blockjson;
+        this.value = value;
+    }
+
+    evaluate(environment) {
+        return;
     }
 }
 

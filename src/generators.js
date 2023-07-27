@@ -159,6 +159,13 @@ export const makeGenerator = () => {
         };
     }
 
+    praxlyGenerator['praxly_single_line_comment_block'] = (block) => {
+        return {
+            blockID: block.id,
+            value: block.getFieldValue('COMMENT'),
+            type: "SINGLE_LINE_COMMENT",
+        };
+    }
     
     praxlyGenerator['praxly_if_block'] = (block) => {
         const condition = block.getInputTargetBlock("CONDITION");

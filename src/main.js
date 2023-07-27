@@ -42,6 +42,7 @@ export const workspace = Blockly.inject('blocklyDiv', {
 const runButton = document.getElementById('runButton');
 const shareButton = document.getElementById('share');
 const darkModeButton = document.getElementById('darkMode');
+const reportIssueButton = document.getElementById('reportBtn')
 // const blockUpdatesButton = document.getElementById('blockUpdates');
 const resizeBar = document.querySelector('.resizeBar');
 const leftPane = document.querySelector('#blocklyDiv');
@@ -72,6 +73,10 @@ document.addEventListener('mouseup', function(e) {
   document.removeEventListener('mousemove', resizeHandler);
   Blockly.svgResize(workspace);
   textEditor.resize();
+});
+reportIssueButton.addEventListener('click', function() {
+  var linkUrl = 'BugsList.html';
+  window.open(linkUrl, '_blank');
 });
 
 // these make it so that the blocks and text take turns. 

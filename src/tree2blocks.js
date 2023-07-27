@@ -43,6 +43,11 @@ export const tree2blocks = (workspace, blockjson) => {
             var result = workspace.newBlock('praxly_comment_block');
             result.setFieldValue(blockjson.value, "COMMENT");
             break;     
+        case 'SINGLE_LINE_COMMENT':
+            var result = workspace.newBlock('praxly_single_line_comment_block');
+            result.setFieldValue(blockjson.value, "COMMENT");
+            break;     
+
 
         case 'INT':
             var result = workspace.newBlock('praxly_literal_block');
