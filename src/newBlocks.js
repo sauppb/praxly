@@ -849,7 +849,7 @@ export function definePraxlyBlocks(workspace) {
                   "args0": [
                     {
                       'type': 'field_image', 
-                      'src': 'images/white-plus-icon-14.jpg', 
+                      'src': 'https://cdn.icon-icons.com/icons2/2036/PNG/512/plus_button_add_insert_icon_124187.png', 
                       'name': 'PLUS_BUTTON',
                       'width': 19, 
                       'height': 19, 
@@ -863,10 +863,10 @@ export function definePraxlyBlocks(workspace) {
                     // },
                     {
                       'type': 'field_image', 
-                      'src': 'images/minus.png', 
+                      'src': 'https://cdn.icon-icons.com/icons2/1946/PNG/512/1904666-calculate-close-delete-hide-minimize-minus-remove_122516.png', 
                       'name': 'MINUS_BUTTON',
-                      'width': 15, 
-                      'height': 15, 
+                      'width': 19, 
+                      'height': 19, 
                       'alt': '*', 
                       
                     },
