@@ -867,7 +867,7 @@ export function definePraxlyBlocks(workspace) {
                   "args0": [
                     {
                       'type': 'field_image', 
-                      'src': 'https://cdn.icon-icons.com/icons2/2036/PNG/512/plus_button_add_insert_icon_124187.png', 
+                      'src': 'https://iconsplace.com/wp-content/uploads/_icons/ffffff/256/png/plus-icon-18-256.png', 
                       'name': 'PLUS_BUTTON',
                       'width': 19, 
                       'height': 19, 
@@ -881,7 +881,7 @@ export function definePraxlyBlocks(workspace) {
                     // },
                     {
                       'type': 'field_image', 
-                      'src': 'https://cdn.icon-icons.com/icons2/1946/PNG/512/1904666-calculate-close-delete-hide-minimize-minus-remove_122516.png', 
+                      'src': 'https://iconsplace.com/wp-content/uploads/_icons/ffffff/256/png/minus-icon-256.png', 
                       'name': 'MINUS_BUTTON',
                       'width': 19, 
                       'height': 19, 
@@ -890,7 +890,7 @@ export function definePraxlyBlocks(workspace) {
                     },
                     ],
                   "output": null,
-                  "style": 'expression_blocks',
+                  "style": 'parameter_blocks',
                   "tooltip": "",
                   "helpUrl": "", 
                   'mutator': 'praxly_arity',
@@ -944,7 +944,7 @@ export function definePraxlyBlocks(workspace) {
                   ],
                         "inputsInline": true,
                         "output": null,
-                        "style": 'variable_blocks',
+                        "style": 'parameter_blocks',
                         "tooltip": "",
                         "helpUrl": ""
                       }, 
