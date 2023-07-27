@@ -384,6 +384,11 @@ export const toolbox = {
               },
               {
                 'kind': 'block',
+                'type': 'praxly_statement_block'
+              },
+
+              {
+                'kind': 'block',
                 'type': 'praxly_singular_param_block'
               },
 

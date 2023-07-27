@@ -232,7 +232,13 @@ export const tree2text = (blockjson, startIndex, indentation) => {
         case 'PROGRAM': 
             return tree2text(blockjson.value, startIndex, indentation);   
         case 'STATEMENT':
-            return  tree2text(blockjson.value, startIndex, indentation);
+            blockjson.beg = startIndex;
+            blockjson.startIndex = startIndex; // - indentation???????
+            var result = '\t'.repeat(indentation);
+            blockjson.endIndex = startIndex + result.length;
+            var expression = tree2text(blockjson.value, blockjson.endIndex, indentation) + '\n';
+            blockjson.end = blockjson.endIndex + expression.length;
+            return result + expression;
         case 'CODEBLOCK':
             var statements = blockjson.statements.map(element => {
                 try {

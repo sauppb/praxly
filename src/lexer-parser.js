@@ -191,7 +191,7 @@ class Token {
   
   class Lexer {
     constructor(source) {
-      if (source[source?.length - 1] !== '\n'){
+      if (source?.length > 0 && source[source?.length - 1] !== '\n'){
         source += "\n";
       } 
       this.source = source;
@@ -1166,6 +1166,9 @@ statement() {
     // while (this.has('print')) {
       this.advance();
       const expression = this.boolean_operation();
+      if (this.has(';')){
+        this.advance();
+      }
       if (this.has('\n')){
         // this.advance();
         result.type = 'PRINT';
@@ -1179,6 +1182,9 @@ statement() {
     // while (this.has('print')) {
       this.advance();
       const expression = this.boolean_operation();
+      if (this.has(';')){
+        this.advance();
+      }
       if (this.has('\n')){
         // this.advance();
         result.type = 'RETURN';
@@ -1233,6 +1239,9 @@ statement() {
         result.varType = 'reassignment';
       }
     }
+    if (this.has(';')){
+      this.advance();
+    }
     return result;
   }
 
@@ -1280,6 +1289,9 @@ statement() {
       }
       result.params = args;
       result.endindex = this.tokens[this.i].endIndex;
+      if (this.has(';')){
+        this.advance();
+      }
       if (this.has('\n')){
         this.advance();
       }
@@ -1297,38 +1309,7 @@ statement() {
     this.advance();
     return result;
   }
-  //this will need ot be moved to the atom precidence methinks. 
-  // else if (this.has('function')){
-  //   result.type = 'FUNCTION_CALL';
-  //   result.name = this.tokens[this.i].value;
-  //   this.advance();
-  //   var args = [];
-  //   if (this.has('(')){
-  //     this.advance();
-  //     var loopBreak = 0;
-  //     while (this.hasNot(')') &&  loopBreak < maxLoop) {
-  //       // this.advance();
-  //       var param = this.boolean_operation();
-  //       args.push(param);
-  //       if (this.has(',')) {
-  //         this.advance();
-          
-  //       }
-  //       loopBreak++;
-  //     }
-  //     console.log('here are the function call params:');
-  //     console.log(args);
-  //     result.params = args;
-  //     if (this.hasNot(')')){
-  //       appendAnnotation("didnt detect closing parintheses in the arguments of  a function call", this.tokens[this.i].startIndex, this.tokens[this.i].endIndex);
-  //       // console.error('didnt detect closing parintheses in the arguments of  a function call');
-  //     }
-  //     result.endIndex = this.tokens[this.i].endIndex;
-  //     result.end = result.endIndex;
-  //     this.advance();
-  //     return result;
-  //   }
-  // }
+
   // expressions can be statements too, might cause bugs
   else if (this.has('/n')){
 
@@ -1341,7 +1322,10 @@ statement() {
     if (contents === undefined){
       contents = null;
     }
-    if (this.has('\n') || this.has(';')){
+    if (this.has(';')){
+      this.advance();
+    }
+    if (this.has('\n')){
       // this.advance();
       result = {
         type: "STATEMENT", 

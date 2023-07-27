@@ -135,7 +135,10 @@ export const tree2blocks = (workspace, blockjson) => {
         case 'PROGRAM':
             return tree2blocks(workspace, blockjson.value);
         case 'STATEMENT':
-            return tree2blocks(workspace, blockjson?.value);
+            var result = workspace.newBlock('praxly_statement_block');
+            var child =  tree2blocks(workspace, blockjson?.value);
+            result.getInput('EXPRESSION').connection.connect(child?.outputConnection);
+            break;
             
         case 'IF':
             var result = workspace.newBlock('praxly_if_block');
