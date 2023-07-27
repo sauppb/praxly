@@ -6,10 +6,10 @@ export const praxlyDefaultTheme = Blockly.Theme.defineTheme('themeName', {
     'base': Blockly.Themes.Classic, 
     'blockStyles': {
         'loop_blocks': {
-            'colourPrimary': '#395BBF'
+            'colourPrimary': '#0361FF'
         },
-        'procedure_blocks': {
-            'colourPrimary': '#FF6600'
+        'array_blocks': {
+            'colourPrimary': '#FA0000'
         },
         'logic_blocks' : {
             'colourPrimary' : '#00D084'
@@ -20,15 +20,20 @@ export const praxlyDefaultTheme = Blockly.Theme.defineTheme('themeName', {
         'comment_blocks' : {
             'colourPrimary' : '#808080'
         }, 
-        'array_blocks' : {
-            'colourPrimary' : '#C200F1'
+        'procedure_blocks' : {
+            'colourPrimary' : '#5300EB'
         }, 
         'variable_blocks' : {
             'colourPrimary' : '#f80069'
         }, 
         'expression_blocks' : {
             'colourPrimary' : '#a7ca00'
-        }   
+        },
+        
+        'parameter_blocks': {
+            'colourPrimary': '#8F48B7'
+        }
+        
     }, 
     'categoryStyles' : {
         'loop_blocks': {

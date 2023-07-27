@@ -48,7 +48,22 @@ export const toolbox = {
                     },
                   }, 
                 }
-              }
+              }, 
+              {
+                'kind': 'block',
+                'type': 'praxly_statement_block', 
+                'inputs': {
+                  'EXPRESSION' : {
+                    'shadow': {
+                      'type' :'praxly_literal_block', 
+                      'fields' : {
+                        'LITERAL' : 'expression',
+                      }
+                    },
+                  }, 
+                }
+              }, 
+              
         ]
       }, 
       {
@@ -382,10 +397,7 @@ export const toolbox = {
                   }, 
                 }
               },
-              {
-                'kind': 'block',
-                'type': 'praxly_statement_block'
-              },
+             
 
               {
                 'kind': 'block',
