@@ -3,7 +3,7 @@
 
 // import { highlightError, indextoAceRange } from "./milestone2";
 // import { textEditor } from "./milestone2";
-// import { block } from "blockly/core/tooltip";
+// import { block } from "blockly/core/tooltip"
 import { appendAnnotation, sendRuntimeError } from "./lexer-parser";
 import { printBuffer } from "./lexer-parser";
 import { addToPrintBuffer } from "./lexer-parser";
@@ -12,8 +12,15 @@ import { addToPrintBuffer } from "./lexer-parser";
 
 var scopes = {};
 
-
-
+// new 08/24/23
+// this will be the error that will halt execution and return code. 
+class ReturnException extends Error {
+    constructor(errorData) {
+      super(`attempting to return. this should return ${errorData}`);
+      this.name = this.constructor.name;
+      this.errorData = errorData;
+    }
+  }
 
 
 // export function clearOutput() {
@@ -332,7 +339,8 @@ class Praxly_return {
     }
     evaluate(environment) {
         // console.log(this.expression.evaluate(environment));
-        return this.expression.evaluate(environment);
+        throw new ReturnException(this.expression.evaluate(environment));
+        // return this.expression.evaluate(environment);
     }
 }
 
@@ -879,7 +887,21 @@ class Praxly_function_call {
         }
         console.log(`here is the new scope in the function named ${this.name}`);
         console.log(newScope);
-        let result = functionContents.evaluate(newScope);
+        //new: add  try/catch
+        try{
+            let result = functionContents.evaluate(newScope);    
+        }
+        catch (error){
+            if (error instanceof ReturnException) {
+                return error.errorData;
+            }
+            console.error(error);
+        }
+
+
+
+        //end new
+        // let result = functionContents.evaluate(newScope);
         //TODO: tpyecheck that it matches the returnType
         if ((result === "Exit_Success" && returnType !== 'void') || (returnType !== (result?.jsonType?.slice(7) ?? "void"))){
             sendRuntimeError(`this function has an invalid return type.\n\t Expected: ${returnType}\n\t Actual: ${result?.jsonType?.slice(7) ?? "void"} `, this.json);
