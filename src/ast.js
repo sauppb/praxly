@@ -901,9 +901,7 @@ class Praxly_function_call {
             }
             // console.error(`the computer is being stupid, it thinks that ${error}`);
         }
-
-
-
+        
         //end new
         // let result = functionContents.evaluate(newScope);
         //TODO: tpyecheck that it matches the returnType
