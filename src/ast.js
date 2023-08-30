@@ -688,6 +688,7 @@ class Praxly_codeBlock {
     constructor(praxly_blocks) {
         this.praxly_blocks = praxly_blocks;
         console.log(this.praxly_blocks);
+
     }
     evaluate(environment) {
         // let exitLoop = false;
@@ -696,11 +697,11 @@ class Praxly_codeBlock {
           const element = this.praxly_blocks[i];
         
           //aborts if it detects a return statement. Hopefully this doesn't cause problems later ahaha
-              if (element?.isreturn) {
-                return element.evaluate(environment);       
-            } else {
+            //   if (element?.isreturn) {
+            //     return element.evaluate(environment);       
+            // } else {
                 element.evaluate(environment);
-            }
+            // }
         } 
       
         return "Exit_Success";
@@ -877,7 +878,8 @@ class Praxly_function_call {
             return new Praxly_invalid();
         }
         // copy the new parameters to the duplicate of the global scope
-        var newScope = JSON.parse(JSON.stringify(environment));
+        // var newScope = JSON.parse(JSON.stringify(environment));
+        var newScope = Object.assign({}, environment);
         for (let i = 0; i < this.args.length; i++){
             let parameterName = functionParams[i][1];
             let parameterType = functionParams[i][0];
@@ -888,14 +890,16 @@ class Praxly_function_call {
         console.log(`here is the new scope in the function named ${this.name}`);
         console.log(newScope);
         //new: add  try/catch
+        let result = null;
+        console.log(functionContents);
         try{
-            let result = functionContents.evaluate(newScope);    
+            result = functionContents.evaluate(newScope);    
         }
         catch (error){
             if (error instanceof ReturnException) {
-                return error.errorData;
+                result = error.errorData;
             }
-            console.error(error);
+            // console.error(`the computer is being stupid, it thinks that ${error}`);
         }
 
 
