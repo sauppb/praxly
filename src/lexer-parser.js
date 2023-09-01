@@ -259,7 +259,7 @@ class Token {
       this.startToken = this.i;
     }
   
-    lex() {
+      lex() {
       while (this.i < this.length) {
         if (this.has("+")) {
           

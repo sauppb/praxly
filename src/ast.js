@@ -697,11 +697,11 @@ class Praxly_codeBlock {
           const element = this.praxly_blocks[i];
         
           //aborts if it detects a return statement. Hopefully this doesn't cause problems later ahaha
-            //   if (element?.isreturn) {
-            //     return element.evaluate(environment);       
-            // } else {
+              if (element?.isreturn) {
+                return element.evaluate(environment);       
+            } else {
                 element.evaluate(environment);
-            // }
+            }
         } 
       
         return "Exit_Success";
@@ -879,7 +879,11 @@ class Praxly_function_call {
         }
         // copy the new parameters to the duplicate of the global scope
         // var newScope = JSON.parse(JSON.stringify(environment));
-        var newScope = Object.assign({}, environment);
+        // var newScope = Object.assign({}, environment);
+        var newScope = {
+            functionList: environment.functionList, 
+            variableList: Object.assign({}, environment.variableList),
+        };
         for (let i = 0; i < this.args.length; i++){
             let parameterName = functionParams[i][1];
             let parameterType = functionParams[i][0];
@@ -898,8 +902,11 @@ class Praxly_function_call {
         catch (error){
             if (error instanceof ReturnException) {
                 result = error.errorData;
+                // console.log(res)
             }
-            // console.error(`the computer is being stupid, it thinks that ${error}`);
+            console.error(`return `, error);
+            console.error(error.errorData);
+            
         }
         
         //end new
