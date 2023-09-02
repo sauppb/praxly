@@ -31,7 +31,7 @@ main {
     background-color: #7e0eff;
 }
 
-#blocklyDiv {
+#blocklyDiv{
     flex: 1;
 
 }
@@ -113,35 +113,9 @@ main {
   width: 100%; /* Full width */
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
-
-/*tab stuff*/
-/* Modal Content */
-.modal-content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-}
-
-/* The Close Button */
-.close {
-  color: #aaaaaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-}
-
 
  /* Style the tab */
  .tab {
@@ -177,15 +151,57 @@ main {
   padding: 6px 12px;
   border: 1px solid #ccc;
   border-top: none;
-} 
-
-.tabcontent {
   animation: fadeEffect 1s; /* Fading effect takes 1 second */
-}
+} 
 
 /* Go from zero to full opacity */
 @keyframes fadeEffect {
   from {opacity: 0;}
   to {opacity: 1;}
 }
-/*end tab stuff*/
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* reference table*/
+
+#reference-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#reference-table th, #reference-table td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+#reference-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#reference-table th {
+  background-color: #4CAF50;
+  color: white;
+}
