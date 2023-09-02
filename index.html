@@ -281,7 +281,7 @@
 
   </style>
   <div id="toast" class="toast">URL copied to clipboard</div>
-  <script type="module" crossorigin src="/praxly/assets/index-6c849af3.js"></script>
+  <script type="module" crossorigin src="/praxly/assets/index-1ed9505e.js"></script>
   <link rel="stylesheet" href="/praxly/assets/index-debe70e8.css">
 </head>
 <body>
@@ -353,35 +353,33 @@
   
 
   
-
-
-   <!-- tab stuff -->
-     <!-- Tab links -->
-     <div class="tab">
-      <button id="blocksButton" class="tablinks">Blocks Only</button>
-      <button id="bothButton" class="tablinks">Default</button>
-      <button id="textButton" class="tablinks">Text Only</button>
-    </div>
-    
-   
-<!-- Tab content -->
-<div id="London" class="tabcontent">
-  <h3>London</h3>
-  <p>London is the capital city of England.</p>
-</div>
-
-<div id="Paris" class="tabcontent">
-  <h3>Paris</h3>
-  <p>Paris is the capital of France.</p>
-</div>
-
-<div id="Tokyo" class="tabcontent">
-  <h3>Tokyo</h3>
-  <p>Tokyo is the capital of Japan.</p>
-</div> 
-
- <!-- end tab stuff -->
-
- 
+  
+  
+  <!-- tab stuff -->
+   <div class="tab">
+    <button id="textButton" class="tablinks" onclick="openCity(event, 'London')">London</button>
+    <button id="blocksButton" class="tablinks" onclick="openCity(event, 'Paris')">Paris</button>
+    <button class="tablinks" onclick="openCity(event, 'Tokyo')">Tokyo</button>
+  </div>
+  
+  <!-- Tab content -->
+  <div id="London" class="tabcontent">
+    <h3>London</h3>
+    <p>London is the capital city of England.</p>
+  </div>
+  
+  <div id="Paris" class="tabcontent">
+    <h3>Paris</h3>
+    <p>Paris is the capital of France.</p>
+  </div>
+  
+  <div id="Tokyo" class="tabcontent">
+    <h3>Tokyo</h3>
+    <p>Tokyo is the capital of Japan.</p>
+  </div>
+  
+  <!-- end tab stuff -->
+  
+  
 </body>
 </html>
