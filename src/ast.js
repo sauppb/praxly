@@ -49,6 +49,9 @@ export const createExecutable = (blockjson) => {
             return new Praxly_String(blockjson.value, blockjson);
         case 'BOOLEAN':
             return new Praxly_boolean( blockjson.value, blockjson);
+        case 'DOUBLE':
+            return new Praxly_double( blockjson.value, blockjson);
+        
         
         // more here coming soon
         case 'ADD':
@@ -262,22 +265,40 @@ class Praxly_int {
 
 }
 
+class Praxly_short {
+    constructor( value, blockjson ) {
+        this.jsonType = 'Praxly_int';
+        this.json = blockjson;
+        this.value = Math.floor(value);
+    }
+    evaluate(environment) {
+        return this;
+    }
+
+}
+
 class Praxly_double {
     constructor( value , blockjson ) {
         this.jsonType = 'Praxly_double';
         this.json = blockjson;
-        this.value = value;
+        this.value = parseFloat(value).toFixed(1);
 
+    }
+    evaluate(environment) {
+        return this;
     }
 
 }
 
 class Praxly_float {
-    constructor( value  , blockjson) {
-        this.jsonType = 'Praxly_float';
+    constructor( value , blockjson ) {
+        this.jsonType = 'Praxly_double';
         this.json = blockjson;
-        this.value = Math.floor(value);
+        this.value = parseFloat(value).toFixed(1);
 
+    }
+    evaluate(environment) {
+        return this;
     }
 
 }
@@ -299,8 +320,11 @@ class Praxly_char {
     constructor( value  , blockjson) {
         this.value = value;
         this.json = blockjson;
-        this.jsonType = 'Praxly_char';
+        this.jsonType = 'Praxly_String';
 
+    }
+    evaluate(environment) {
+        return this;
     }
 
 }
@@ -313,6 +337,12 @@ class Praxly_String {
     }
     evaluate(environment) {
         return this;
+    }
+}
+
+class Praxly_array{
+    constructor(){
+        
     }
 }
 
@@ -717,9 +747,10 @@ class Praxly_assignment {
         this.type = type;
         this.name = name;
         this.value = expression;
-        
+        console.error(this.value);
     }
     evaluate(environment) {
+        
         // if it is a reassignment, the variable must be in the list and have a matching type. 
         let valueEvaluated = this.value.evaluate(environment);
         if (this.type === "reassignment"){
@@ -736,6 +767,12 @@ class Praxly_assignment {
             }
           
         } else {
+            //this should allow ints to be assigned to doubles
+            if (valueEvaluated.jsonType === "Praxly_int" && this.type === "Praxly_double"){
+                // valueEvaluated.value += 0.0;
+                valueEvaluated.jsonType = "Praxly_double";
+                
+            }
             if (valueEvaluated.jsonType !== this.type){
                 
                 sendRuntimeError(`varible assignment does not match declared type:\n\texpected type: ${this.type.slice(7)} \n\texpression type: ${valueEvaluated.jsonType}`, this.json);
@@ -908,10 +945,14 @@ class Praxly_function_call {
             console.error(error.errorData);
             
         }
-        
-        //end new
-        // let result = functionContents.evaluate(newScope);
-        //TODO: tpyecheck that it matches the returnType
+
+        // due to lack of time, these datatypes will be considered the same. 
+        if (returnType === 'short'){
+            returnType = 'int';
+        }
+        if (returnType === 'float'){
+            returnType = 'double';
+        }
         if ((result === "Exit_Success" && returnType !== 'void') || (returnType !== (result?.jsonType?.slice(7) ?? "void"))){
             sendRuntimeError(`this function has an invalid return type.\n\t Expected: ${returnType}\n\t Actual: ${result?.jsonType?.slice(7) ?? "void"} `, this.json);
             console.error(`invalid return type: ${returnType} `);
@@ -966,16 +1007,19 @@ const ResultType = {
   }
   
   function checkAddition(op1, op2) {
+    if(op1 instanceof Praxly_String || op2 instanceof Praxly_String){
+        return ResultType.STRING;
+    }
     if (
-      (op1 instanceof Praxly_int && op2 instanceof Praxly_int) ||
-      (op1 instanceof Praxly_double && op2 instanceof Praxly_double)
-    ) {
+        (op1 instanceof Praxly_int && op2 instanceof Praxly_double) ||
+        (op1 instanceof Praxly_double && op2 instanceof Praxly_int) ||
+        (op1 instanceof Praxly_double && op2 instanceof Praxly_double)
+      ) {
+        return ResultType.DOUBLE;
+      } 
+    if (op1 instanceof Praxly_int && op2 instanceof Praxly_int) {
       return ResultType.INT;
     } else if (
-      op1 instanceof Praxly_int ||
-      op2 instanceof Praxly_int ||
-      op1 instanceof Praxly_double ||
-      op2 instanceof Praxly_double ||
       op1 instanceof Praxly_String ||
       op2 instanceof Praxly_String
     ) {
@@ -1009,7 +1053,7 @@ const ResultType = {
         console.log('we have an issue');
         return ResultType.INVALID;
     }
-  }
+  
   
 
-
+  }

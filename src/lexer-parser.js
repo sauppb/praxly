@@ -596,11 +596,11 @@ class Parser {
           beg: startIndex, 
           end: endIndex
         };
-    } else if (this.has("double")) {
+    } else if (this.has("Double")) {
         this.advance();
         return {
           value: tok.value, 
-          type: tok.token_type,
+          type: "DOUBLE",
           blockID: "code",
           startIndex: startIndex, 
           endIndex: endIndex,
