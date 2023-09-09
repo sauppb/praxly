@@ -39,6 +39,8 @@ export const workspace = Blockly.inject('blocklyDiv', {
 
   renderer: 'zelos'
 });
+
+// Blockly.svgResize(workspace);
 // Blockly.inject('blocklyDiv2', {
 //   toolbox: toolbox,
 //   // scrollbars: false,
@@ -60,7 +62,7 @@ export const workspace = Blockly.inject('blocklyDiv', {
 const runButton = document.getElementById('runButton');
 const shareButton = document.getElementById('share');
 const darkModeButton = document.getElementById('darkMode');
-const reportIssueButton = document.getElementById('reportBtn')
+// const reportIssueButton = document.getElementById('reportBtn')
 const helpButton = document.getElementById("help");
 const manualButton = document.getElementById("reference");
 // const blockUpdatesButton = document.getElementById('blockUpdates');
@@ -98,8 +100,8 @@ document.addEventListener('mouseup', function(e) {
   Blockly.svgResize(workspace);
   textEditor.resize();
 });
-reportIssueButton.addEventListener('click', function() {
-  var linkUrl = 'BugsList.html';
+manualButton.addEventListener('click', function() {
+  var linkUrl = 'pseudocode.html';
   window.open(linkUrl, '_blank');
 });
 
