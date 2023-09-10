@@ -60,6 +60,8 @@ const bugButton = document.getElementById("BugButton");
 const changelogButton = document.getElementById('ChangelogButton');
 const exampleDiv = document.getElementById('exampleTable');
 const editorElement = textEditor.container;
+const githubButton = document.getElementById('GitHubButton');
+const BenButton = document.getElementById('AboutButton');
 
 var mainTree = null;
 let darkMode = false;
@@ -97,6 +99,14 @@ changelogButton.addEventListener('click', function(){
 featuresButton.addEventListener('click', function(){
   window.open("features.html", '_blank');
 });
+githubButton.addEventListener('click', function(){
+  window.open("https://github.com/Praxly/praxly.github.io", '_blank');
+});
+BenButton.addEventListener('click', function() {
+  window.open('https://sauppb.github.io/website/');
+});
+
+
 // these make it so that the blocks and text take turns. 
 leftPane.addEventListener('click', () => {
   workspace.removeChangeListener(turnBlocksToCode); 
