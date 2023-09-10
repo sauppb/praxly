@@ -2,7 +2,9 @@ import ace from 'ace-builds';
 
 
 
-export const textEditor = ace.edit("aceCode", {fontSize: 16});
+export const textEditor = ace.edit("aceCode", {fontSize: 16, mode: 'ace/mode/java'});
+// textEditor.session.setMode("ace/mode/java");
+
 // var AceRange = ace.require('ace/range').Range;
 
 
@@ -847,6 +849,10 @@ class Parser {
     return l;
   }
 
+  
+
+
+
   additive() {
     let l =this.multiplicitive();
     while (this.has("ADD") || this.has("SUBTRACT")) {
@@ -1034,7 +1040,7 @@ boolean_operation() {
       var endIndex = this.tokens[this.i].endIndex;
     if (this.has("and")) {
       this.advance();
-      const r =this.additive();
+      const r =this.comparable();
       // l =new Operators.Less_Than_Equal_To(left, right);
       l ={
           left: l, 
@@ -1048,7 +1054,7 @@ boolean_operation() {
       }
     } else if (this.has("or")) {
       this.advance();
-      const r =this.additive();
+      const r =this.comparable();
       // l =new Operators.Greater_Than_EqualTo(left, right);
       l ={
           left: l, 

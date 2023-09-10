@@ -772,13 +772,13 @@ class Praxly_assignment {
             let currentStoredVariableEvaluated = environment.variableList[this.name].evaluate(environment);
             // console.log(variableList);
             if (!environment.variableList.hasOwnProperty(this.name)){
-                console.error(`Error: variable name ${this.name} not in the variablelist: \n ${environment.variableList}`);
+                sendRuntimeError(`Error: variable name ${this.name} not in the variablelist: \n ${environment.variableList}`, this.json);
             }
     
             if (currentStoredVariableEvaluated.jsonType !== valueEvaluated.jsonType){
                 sendRuntimeError(`Error: varible reassignment does not match declared type: \n\t Expected:`
                 + `${currentStoredVariableEvaluated.jsonType.slice(7)}, \n\t Actual: ${valueEvaluated.jsonType.slice(7)}`, this.json);
-                console.error("Error: varible reassignment does not match declared type:");
+                sendRuntimeError("Error: varible reassignment does not match declared type:", this.json);
             }
           
         } else {
