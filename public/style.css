@@ -7,6 +7,9 @@ body {
     display: flex;
     flex-direction: column;
     margin: 0;
+    background-color: #2196f3;
+    height: 100%;
+    
     
 }
 
@@ -22,6 +25,7 @@ main {
     display: flex;
     height: 60vh;
     width: 95vw;
+    background-color: #ddc8f5;
     
 }
 
@@ -236,6 +240,7 @@ main {
 
 #exampleTable{
   color: #2196f3;
+  background-color: #e7e5e5;
   display: flex;
 
 }
@@ -255,4 +260,8 @@ main {
 
 #secondary_bar {
   display: flex;
+  background-color:  #e7e5e5;
+  border-style: solid;
+  border-color: #aaaaaa;
+  
 }

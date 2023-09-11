@@ -72,7 +72,3 @@ end gcd
 print gcd(21, 35)
 `;
 
-console.log(codeText);
-
-
-console.log(codeText);
