@@ -13,11 +13,11 @@ body {
     
 }
 
-.output, .error {
+.output {
     box-sizing: border-box;
     background: #d9dbda;
     margin: 10px;
-    height: 10vh;
+    height: 20vh;
     padding: 10px;
 }
 

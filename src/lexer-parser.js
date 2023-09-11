@@ -1350,7 +1350,7 @@ statement() {
       return result;
   }
 
-  //annoying bullshit because array syntax sucks to impliment
+  //annoying stuff because array syntax sucks to impliment
   else if (this.has('Variable') && this.has_ahead('[') && this.has_array_reference_assignment()){
     result.name = this.tokens[this.i].value;
     this.advance();
