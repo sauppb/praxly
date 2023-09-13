@@ -71,7 +71,7 @@ export const tree2text = (blockjson, startIndex, indentation) => {
             }
         case 'SINGLE_LINE_COMMENT':
             try {
-                var result = '\t'.repeat(indentation) +  blockjson.value + '\n';
+                var result = '\t'.repeat(indentation) + '//' + blockjson.value + '\n';
                 blockjson.startIndex = startIndex;
                 blockjson.endIndex = startIndex + result.length;
                 blockjson.beg = startIndex;
