@@ -2,7 +2,7 @@ import ace from 'ace-builds';
 
 
 
-export const textEditor = ace.edit("aceCode", {fontSize: 16, mode: 'ace/mode/java'});
+export const textEditor = ace.edit("aceCode", {fontSize: 17, mode: 'ace/mode/java'});
 // textEditor.session.setMode("ace/mode/java");
 
 // var AceRange = ace.require('ace/range').Range;
