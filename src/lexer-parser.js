@@ -351,8 +351,8 @@ class Token {
             this.capture();
             this.emit_token("Not_Equal");
          } else if (this.has('/') && this.has_ahead('/')){
-          this.advance();
-          this.advance();
+          this.skip();
+          this.skip();
           while(this.hasNot('\n')){
             this.capture();
           }
