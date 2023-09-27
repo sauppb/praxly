@@ -49,12 +49,8 @@ export const createExecutable = (blockjson) => {
             return new Praxly_boolean( blockjson.value, blockjson);
         case 'DOUBLE':
             return new Praxly_double( blockjson.value, blockjson);
-        
-        
-        // more here coming soon
         case 'ADD':
             return new Praxly_addition(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
-        
         case 'SUBTRACT':
             return new Praxly_subtraction(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
         case 'MULTIPLY':

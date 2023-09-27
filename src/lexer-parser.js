@@ -217,6 +217,7 @@ class Token {
       const a = this.source[this.i];
       return /^[A-Za-z]$/.test(a);
     }
+
   
     has(c) {
       return this.i < this.length && this.source[this.i] === c;
@@ -552,6 +553,18 @@ class Parser {
     return this.statementKeywords.includes(this.tokens[this.i].token_type);
   }
 
+  match_and_discard_next_token(type){
+    if (this.tokens[this.i].token_type === type ){
+      this.advance();
+    } else{
+      sendRuntimeError(`did not detect desired token at this location. \nexpected: \'${type}\'\n but was: ${this.tokens[this.i].token_type}`);
+    }
+  }
+
+
+
+
+
   //peeks ahead to determine if this annoying array syntax is correct.
   //assumes that if an = is seen before a newline, it must be an assignment
   has_array_reference_assignment(){
@@ -808,6 +821,22 @@ class Parser {
     }
     return l;
   }
+
+  location(){
+    var tok = this.tokens[this.i];
+    if (this.has('Variable')) {
+      this.advance();
+      if (this.has('[')){
+        this.advance();
+      }
+
+    }
+  }
+
+
+
+
+
 
   multiplicitive() {
     let l =this.exponent();
