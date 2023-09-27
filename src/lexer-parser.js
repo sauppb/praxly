@@ -822,6 +822,7 @@ class Parser {
     return l;
   }
 
+  
   location(){
     var tok = this.tokens[this.i];
     if (this.has('Variable')) {
