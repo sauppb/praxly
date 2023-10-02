@@ -800,13 +800,13 @@ class Praxly_array_assignment {
         this.type = type;
         this.name = name;
         this.value = expression;
-        console.error(this.value);
+        // console.error(this.value);
     }
     evaluate(environment) {
         // if it is a reassignment, the variable must be in the list and have a matching type. 
         let valueEvaluated = this.value.evaluate(environment);   
             for (var k = 0; k < valueEvaluated.elements.length; k++){
-                if (valueEvaluated.elements[k].jsonType !== this.type){
+                if (valueEvaluated.elements[k].realType !== this.type){
                     
                     sendRuntimeError(`at least one element in the array did not match declared type:\n\texpected type: ${this.type.slice(7)} \n\texpression type: ${valueEvaluated.jsonType}`, this.json);
                 }
@@ -868,6 +868,9 @@ class Praxly_for {
         while (loopLimit < 500 && this.condition.evaluate(environment).value) {
             this.statement.evaluate(environment);
             this.incrimentation.evaluate(environment);
+            if (loopLimit === 499){
+                sendRuntimeError(`This is probubly an infinite loop.`, this.json);
+            }
 
         }
     }
@@ -883,6 +886,9 @@ class Praxly_while {
         var loopLimit = 0;
         while (loopLimit < 500 && this.condition.evaluate(environment).value) {
             this.statement.evaluate(environment);
+            if (loopLimit === 499){
+                sendRuntimeError(`This is probubly an infinite loop.`, this.json);
+            }
         }
     }
 }
@@ -897,6 +903,9 @@ class Praxly_do_while {
         var loopLimit = 0;
         while (loopLimit < 500 && this.condition.evaluate(environment).value) {
             this.statement.evaluate(environment);
+            if (loopLimit === 499){
+                sendRuntimeError(`This is probubly an infinite loop.`, this.json);
+            }
         }
     }
 }
@@ -911,6 +920,9 @@ class Praxly_repeat_until {
         this.statement.evaluate(environment);
         while (loopLimit < 500 && ! this.condition.evaluate(environment).value) {
             this.statement.evaluate(environment);
+            if (loopLimit === 499){
+                sendRuntimeError(`This is probubly an infinite loop.`, this.json);
+            }
         }
     }
 }
@@ -1186,6 +1198,9 @@ this function will take in the operation and the types of the operands and repor
 upon evaluation. If the operators are incompatible, then it will throw an error.
 */
 function master_typecheck(operation, type1, type2, json) {
+    if (type1 === undefined || type2 === undefined){
+        sendRuntimeError(`missing operand type for ${operation}`, json);
+    }
     switch(operation) {
 
         case OP.ADDITION:
@@ -1206,7 +1221,6 @@ function master_typecheck(operation, type1, type2, json) {
 
         case OP.AND:
         case OP.OR:
-        case OP.NOT:
             return can_boolean_operation(operation, type1, type2, json);
 
         case OP.EQUALITY:
@@ -1224,7 +1238,7 @@ function master_typecheck(operation, type1, type2, json) {
 }
 
 
-function litNode_new(type, value){
+function litNode_new(type, value, json){
     switch(type){
         case TYPES.INT:
             return new Praxly_int(value); 
@@ -1241,6 +1255,8 @@ function litNode_new(type, value){
         case TYPES.SHORT:
             return new Praxly_short(value);
         case TYPES.INVALID:
+            console.error(`invalid literal:`);
+            console.error(json);
             return new Praxly_invalid();
     }
 }
