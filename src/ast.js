@@ -867,10 +867,12 @@ class Praxly_for {
         var loopLimit = 0;
         while (loopLimit < 500 && this.condition.evaluate(environment).value) {
             this.statement.evaluate(environment);
+            loopLimit += 1;
             this.incrimentation.evaluate(environment);
             if (loopLimit === 499){
                 sendRuntimeError(`This is probubly an infinite loop.`, this.json);
             }
+            
 
         }
     }
@@ -886,6 +888,7 @@ class Praxly_while {
         var loopLimit = 0;
         while (loopLimit < 500 && this.condition.evaluate(environment).value) {
             this.statement.evaluate(environment);
+            loopLimit += 1;
             if (loopLimit === 499){
                 sendRuntimeError(`This is probubly an infinite loop.`, this.json);
             }
@@ -903,6 +906,7 @@ class Praxly_do_while {
         var loopLimit = 0;
         while (loopLimit < 500 && this.condition.evaluate(environment).value) {
             this.statement.evaluate(environment);
+            loopLimit += 1;
             if (loopLimit === 499){
                 sendRuntimeError(`This is probubly an infinite loop.`, this.json);
             }
@@ -920,6 +924,7 @@ class Praxly_repeat_until {
         this.statement.evaluate(environment);
         while (loopLimit < 500 && ! this.condition.evaluate(environment).value) {
             this.statement.evaluate(environment);
+            loopLimit += 1;
             if (loopLimit === 499){
                 sendRuntimeError(`This is probubly an infinite loop.`, this.json);
             }
