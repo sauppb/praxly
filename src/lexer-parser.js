@@ -184,8 +184,8 @@ export const text2tree = () => {
     console.log(code);
     let lexer = new Lexer(code);
     let tokens = lexer?.lex();
-    console.log('here are the new lexer tokens:');
-    console.log(tokenize(code));
+    // console.log('here are the new lexer tokens:');
+    // console.log(tokenize(code));
     console.log(tokens);
     let parser = new Parser(tokens);
     let textjson = parser?.parse();
@@ -312,28 +312,13 @@ class Token {
           this.emit_token("SUBTRACT");
         } else if (this.has("%")) {
           this.capture();
-          if (this.has('=')){
-            this.capture();
-            this.emit_token('%=');
-          } else {
-            this.emit_token("MOD");
-          }
+          this.emit_token("MOD");
         } else if (this.has("*")) {
             this.capture();
-            if (this.has('=')){
-              this.capture();
-              this.emit_token('*=');
-            } else {
-              this.emit_token("MULTIPLY");
-            }
+            this.emit_token("MULTIPLY");
         } else if (this.has("^")) {
             this.capture();
-            if (this.has('=')){
-              this.capture();
-              this.emit_token('^=');
-            } else {
-              this.emit_token("EXPONENT");
-            }
+            this.emit_token("EXPONENT");
          } else if (this.has("≠")) {
             this.capture();
             this.emit_token("Not_Equal");
@@ -405,8 +390,6 @@ class Token {
               textError('lexing', 'looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\' or \").',stringStart, this.i - 1);
             }
           
-
-
 
           } else if (this.has("\"") || this.has("\'") ){
             var stringStart = this.i;
@@ -1560,7 +1543,6 @@ statement() {
         blockID: "code"
       };
     }
-    
 
   }
 

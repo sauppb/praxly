@@ -227,13 +227,98 @@ export function tokenize(source) {
     
 }
 
+const nodeTypes = {
+    BLOCK: "BLOCK", 
+    VARDECL: "VARDECL", 
+    ASSIGNMENT: "ASSIGNMENT", 
+    REASSIGNEMNT: "REASSIGNMENT", 
+    FUNCDECL: "FUNCATION_DECLARATION",
+    FUNCCALL: "FUNCCALL",
+}
+
+
 function newParser(tokens){
     let index = 0;
+
+    function next_token_type(){
+        return tokens[index].token_type;
+    }
+
+    function has_mlultiplicitive(){
+        return tokens[index].token_type === TokenTypes.SYMBOL 
+            && (next_token_type() === '*' || next_token_type() === '/' || next_token_type() === '%');
+    }
+
+    function has_additive(){
+        return tokens[index].token_type === TokenTypes.SYMBOL 
+        && (next_token_type() === '+' || next_token_type() === '-');
+    }
+
+    function has_value(c){
+        return tokens[index].value === c;
+    }
+
+    function has_type(c){
+        return tokens[index].token_type === c;
+    }
+
+    function match_and_discard_next_token(value){
+        if (token[index].value !== value){
+            //TODO: throw error at this line
+
+        } else {
+            index++;
+        }
+    }
+
+
+
+
+
+
     return parse_program();
 
-    function parse_program(){
-        
+    function parse_block(){
+        let statements = []
+        while ( index < tokens.length && tokens[index].token_type !== TokenTypes.EOF){
+            statements.push(parse_statement());
+        }
+        return {
+            type: nodeTypes.BLOCK, 
+            statements: statements,
+            blockID: "code"
+         };
+    }
+    
+    function parse_statement(){
+        let result = null;
+        let condition = null;
+        let line = tokens[index].line;
+        if(has_type(TokenTypes.INDENTIFIER)){
+            let loc = parse_location(input);
+            if (loc.type === nodeTypes.FUNCCALL){
+                result = loc;
+            } else {
+                match_and_discard_next_token('=');
+                value = parse_expression();
+                result = {
+                    type: nodeTypes.REASSIGNEMNT, 
+                    location: loc,
+                    value: value,
+                }
+
+            }
+        } else if (has_type(TokenTypes.KEYWORD)){
+            
+
+        } else if (has_type(TokenTypes.COMMENT)){
+
+        } else if (has_type(TokenTypes.LONG_COMMENT)){
+
+        }
 
     }
+
+
 }
 
