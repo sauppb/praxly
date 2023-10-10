@@ -221,6 +221,8 @@ function tokenize(source) {
         }
 
     }
+    emit_token(TokenTypes.EOF);
+    return tokens;
   
     
 }
