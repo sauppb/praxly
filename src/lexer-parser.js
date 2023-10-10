@@ -1,5 +1,6 @@
 import ace from 'ace-builds';
 import { FieldNumber } from 'blockly';
+import { tokenize } from './newLexer';
 
 
 
@@ -183,6 +184,8 @@ export const text2tree = () => {
     console.log(code);
     let lexer = new Lexer(code);
     let tokens = lexer?.lex();
+    console.log('here are the new lexer tokens:');
+    console.log(tokenize(code));
     console.log(tokens);
     let parser = new Parser(tokens);
     let textjson = parser?.parse();

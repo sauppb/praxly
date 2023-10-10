@@ -1,4 +1,4 @@
-class Token {
+export class Token {
     constructor(type, text, line) {
        token_type = type;
        value = text;
@@ -29,7 +29,7 @@ export const TokenTypes = {
 
 
 
-function tokenize(source) {
+export function tokenize(source) {
     let tokens = [];
     let index = 0;
     let token_so_far = "";
@@ -62,7 +62,7 @@ function tokenize(source) {
         }
 
         function hasNot(c) {
-            return index < source.length && source[index] !== c;
+            return index < source.length && source[index] !== c;    
         }
 
         function has_ahead(c) {
@@ -226,3 +226,14 @@ function tokenize(source) {
   
     
 }
+
+function newParser(tokens){
+    let index = 0;
+    return parse_program();
+
+    function parse_program(){
+        
+
+    }
+}
+
