@@ -182,7 +182,9 @@ export const tree2blocks = (workspace, blockjson) => {
                     result = workspace.newBlock('praxly_array_assignment_block');
                     result.setFieldValue('int[]', "VARTYPE");
                 } else{
-                    result.setFieldValue(blockjson.varType.toLowerCase(), "VARTYPE");
+                    var vartype = blockjson.varType.toLowerCase();
+                    vartype = vartype === "string" ? "String" : vartype;
+                    result.setFieldValue(vartype, "VARTYPE");
                     
                 }
             }

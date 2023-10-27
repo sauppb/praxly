@@ -285,6 +285,9 @@ class Token {
           if (this.has("=")) {
             this.capture();
             this.emit_token("Less_Than_Equal_To");
+          } else if (this.has("-")){
+            this.capture();
+            this.emit_token("Assignment");
           } else {
             this.emit_token("Less_Than");
           }
@@ -1289,6 +1292,9 @@ statement() {
           
           this.advance();
           result.value = this.boolean_operation();
+          if (this.has(";")){
+            this.advance();
+          }
           
           result.varType = returnType;
         }
