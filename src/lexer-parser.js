@@ -1,19 +1,28 @@
 import ace from 'ace-builds';
 import { FieldNumber } from 'blockly';
 import { tokenize } from './newLexer';
+import { praxlyDefaultTheme } from './theme';
 
 
 
-export const textEditor = ace.edit("aceCode", {fontSize: 17, mode: 'ace/mode/java'});
+export const textEditor = ace.edit("aceCode", {fontSize: 19, mode: 'ace/mode/java'});
 // textEditor.session.setMode("ace/mode/java");
 
 // var AceRange = ace.require('ace/range').Range;
 
 
 
+export class PraxlyErrorException extends Error {
+  constructor(message, line) {
+    super(`<pre>error occured on line ${line}:\n\t${message}</pre>`);
+    this.errorMessage = this.message;
+    appendAnnotation(message, line);
+    errorOutput += this.message;
 
+  }
+}
 
-const MAX_LOOP = 100;
+export const MAX_LOOP = 100;
 
 export var printBuffer = "";
 export var errorOutput = "";
@@ -37,11 +46,9 @@ export function clearOutput() {
 }
 
 
-// new lexer attempt
-
-
+// might delete
+// this is a unique function that will throw an error, but not halt execution. That way we can attempt to build as accurate of a tree as possible before shutting down. 
 export function textError(type, error, line){
-
   errorOutput += `<pre>${type} error occured on line ${line}:  ${error} \n\t </pre>`;
   appendAnnotation(error, line);
 }
@@ -58,30 +65,31 @@ export function addBlockErrors(workspace){
   }
 }
 
-export function sendRuntimeError(errormessage, line){
-  textError('runtime', errormessage, line);
+// might delete
+// this will likely be replaced as well
+export function sendRuntimeError(errormessage, json){
+  textError('runtime', errormessage, json.line);
   blockErrorsBuffer[blockjson.blockID] = errormessage;
 
 }
 
+
 export function appendAnnotation(errorMessage, line) {
   var annotation = {
-    row: line, // no idea why the rows start with zero here but start with 1 everywhere else, but okay
+    row: line - 1, // no idea why the rows start with zero here but start with 1 everywhere else, but okay
     column: 0,
     text: errorMessage,
     type: "error"
   };
   annotationsBuffer.push(annotation);
-  highlightError(line);
+  highlightLine(line);
 
 }
 
-// this doesnt work
-function highlightError(line) {
-  // console.error(`startRow: ${startRow}\t, start column: ${startColumn}\nedRow: ${endRow}, \tendcolumn: ${endColumn}`);
+function highlightLine(line, debug = false) {
   var session = textEditor.session;
   
-  var errorRange = indextoAceRange(line);
+  var errorRange = indextoAceRange(line - 1);
   var markerId = session.addMarker(errorRange, 'error-marker', 'fullLine');
 
   var markerCss = `
@@ -106,7 +114,7 @@ function highlightError(line) {
   // Append the error-marker rules to the existing style tag
   existingStyleTag.appendChild(document.createTextNode(markerCss));
 
-  console.log('attempted to highlight');
+  console.log(`attempted to highlight ${line}` );
   markersBuffer.push(markerId);
   return markerId;
 }
@@ -134,10 +142,12 @@ export const text2tree = () => {
     let tokens = lexer?.lex();
     // console.log('here are the new lexer tokens:');
     // console.log(tokenize(code));
-    console.log(tokens);
+    console.info('here are the tokens:');
+    console.debug(tokens);
     let parser = new Parser(tokens);
     let textjson = parser?.parse();
-    console.log(textjson);
+    console.info('here is the tree:');
+    console.debug(textjson);
     return textjson;
 }
 
@@ -162,7 +172,7 @@ class Token {
       this.keywords = ["if", "else", "end", "print", "println", "for", "while", 'and', 'or', 'do', 'repeat', 'until', 'not', 'return'];
       this.types = ['int', 'double', 'String', 'char', 'float', 'boolean', 'short', 'void', 'int[]'];
       this.startToken = 0;
-      this.currentLine = 0;
+      this.currentLine = 1;
     }
   
     printTokens() {
@@ -219,7 +229,7 @@ class Token {
   
     emit_token(type) {
 
-      this.tokens.push(new Token(type, this.token_so_far, this.startToken, this.i, this.currentLine));
+      this.tokens.push(new Token(type, this.token_so_far, this.currentLine));
       this.token_so_far = '';
       this.startToken = this.i;
     }
@@ -246,7 +256,8 @@ class Token {
             }
           } 
           else {
-            textError('lexing', 'looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.',commentStart, this.i);
+            textError('lexing', 'looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.',commentStart, this.currentLine);
+            // throw new PraxlyErrorException('looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.', this.currentLine);
             // appendAnnotation('looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.',commentStart, this.i);
             this.i -= 1;
             this.emit_token();
@@ -453,6 +464,7 @@ class Parser {
 
   }
 
+
   hasNot(type) {
     return this.i < this.length && this.tokens[this.i].token_type !== type;
   }
@@ -629,7 +641,7 @@ class Parser {
       console.log(args);
       result.params = args;
       if (this.hasNot('}')){
-        appendAnnotation("didnt detect closing curlybrace in the array declaration", this.tokens[this.i].line);
+        textError("parsing", "didnt detect closing curlybrace in the array declaration", this.tokens[this.i].line);
         // console.error('didnt detect closing parintheses in the arguments of  a function call');
       }
       this.advance();
@@ -665,7 +677,6 @@ class Parser {
           blockID: "code",
           line: line, 
           
-           line, 
             
           
         };
@@ -722,9 +733,7 @@ class Parser {
       return;
     
     } else {
-      // textError('parsing', `Missing or Unrecognized token: ${this.i} This is likely the result of a lexing error?.', line, `);
-      console.log(`atom problem at this token: ${this.tokens[this.i].token_type}`);
-      return;
+      textError("parsing", "missing or invalid base expression. most likely due to a missing operand", line);
     }
   }
 
@@ -873,6 +882,12 @@ class Parser {
         result.value = expression;
       }
     }
+    if (this.has("SUBTRACT")){
+      this.advance();
+      this.tokens[this.i].value = '-'.concat(value);
+      return this.boolean_operation();
+    }
+
     return result;
   }
 
@@ -1061,7 +1076,6 @@ statement() {
     blockID: 'code', 
     line: line, 
      
-     line
   };
   if (this.has("if")) {
 
@@ -1215,7 +1229,6 @@ statement() {
   }
 
   else if (this.has("print")) {
-    // while (this.has('print')) {
       this.advance();
       const expression = this.boolean_operation();
       if (this.has(';')){

@@ -28,6 +28,8 @@ export function definePraxlyBlocks(workspace) {
   //   newblock.initSvg();
 
   // }
+
+
   
   Blockly.Extensions.registerMutator('praxly_arity', callbacks);
   
@@ -920,7 +922,7 @@ export function definePraxlyBlocks(workspace) {
                   "args0": [
                     {
                       'type': 'field_image', 
-                      'src': 'https://iconsplace.com/wp-content/uploads/_icons/ffffff/256/png/plus-icon-18-256.png', 
+                      'src': 'images\icons8-minus-50.png', 
                       'name': 'PLUS_BUTTON',
                       'width': 19, 
                       'height': 19, 
@@ -934,7 +936,7 @@ export function definePraxlyBlocks(workspace) {
                     // },
                     {
                       'type': 'field_image', 
-                      'src': 'https://iconsplace.com/wp-content/uploads/_icons/ffffff/256/png/minus-icon-256.png', 
+                      'src': 'images\icons8-minus-50.png', 
                       'name': 'MINUS_BUTTON',
                       'width': 19, 
                       'height': 19, 

@@ -49,8 +49,8 @@ println b
 
 ##gcd 
 ##int gcd(int a, int b)
+	int temp = b
 	while (b≠0)
-		int temp = b
 		b = a % b
 		a = temp
 	end while
