@@ -871,7 +871,6 @@ class Parser {
     if (!this.has('not') && !this.has('SUBTRACT')){
       return this.atom();
     }
-    while (this.has('not')){
       
       var line = this.tokens[this.i].line;
       var result = {
@@ -880,15 +879,16 @@ class Parser {
       };
       if (this.has('not')){
         this.advance();
-        var expression = this.boolean_operation();
+        var expression = this.atom();
         result.type = 'NOT';
         result.value = expression;
+        return result;
       }
-    }
-    if (this.has("SUBTRACT")){
+      else if (this.has("SUBTRACT")){
       this.advance();
-      this.tokens[this.i].value = '-'.concat(value);
-      return this.boolean_operation();
+        var expression = this.atom();
+        result.type = 'NEGATE';
+        result.value = expression;
     }
 
     return result;

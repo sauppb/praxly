@@ -220,6 +220,9 @@ export const createExecutable = (blockjson) => {
             }
         case 'NOT':
             return new Praxly_not(createExecutable(blockjson.value), blockjson);
+        case 'NEGATE':
+            return new Praxly_negate(createExecutable(blockjson.value), blockjson);
+        
         case 'COMMENT':
             return  new Praxly_comment(blockjson.value, blockjson);
         case 'SINGLE_LINE_COMMENT':
@@ -973,9 +976,24 @@ class Praxly_not {
     }
 
     evaluate(environment) {
-        return new Praxly_boolean(!this.expression.evaluate(environment).value);
+        var a = this.expression.evaluate(environment);
+        return new litNode_new(binop_typecheck(OP.NOT, a.realType, this.json), !a.value, this.json);
     }
 }
+
+class Praxly_negate {
+    constructor(value  , blockjson){
+        this.json = blockjson;
+        this.expression = value;
+    }
+
+    evaluate(environment) {
+        var a = this.expression.evaluate(environment);
+        return new litNode_new(binop_typecheck(OP.NEGATE, a.realType, this.json), -1 * a.value, this.json);
+    }
+}
+
+
 
 class Praxly_invalid {
     constructor() {
@@ -1116,6 +1134,7 @@ export const OP = {
     AND: "AND",
     OR: "OR",
     NOT: "NOT",
+    NEGATE: "NEGATE",
 };
 
 
@@ -1255,6 +1274,21 @@ function can_compare(operation, type1, type2, json) {
     // throw new PraxlyErrorException(`bad operand tpyes for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid comparison operation
 }
 
+// yea I know this is sloppy but I am getting tired and I'm running outta time
+function can_negate(operation, type1, json) {
+    if (operation === OP.NEGATE) {
+        if (type1 === TYPES.INT || type1 === TYPES.DOUBLE || type1 === TYPES.FLOAT || type1 === TYPES.SHORT) {
+            return type1; 
+        }
+    }  if (operation === OP.NOT) {
+        if (type1 === Types.BOOLEAN){
+            return type1;
+        }
+    }
+    throw new PraxlyErrorException(`bad operand tpyes for ${operation}, \n\tchild: ${type1}`, json.line);
+    // throw new PraxlyErrorException(`bad operand tpyes for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid comparison operation
+}
+
 
 /* 
 this function will take in the operation and the types of the operands and report what type the result will be 
@@ -1266,6 +1300,9 @@ function binop_typecheck(operation, type1, type2, json) {
         throw new PraxlyErrorException(`missing operand type for ${operation}`, json.line);
     }
     switch(operation) {
+        case OP.NOT:
+        case OP.NEGATE:
+            return can_negate(operation, type1, json);
 
         case OP.ADDITION:
             return can_add(operation, type1, type2, json);

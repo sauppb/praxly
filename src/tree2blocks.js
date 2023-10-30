@@ -222,6 +222,12 @@ export const tree2blocks = (workspace, blockjson) => {
             var child = tree2blocks(workspace, blockjson?.value);
             result.getInput('EXPRESSION').connection.connect(child?.outputConnection);
             break;
+
+        case 'NEGATE':
+            var result = workspace.newBlock('praxly_negate_block');
+            var child = tree2blocks(workspace, blockjson?.value);
+            result.getInput('EXPRESSION').connection.connect(child?.outputConnection);
+            break;
             
         case 'RETURN':
             var result = workspace.newBlock('praxly_return_block');

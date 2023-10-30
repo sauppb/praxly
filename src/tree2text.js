@@ -358,6 +358,14 @@ export const tree2text = (blockjson, startIndex, indentation) => {
             var expression = tree2text(blockjson.value, blockjson.endIndex, indentation);
             blockjson.end = blockjson.endIndex + expression.length;
             return result + expression;
+        case 'NEGATE':
+            blockjson.beg = startIndex;
+            blockjson.startIndex = startIndex;
+            var result =  "-";
+            blockjson.endIndex = startIndex + result.length;
+            var expression = tree2text(blockjson.value, blockjson.endIndex, indentation);
+            blockjson.end = blockjson.endIndex + expression.length;
+            return result + expression;
         case 'FOR':
             blockjson.beg = startIndex;
             blockjson.startIndex = startIndex + indentation;

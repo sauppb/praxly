@@ -371,6 +371,7 @@ export function definePraxlyBlocks(workspace) {
             "helpUrl": "", 
 
           }, 
+          
           {
             "type": "praxly_boolean_operators_block",
             "message0": "%1 %2 %3 %4",
@@ -697,6 +698,24 @@ export function definePraxlyBlocks(workspace) {
       "previousStatement": null,
       "nextStatement": null,
       "style": 'procedure_blocks',
+      "tooltip": "",
+      "helpUrl": ""
+    }, 
+    
+    {
+      "type": "praxly_negate_block",
+      "message0": "- %1 %2",
+      "args0": [
+        {
+          "type": "input_value",
+          "name": "EXPRESSION"
+        },
+        {
+          "type": "input_dummy"
+        }
+      ],
+      "output": null,
+      "style": 'expression_blocks',
       "tooltip": "",
       "helpUrl": ""
     }, 
