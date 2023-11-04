@@ -1,14 +1,8 @@
 
-// import { workspace } from "./main";
-
-
-// import { line } from "blockly/core/utils/svg_paths";
-// import { Types } from "blockly/core/renderers/measurables/types";
-// import { block } from "blockly/core/tooltip";
 import { PraxlyErrorException, appendAnnotation, defaultError, sendRuntimeError } from "./lexer-parser";
 import { printBuffer } from "./lexer-parser";
 import { addToPrintBuffer } from "./lexer-parser";
-import { praxlyDefaultTheme } from "./theme";
+
 
 
 
@@ -147,11 +141,12 @@ export const createExecutable = (blockjson) => {
                 return null;
             }
         case 'VARDECL':
-            return new Praxly_vardecl(blockjson, createExecutable(blockjson.location), createExecutable(blockjson.value));
+            var location = createExecutable(blockjson.location);
+            return new Praxly_vardecl(blockjson, location, createExecutable(blockjson.value));
 
         case 'ARRAY_ASSIGNMENT':
             try {
-                return new Praxly_array_assignment(blockjson, blockjson.varType, blockjson.name, createExecutable(blockjson.value), blockjson);
+                return new Praxly_array_assignment(blockjson, createExecutable(blockjson.location), createExecutable(blockjson.value));
             } 
             catch (error) {
                 sendRuntimeError('assignment error', blockjson);
@@ -236,12 +231,12 @@ export const createExecutable = (blockjson) => {
         case 'RETURN':
             return new Praxly_return(createExecutable(blockjson.value), blockjson);
 
-        case 'ARRAY':
+        case 'ARRAY_LITERAL':
             var args = [];
             blockjson.params.forEach((arg) => {
                 args.push(createExecutable(arg));
             });
-            return new Praxly_array( args, blockjson);
+            return new Praxly_array_literal( args, blockjson);
         case 'ARRAY_REFERENCE':
             // console.error(createExecutable(blockjson.index));
             return new Praxly_array_reference(blockjson.name, createExecutable(blockjson.index), blockjson);
@@ -392,7 +387,7 @@ class Praxly_String {
     }
 }
 
-class Praxly_array{
+class Praxly_array_literal{
     constructor(elements, blockjson){
         this.elements = elements;
         this.blockjson = blockjson;
@@ -835,7 +830,11 @@ class Praxly_assignment {
                     // }
         let storage = accessLocation(environment, this.location);
         // console.warn(storage);
-        storage[this.location.name] = valueEvaluated;
+        if (this.location.isArray){
+            storage[this.location.name].elements[this.location.index.evaluate(environment).value] = valueEvaluated;
+        }else {
+            storage[this.location.name] = valueEvaluated;
+        }
         
         return valueEvaluated;
     }
@@ -860,37 +859,30 @@ class Praxly_vardecl{
                 // sendRuntimeError(`varible assignment does not match declared type:\n\texpected type: ${this.type} \n\texpression type: ${valueEvaluated.realType}`, this.json);
                 throw new PraxlyErrorException(`varible assignment does not match declared type:\n\texpected type: ${this.type} \n\texpression type: ${valueEvaluated.realType}`, this.json.line);
             }
-<<<<<<< HEAD
         environment.variableList[this.name] = valueEvaluated;
         
         console.log(environment);
         return;
-=======
-            // environment.variableList[this.name] = this.expression;
-                  
-        }
-        environment.variableList[this.name] =  litNode_new(this.type, valueEvaluated.value, this.json);
->>>>>>> ddc4698acd2a2b3183e236ce32fbb3b961f308eb
     }
 }
 
 
 class Praxly_array_assignment {
-    constructor( json, type, name, expression, blockjson){
-        this.json = blockjson;
-        this.type = type;
-        this.name = name;
+    constructor( json, location, expression){
+        this.json = json;
+        this.location = location,
         this.value = expression;
+        this.name = location.name;
         // console.error(this.value);
     }
     evaluate(environment) {
         // if it is a reassignment, the variable must be in the list and have a matching type. 
         let valueEvaluated = this.value.evaluate(environment);   
             for (var k = 0; k < valueEvaluated.elements.length; k++){
-                if (valueEvaluated.elements[k].realType !== this.type){
+                if (valueEvaluated.elements[k].realType !== this.json.varType){
                     
                     // sendRuntimeError(`at least one element in the array did not match declared type:\n\texpected type: ${this.type.slice(7)} \n\texpression type: ${valueEvaluated.jsonType}`, this.json);
-                    throw new PraxlyErrorException(`at least one element in the array did not match declared type:\n\texpected type: ${this.type.slice(7)} \n\texpression type: ${valueEvaluated.jsonType}`, this.json.line);
+                    throw new PraxlyErrorException(`at least one element in the array did not match declared type:\n\texpected type: ${this.json.varType} \n\texpression type: ${valueEvaluated.realType}`, this.json.line);
                 }
             }
         environment.variableList[this.name] = valueEvaluated;
@@ -938,6 +930,10 @@ class Praxly_Location{
             throw new PraxlyErrorException(`Error: variable name ${this.name} does not currently exist in this scope or its parents scpe: \n ${environment.variableList}`, this.json.line);
         }
          if (this.isArray){
+            var index = this.index.evaluate(environment).value;
+            if (index >= storage[this.name].elements.length){
+                throw new PraxlyErrorException(`index ${index} out of bounds for array named ${this.name}`, this.json.line);
+            }
             return storage[this.name].elements[this.index.evaluate(environment).value].evaluate(environment);
         } else{
             return storage[this.name].evaluate(environment);

@@ -170,7 +170,7 @@ class Token {
       this.length = this.source?.length;
       this.token_so_far = "";
       this.keywords = ["if", "else", "end", "print", "println", "for", "while", 'and', 'or', 'do', 'repeat', 'until', 'not', 'return'];
-      this.types = ['int', 'double', 'String', 'char', 'float', 'boolean', 'short', 'void', 'int[]'];
+      this.types = ['int', 'double', 'String', 'char', 'float', 'boolean', 'short', 'void'];
       this.startToken = 0;
       this.currentLine = 1;
     }
@@ -511,29 +511,9 @@ class Parser {
     }
   }
 
-
-
-
-
-  //peeks ahead to determine if this annoying array syntax is correct.
-  //assumes that if an = is seen before a newline, it must be an assignment
-  has_array_reference_assignment(){
-    var j = this.i;
-    while(j < this.length && this.tokens[j].token_type !== '\n'){
-      if(this.tokens[j].token_type === 'Assignment'){
-        return true;
-      }
-      j++
-    }
-    return false;
-  }
-
-  advance() {
+  advance(){
     this.i++;
   }
-
-
-
 
   parse() {
     if (!this.tokens){
@@ -619,12 +599,8 @@ class Parser {
       let result = {
         blockID: 'code', 
         line: line, 
-         
-         line,
-        type: 'ARRAY',
+        type: 'ARRAY_LITERAL',
       };
-      // result.type = 'ARRAY';
-      // result.name = this.tokens[this.i].value;
       var args = [];
       this.advance();
       var loopBreak = 0;
@@ -638,8 +614,8 @@ class Parser {
         }
         loopBreak++;
       }
-      console.log('here are the array contents');
-      console.log(args);
+      // console.log('here are the array contents');
+      // console.log(args);
       result.params = args;
       if (this.hasNot('}')){
         textError("parsing", "didnt detect closing curlybrace in the array declaration", this.tokens[this.i].line);
@@ -1035,14 +1011,24 @@ parse_location(){
 
 //this one kinda a mess ngl, but my goal is to support variable initialization and assignment all together
 parse_funcdecl_or_vardecl(){
+  var isArray = false;
+  var type = "VARDECL";
   var vartype = this.tokens[this.i].value.toUpperCase();
   this.advance();
+  if (this.has('[')){
+    this.advance();
+    if (this.has(']')){
+      this.advance();
+      type = "ARRAY_ASSIGNMENT"
+      isArray = true;
+    }
+  }
   var location = this.parse_location();
   var result = {
-    type: "VARDECL",
+    type: type,
     varType: vartype, 
     name: location.name,
-    isArray: false,
+    isArray: isArray,
     blockID: 'code',
     location: location,
     line: this.tokens[this.i].line,
