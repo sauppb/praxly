@@ -412,7 +412,11 @@ class Praxly_print {
     evaluate(environment) {
         // console.log(this.expression.evaluate(environment));
         var child = this.expression.evaluate(environment);
-        addToPrintBuffer((child.value.toString()));
+        var result = child.value.toString();
+        if ((child.realType === TYPES.DOUBLE || child.realType === TYPES.FLOAT) && result.indexOf('.') === -1){
+            result += '.0';
+        }
+        addToPrintBuffer(result);
         return null;
     }
 }
@@ -425,7 +429,12 @@ class Praxly_println {
     }
     evaluate(environment) {
         // console.log(this.expression.evaluate(environment));
-        addToPrintBuffer((this.expression.evaluate(environment).value.toString()) + '<br>');
+        var child = this.expression.evaluate(environment);
+        var result = child.value.toString();
+        if ((child.realType === TYPES.DOUBLE || child.realType === TYPES.FLOAT) && result.indexOf('.') === -1){
+            result += '.0';
+        }
+        addToPrintBuffer(result + '<br>');
         return null;
     }
 }
@@ -851,10 +860,17 @@ class Praxly_vardecl{
                 // sendRuntimeError(`varible assignment does not match declared type:\n\texpected type: ${this.type} \n\texpression type: ${valueEvaluated.realType}`, this.json);
                 throw new PraxlyErrorException(`varible assignment does not match declared type:\n\texpected type: ${this.type} \n\texpression type: ${valueEvaluated.realType}`, this.json.line);
             }
+<<<<<<< HEAD
         environment.variableList[this.name] = valueEvaluated;
         
         console.log(environment);
         return;
+=======
+            // environment.variableList[this.name] = this.expression;
+                  
+        }
+        environment.variableList[this.name] =  litNode_new(this.type, valueEvaluated.value, this.json);
+>>>>>>> ddc4698acd2a2b3183e236ce32fbb3b961f308eb
     }
 }
 
