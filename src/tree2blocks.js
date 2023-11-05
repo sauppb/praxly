@@ -248,7 +248,7 @@ export const tree2blocks = (workspace, blockjson) => {
             result.setFieldValue(blockjson?.name, 'PROCEDURE_NAME');
             
             result.getInput('PARAMS').connection.connect(params?.outputConnection);
-            var argsList = blockjson?.params;
+            var argsList = blockjson?.args;
             for (var i = 0; i < ( argsList?.length ?? 0); i++){
                 params.appendValueInput(`PARAM_${i}`);
                 var argument = tree2blocks(workspace, argsList[i]);

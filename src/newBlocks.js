@@ -1035,31 +1035,31 @@ export function definePraxlyBlocks(workspace) {
                             "options": [
                               [
                                 "int",
-                                "int"
+                                "INT"
                               ],
                               [
                                 "boolean",
-                                "boolean"
+                                "BOOLEAN"
                               ],
                               [
                                 "double",
-                                "double"
+                                "DOUBLE"
                               ],
                               [
                                 "char",
-                                "char"
+                                "CHAR"
                               ],
                               [
                                 "String",
-                                "String"
+                                "STRING"
                               ],
                               [
                                 "float",
-                                "float"
+                                "STRING"
                               ], 
                               [
                                 'short', 
-                                'short'
+                                'SHORT'
                               ],
                               
                             ]

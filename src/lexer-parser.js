@@ -1039,6 +1039,7 @@ parse_funcdecl_or_vardecl(){
     result.value = this.parse_boolean_operation();
   } else{
     result.type = "FUNCDECL";
+    result.returnType = vartype.toUpperCase();
     this.match_and_discard_next_token('(');
     var params = [];
       var stopLoop = 0;
@@ -1146,6 +1147,9 @@ codeBlock(endToken) {
    const argsArray = Array.from(arguments);
   //  while (!this.eof) {
   while (this.hasNotAny(argsArray)) {
+    while(this.has('\n')){
+      this.advance();
+    }
     praxly_blocks.push(this.parse_statement());
     this.advance();
    }
@@ -1159,9 +1163,7 @@ codeBlock(endToken) {
 
 parse_statement() {
   // while loop here?
-  while(this.has('\n')){
-    this.advance();
-  }
+  
   var line = this.tokens[this.i].line;
   
   let result = {

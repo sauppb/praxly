@@ -411,7 +411,7 @@ export const tree2text = (blockjson, startIndex, indentation) => {
             blockjson.startIndex = startIndex;
             var result =  blockjson.name + '(';
             blockjson.endIndex = startIndex + result.length - 1;
-            var argsList = blockjson.params;
+            var argsList = blockjson.args;
             
             if (argsList !== null && argsList.length > 0){
                 argsList.forEach(element => {

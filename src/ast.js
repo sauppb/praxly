@@ -33,13 +33,13 @@ class ReturnException extends Error {
 export const createExecutable = (blockjson) => {
     if (typeof blockjson === 'undefined' || typeof blockjson.type === 'undefined'  ) {
         defaultError("invalid program.");
-        console.error('error constructing the tree: reached an invalid branch that is either undefined or has an undefined type');
+        console.error(blockjson);
         return new Praxly_invalid(blockjson);
       }
       
 
-
-    // console.log(blockjson.type);
+    
+    console.warn(blockjson.type);
     switch(blockjson.type) {
         case 'INT':
             return new Praxly_int( blockjson.value, blockjson);
@@ -224,7 +224,7 @@ export const createExecutable = (blockjson) => {
             return new Praxly_function_declaration(blockjson.returnType, blockjson.name, blockjson.params, contents, blockjson);
         case 'FUNCTION_CALL':
             var args = [];
-            blockjson.params.forEach((arg) => {
+            blockjson.args.forEach((arg) => {
                 args.push(createExecutable(arg));
             });
             return new Praxly_function_call(blockjson.name, args, blockjson);
@@ -1179,8 +1179,8 @@ class Praxly_function_call {
         if (returnType === 'float'){
             returnType = 'double';
         }
-        if ((result === "Exit_Success" && returnType !== 'void') || (returnType !== (result?.jsonType?.slice(7) ?? "void"))){
-            throw new PraxlyErrorException(`this function has an invalid return type.\n\t Expected: ${returnType}\n\t Actual: ${result?.jsonType?.slice(7) ?? "void"} `, this.json.line);
+        if ((result === "Exit_Success" && returnType !== 'void') || (returnType !== (result?.realType ?? "void"))){
+            throw new PraxlyErrorException(`this function has an invalid return type.\n\t Expected: ${returnType}\n\t Actual: ${result?.realType ?? "void"} `, this.json.line);
             // sendRuntimeError(`this function has an invalid return type.\n\t Expected: ${returnType}\n\t Actual: ${result?.jsonType?.slice(7) ?? "void"} `, this.json);
             // console.error(`invalid return type: ${returnType} `);
         }

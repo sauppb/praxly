@@ -285,6 +285,7 @@ export const makeGenerator = () => {
               }, 
               location: {
                 name: variableName,
+                type: "LOCATION",
               },
             blockID: block.id, 
             varType: varType.toUpperCase(),
@@ -427,7 +428,7 @@ export const makeGenerator = () => {
     }
 
     praxlyGenerator['praxly_procedure_block'] = (block)=> {
-        var returnType = block.getFieldValue('RETURNTYPE');
+        var returnType = block.getFieldValue('RETURNTYPE').toUpperCase();
         // console.log(`field input is ${varType}`);
         var args = block.getInputTargetBlock('PARAMS');
         var argschildren = args.getChildren(true);
@@ -444,7 +445,7 @@ export const makeGenerator = () => {
 
         
         return {
-            type: 'FUNCTION_ASSIGNMENT', 
+            type: 'FUNCDECL', 
             name: procedureName, 
             params: argsList,
             returnType: returnType,
@@ -468,7 +469,7 @@ export const makeGenerator = () => {
             blockID: block.id, 
             type: 'FUNCTION_CALL', 
             name: procedureName, 
-            params: argsList, 
+            args: argsList, 
         }
     }
 
