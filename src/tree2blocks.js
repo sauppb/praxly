@@ -164,30 +164,37 @@ export const tree2blocks = (workspace, blockjson) => {
             result.getInput('ALTERNATIVE').connection.connect(alternatives[0]?.previousConnection);
             break;
              
-        case 'VARIABLE':
-            var result = workspace.newBlock('praxly_variable_block');
-            result.setFieldValue(blockjson.name, "LITERAL");
-            break;
+        case 'LOCATION':
+            if (blockjson.isArray){
+                
+                var result = workspace.newBlock('praxly_array_reference_block');
+                result.setFieldValue(blockjson.name, "VARIABLENAME");
+                var child = tree2blocks(workspace, blockjson?.index);
+                result.getInput('INDEX').connection.connect(child?.outputConnection);
+                    break;
+            } else {
+                var result = workspace.newBlock('praxly_variable_block');
+                result.setFieldValue(blockjson.name, "LITERAL");
+                break;
+
+            }
              
 
         case 'ASSIGNMENT':
             var expression = tree2blocks(workspace, blockjson?.value); 
-            if (blockjson.varType === 'reassignment'){
-                var result = workspace.newBlock('praxly_reassignment_block');
-            }
-            else {
-                var result = workspace.newBlock('praxly_assignment_block');
-                if (blockjson.varType === 'Praxly_array'){
-                    result.dispose();
-                    result = workspace.newBlock('praxly_array_assignment_block');
-                    result.setFieldValue('int[]', "VARTYPE");
-                } else{
-                    var vartype = blockjson.varType.toLowerCase();
-                    vartype = vartype === "string" ? "String" : vartype;
-                    result.setFieldValue(vartype, "VARTYPE");
+            
+                var result = workspace.newBlock('praxly_reassignment_expression_block');
+
+                // if (blockjson.varType === 'Praxly_array'){
+                //     result = workspace.newBlock('praxly_array_assignment_block');
+                //     result.setFieldValue('int[]', "VARTYPE");
+                // } else{
+                //     var vartype = blockjson.varType.toLowerCase();
+                //     vartype = vartype === "string" ? "String" : vartype;
+                //     result.setFieldValue(vartype, "VARTYPE");
                     
-                }
-            }
+                // }
+            // }
             
             result.setFieldValue(blockjson.name, "VARIABLENAME");
             result.getInput('EXPRESSION').connection.connect(expression?.outputConnection);
@@ -313,12 +320,6 @@ export const tree2blocks = (workspace, blockjson) => {
             var result = params;
             break;
 
-        case 'ARRAY_REFERENCE':
-            var result = workspace.newBlock('praxly_array_reference_block');
-            result.setFieldValue(blockjson.name, "VARIABLENAME");
-            var child = tree2blocks(workspace, blockjson?.index);
-            result.getInput('INDEX').connection.connect(child?.outputConnection);
-            break;
 
         case 'ARRAY_REFERENCE_ASSIGNMENT':
             var result = workspace.newBlock('praxly_array_reference_reassignment_block');
