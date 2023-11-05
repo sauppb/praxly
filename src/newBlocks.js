@@ -914,9 +914,8 @@ export function definePraxlyBlocks(workspace) {
             "args0": [
             
               {
-                "type": "field_input",
-                "name": "VARIABLENAME",
-                "text": "i"
+                "type": "input_value",
+                "name": "LOCATION"
               },
               {
                 "type": "input_value",

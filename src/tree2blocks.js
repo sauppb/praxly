@@ -195,9 +195,9 @@ export const tree2blocks = (workspace, blockjson) => {
                     
                 // }
             // }
-            
-            result.setFieldValue(blockjson.name, "VARIABLENAME");
+            var location = tree2blocks(workspace, blockjson.location);
             result.getInput('EXPRESSION').connection.connect(expression?.outputConnection);
+            result.getInput('LOCATION').connection.connect(location?.outputConnection);
             break;
              
         case 'WHILE':
@@ -258,7 +258,7 @@ export const tree2blocks = (workspace, blockjson) => {
             params.initSvg();
             break;
 
-        case 'FUNCTION_ASSIGNMENT':
+        case 'FUNCDECL':
             var returnType = blockjson?.returnType;
             var argsList = blockjson?.params;
             var result = workspace.newBlock('praxly_procedure_block');
@@ -309,7 +309,7 @@ export const tree2blocks = (workspace, blockjson) => {
 
             }
             break;
-        case 'ARRAY':    
+        case 'ARRAY_LITERAL':    
             var argsList = blockjson?.params;
             var params = workspace.newBlock('praxly_parameter_block');
             for (var i = 0; i < ( argsList?.length ?? 0); i++){

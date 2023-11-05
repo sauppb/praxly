@@ -1159,6 +1159,9 @@ codeBlock(endToken) {
 
 parse_statement() {
   // while loop here?
+  while(this.has('\n')){
+    this.advance();
+  }
   var line = this.tokens[this.i].line;
   
   let result = {
@@ -1543,13 +1546,6 @@ parse_statement() {
   // }
 
   // expressions can be statements too, might cause bugs
-  else if (this.has('/n')){
-
-    return {
-      type: "EMPTYLINE", 
-      blockID: "code"
-    };
-  }
 
   else {
     // this is a stand alone expression as a satement.

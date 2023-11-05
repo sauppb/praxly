@@ -100,9 +100,10 @@ export const makeGenerator = () => {
         var index = block.getInputTargetBlock("INDEX");
         return {
             blockID: block.id,
-            type: 'ARRAY_REFERENCE', 
+            type: 'LOCATION', 
             name: block.getFieldValue("VARIABLENAME"),
             index: praxlyGenerator[index.type](index),
+            isArray: true,
         } 
     }
 
@@ -115,6 +116,7 @@ export const makeGenerator = () => {
         const input = block.getFieldValue('LITERAL');
         const node = {
             blockID: block.id,
+            isArray: false,
             value: input,
         }
         if (input[0] === '\"' && input[input.length - 1] === '\"') {
@@ -126,7 +128,7 @@ export const makeGenerator = () => {
         }else if (containsOnlyNumbers(input)) {
             node.type = 'INT';
         } else {
-            node.type = 'VARIABLE';
+            node.type = 'LOCATION';
             node.name = input;
         }
         return node;
@@ -147,7 +149,7 @@ export const makeGenerator = () => {
         }else if (containsOnlyNumbers(input)) {
             node.type = 'INT';
         } else {
-            node.type = 'VARIABLE';
+            node.type = 'LOCATION';
             node.name = input;
         }
         return node;
@@ -278,8 +280,12 @@ export const makeGenerator = () => {
             value: {
                 blockID: args.id, 
                 params: argsList,
-                type: 'ARRAY',
+                type: 'ARRAY_LITERAL',
+                isArray: true,
               }, 
+              location: {
+                name: variableName,
+              },
             blockID: block.id, 
             varType: varType.toUpperCase(),
 
@@ -338,16 +344,18 @@ export const makeGenerator = () => {
 
     praxlyGenerator['praxly_reassignment_expression_block'] = (block)=> {
         var varType = block.getFieldValue('VARTYPE');
-        console.log(`field input is ${varType}`);
-        var variableName = block.getFieldValue('VARIABLENAME');
+        // console.log(`field input is ${varType}`);
+        var location = block.getInputTargetBlock('LOCATION');
         var expression = block.getInputTargetBlock('EXPRESSION'); 
+        var  loc = praxlyGenerator[location.type](location);
         var value = praxlyGenerator[expression.type](expression);
         return {
             type: 'ASSIGNMENT', 
-            name: variableName, 
+            name: loc.name,
+            location: loc,
             value: value, 
             blockID: block.id, 
-            varType: 'reassignment'
+            varType: varType,
 
         }
     }
