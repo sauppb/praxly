@@ -1,3 +1,4 @@
+
 import { textEditor } from "./lexer-parser";
 
 
@@ -200,6 +201,15 @@ export const tree2blocks = (workspace, blockjson) => {
             result.getInput('LOCATION').connection.connect(location?.outputConnection);
             break;
              
+        case "VARDECL":
+            var result = workspace.newBlock('praxly_assignment_block');
+            var expression = tree2blocks(workspace, blockjson?.value);
+            // expression.initSvg();
+            result.setFieldValue(blockjson.varType.toLowerCase(), "VARTYPE");
+            result.setFieldValue(blockjson.name, "VARIABLENAME");
+            result.getInput('EXPRESSION').connection.connect(expression.outputConnection);
+            break;
+
         case 'WHILE':
             var result = workspace.newBlock('praxly_while_loop_block');
             var condition = tree2blocks(workspace, blockjson?.condition);
@@ -285,7 +295,8 @@ export const tree2blocks = (workspace, blockjson) => {
             var result = workspace.newBlock('praxly_for_loop_block');
             try {
                 var initialization = workspace.newBlock('praxly_assignment_expression_block');
-                var incriment = workspace.newBlock('praxly_reassignment_expression_block');
+                // var incriment = workspace.newBlock('praxly_reassignment_expression_block');
+                var incriment = tree2blocks(workspace, blockjson?.incriment)
                 var expression = tree2blocks(workspace, blockjson?.initialization.value); 
                 initialization.setFieldValue(blockjson?.initialization.varType.toUpperCase(), "VARTYPE");
                 initialization.setFieldValue(blockjson?.initialization.name, "VARIABLENAME");
@@ -293,14 +304,14 @@ export const tree2blocks = (workspace, blockjson) => {
                 result.getInput('INITIALIZATION').connection.connect(initialization?.outputConnection);
                 var condition = tree2blocks(workspace, blockjson?.condition);
                 result.getInput('CONDITION').connection.connect(condition.outputConnection);
-                var expression2 = tree2blocks(workspace, blockjson?.incriment.value); 
-                incriment.setFieldValue(blockjson?.incriment.name, "VARIABLENAME");
-                incriment.getInput('EXPRESSION').connection.connect(expression2?.outputConnection);
+                // var expression2 = tree2blocks(workspace, blockjson?.incriment.value); 
+                // incriment.setFieldValue(blockjson?.incriment.name, "VARIABLENAME");
+                // incriment.getInput('EXPRESSION').connection.connect(expression2?.outputConnection);
                 result.getInput('REASSIGNMENT').connection.connect(incriment?.outputConnection);
                 var codeblocks = tree2blocks(workspace, blockjson?.statement);
                 result.getInput('CODEBLOCK').connection.connect(codeblocks[0]?.previousConnection);
                 initialization.initSvg();
-                incriment.initSvg();
+                // incriment.initSvg();
             }
             catch (error)  {
                 console.error('An error occurred: could not generate the nested block', error);

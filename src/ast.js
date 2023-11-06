@@ -1179,7 +1179,7 @@ class Praxly_function_call {
         if (returnType === 'float'){
             returnType = 'double';
         }
-        if ((result === "Exit_Success" && returnType !== 'void') || (returnType !== (result?.realType ?? "void"))){
+        if ((result === "Exit_Success" && returnType !== 'VOID') || (returnType !== (result?.realType ?? "VOID"))){
             throw new PraxlyErrorException(`this function has an invalid return type.\n\t Expected: ${returnType}\n\t Actual: ${result?.realType ?? "void"} `, this.json.line);
             // sendRuntimeError(`this function has an invalid return type.\n\t Expected: ${returnType}\n\t Actual: ${result?.jsonType?.slice(7) ?? "void"} `, this.json);
             // console.error(`invalid return type: ${returnType} `);
@@ -1363,7 +1363,7 @@ function can_negate(operation, type1, json) {
             return type1; 
         }
     }  if (operation === OP.NOT) {
-        if (type1 === Types.BOOLEAN){
+        if (type1 === TYPES.BOOLEAN){
             return type1;
         }
     }

@@ -254,11 +254,15 @@ export const makeGenerator = () => {
         var expression = block.getInputTargetBlock('EXPRESSION'); 
         var value = praxlyGenerator[expression.type](expression);
         return {
-            type: 'ASSIGNMENT', 
+            type: 'VARDECL', 
             name: variableName, 
             value: value, 
             blockID: block.id, 
             varType: varType.toUpperCase(),
+            location: {
+                name: variableName,
+                type: "LOCATION",
+              },
 
         }
     }
@@ -334,13 +338,20 @@ export const makeGenerator = () => {
         var expression = block.getInputTargetBlock('EXPRESSION'); 
         var value = praxlyGenerator[expression.type](expression);
         return {
-            type: 'ASSIGNMENT', 
+            type: 'VARDECL', 
             name: variableName, 
             value: value, 
             blockID: block.id, 
             varType: varType.toUpperCase(),
+            location: {
+                name: variableName,
+                type: "LOCATION",
+              },
 
         }
+
+
+
     }
 
     praxlyGenerator['praxly_reassignment_expression_block'] = (block)=> {

@@ -2,6 +2,10 @@ import ace from 'ace-builds';
 import { FieldNumber } from 'blockly';
 import { tokenize } from './newLexer';
 import { praxlyDefaultTheme } from './theme';
+import { TYPES } from './ast';
+
+
+
 
 
 
@@ -1215,7 +1219,7 @@ parse_statement() {
       // this.advance();
       if (this.has(';')) {
         this.advance();
-        result.incriment = this.parse_statement();
+        result.incriment = this.parse_atom();
         if (this.hasNot(')')){
           return result;
         }
@@ -1578,4 +1582,3 @@ parse_statement() {
 
 
 }
-
