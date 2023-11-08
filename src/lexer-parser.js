@@ -8,7 +8,7 @@ import { TYPES } from './ast';
 
 
 
-
+ace.config.set('basePath', '/node_modules/ace-builds/src-min-noconflict');
 export const textEditor = ace.edit("aceCode", {fontSize: 19, mode: 'ace/mode/java'});
 // textEditor.session.setMode("ace/mode/java");
 
