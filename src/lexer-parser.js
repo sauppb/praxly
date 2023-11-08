@@ -1,8 +1,4 @@
 import ace from 'ace-builds';
-import { FieldNumber } from 'blockly';
-import { tokenize } from './newLexer';
-import { praxlyDefaultTheme } from './theme';
-import { TYPES } from './ast';
 
 
 
@@ -1041,7 +1037,7 @@ parse_funcdecl_or_vardecl(){
   if (this.has('Assignment')){
     this.advance();
     result.value = this.parse_boolean_operation();
-  } else{
+  } if (this.has('(')){
     result.type = "FUNCDECL";
     result.returnType = vartype.toUpperCase();
     this.match_and_discard_next_token('(');
