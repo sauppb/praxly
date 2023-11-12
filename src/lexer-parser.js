@@ -4,7 +4,7 @@ import ace from 'ace-builds';
 
 
 
-ace.config.set('basePath', '/node_modules/ace-builds/src-min-noconflict');
+ace.config.set('basePath', './node_modules/ace-builds/src-min-noconflict');
 export const textEditor = ace.edit("aceCode", {fontSize: 19, mode: 'ace/mode/java'});
 // textEditor.session.setMode("ace/mode/java");
 
