@@ -1,9 +1,6 @@
 import ace from 'ace-builds';
 
 
-
-
-
 ace.config.set('basePath', './node_modules/ace-builds/src-min-noconflict');
 export const textEditor = ace.edit("aceCode", {fontSize: 19, mode: 'ace/mode/java'});
 // textEditor.session.setMode("ace/mode/java");
@@ -34,7 +31,10 @@ export function addToPrintBuffer (message){
   printBuffer += message;
 }
 
-
+/**
+ * this clears the output buffer. It does not clear what the user sees on their screen. 
+ * It also clears all of the ace error annotations. 
+ */
 export function clearOutput() {
   annotationsBuffer = [];
   printBuffer = "";
@@ -45,9 +45,12 @@ export function clearOutput() {
   });
 }
 
-
-// might delete
-// this is a unique function that will throw an error, but not halt execution. That way we can attempt to build as accurate of a tree as possible before shutting down. 
+/**
+ * This is a unique function that will throw a compiling error. 
+ * @param {string} type the type of error
+ * @param {string} error the error message
+ * @param {number} line the error line number 
+ */
 export function textError(type, error, line){
   errorOutput += `<pre>${type} error occured on line ${line}:  ${error} \n\t </pre>`;
   appendAnnotation(error, line);
@@ -73,7 +76,11 @@ export function sendRuntimeError(errormessage, json){
 
 }
 
-
+/**
+ * This function will create the little 'x' on a message in Praxly's code editor
+ * @param {string} errorMessage the string that you want to passs as the error
+ * @param {number} line the line number that the error occured on
+ */
 export function appendAnnotation(errorMessage, line) {
   var annotation = {
     row: line - 1, // no idea why the rows start with zero here but start with 1 everywhere else, but okay
@@ -86,10 +93,18 @@ export function appendAnnotation(errorMessage, line) {
 
 }
 
+/**
+ * This will highlight a line of code
+ * @param {number} line the desired line that you want to highlight
+ * @param {boolean} debug set this flag to true if this is being used for debugging. (it changes the color to green)
+ * @returns the marker id associated with the marker. This should not be needed.
+ */
 function highlightLine(line, debug = false) {
   var session = textEditor.session;
   
-  var errorRange = indextoAceRange(line - 1);
+  // var errorRange = indextoAceRange(line - 1);
+  var Range = ace.require('ace/range').Range;
+  var errorRange = new Range(line, 0, line - 1, 1);
   var markerId = session.addMarker(errorRange, 'error-marker', 'fullLine');
 
   var markerCss = `
@@ -124,8 +139,6 @@ function highlightLine(line, debug = false) {
 
 
 
-// Get the underlying DOM element of the Ace editor
-
 export const indextoAceRange = (line) => {
 
   var Range = ace.require('ace/range').Range;
@@ -133,15 +146,17 @@ export const indextoAceRange = (line) => {
 };
 
 
-
-export const text2tree = () => {
+/**
+ * this will take all of the text currently in the editor and generate the corresponding Intermediate Representation .
+ * @returns the Intermediate Representation as a tree structure in json format.
+ */
+export function text2tree () {
   let code = textEditor?.getValue();
 
     console.log(code);
     let lexer = new Lexer(code);
     let tokens = lexer?.lex();
-    // console.log('here are the new lexer tokens:');
-    // console.log(tokenize(code));
+
     console.info('here are the tokens:');
     console.debug(tokens);
     let parser = new Parser(tokens);
@@ -258,7 +273,6 @@ class Token {
           else {
             textError('lexing', 'looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.',commentStart, this.currentLine);
             // throw new PraxlyErrorException('looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.', this.currentLine);
-            // appendAnnotation('looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.',commentStart, this.i);
             this.i -= 1;
             this.emit_token();
   
@@ -363,6 +377,7 @@ class Token {
               
             }
             else {
+              // throw new PraxlyErrorException('looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\").', this.currentLine);
               textError('lexing', 'looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\").',stringStart);
               this.i -= 1;
               this.emit_token();
@@ -673,75 +688,9 @@ class Parser {
         }
       }
       return l;
-      // this.advance();
-      // if(this.has('[')){
-      //   this.advance();
-      //   var index = this.parse_boolean_operation();
-      //   if (this.has("]")) {
-      //     this.advance();
-      //   } else {
-      //     textError('parsing', 'did not detect closing bracket', line, );
-      //     // console.log("did not detect closing parentheses");
-      //   }
-      //   return {
-      //     name: tok.value, 
-      //     type: 'ARRAY_REFERENCE',
-      //     index: index,
-      //     blockID: "code",
-      //     line: line,         
-          
-      //   };
-      // }
-      // return {
-      //   name: tok.value, 
-      //   type: 'Location',
-      //   blockID: "code",
-      //   line: line, 
-        
-      //    line, 
-          
-        
-      // };
-    
-
-    // } else if (this.has('function')){
-    //     let result = {
-    //       blockID: 'code', 
-    //       line: line, 
-           
-    //        line
-    //     };
-    //     result.type = 'FUNCTION_CALL';
-    //     result.name = this.tokens[this.i].value;
-    //     this.advance();
-    //     var args = [];
-    //     if (this.has('(')){
-    //       this.advance();
-    //       var loopBreak = 0;
-    //       while (this.hasNot(')') &&  loopBreak < MAX_LOOP) {
-    //         // this.advance();
-    //         var param = this.parse_boolean_operation();
-    //         args.push(param);
-    //         if (this.has(',')) {
-    //           this.advance();
-              
-    //         }
-    //         loopBreak++;
-    //       }
-    //       console.log('here are the function call params:');
-    //       console.log(args);
-    //       result.params = args;
-    //       if (this.hasNot(')')){
-    //         appendAnnotation("didnt detect closing parintheses in the arguments of  a function call", this.tokens[this.i].line);
-    //         // console.error('didnt detect closing parintheses in the arguments of  a function call');
-    //       }
-          
-    //       this.advance();
-    //       return result;
-    //     }
+      
       
     }else if (this.has("\n")){
-      // this.advance();
       return;
     
     } else {
@@ -1193,7 +1142,6 @@ parse_statement() {
         return result;
       }
       else {
-        // sendRuntimeError("missing the \'end if\' token", blockjson);
         textError('compile time', "missing the \'end if\' token", result.line);
         return {
           type: 'INVALID'

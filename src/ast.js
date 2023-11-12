@@ -1,4 +1,5 @@
 
+import { TYPES } from "./common";
 import { PraxlyErrorException, appendAnnotation, defaultError, sendRuntimeError } from "./lexer-parser";
 import { printBuffer } from "./lexer-parser";
 import { addToPrintBuffer } from "./lexer-parser";
@@ -1221,24 +1222,23 @@ export const OP = {
 
 
 
-export const TYPES = {
-    INT: "INT",
-    DOUBLE: "DOUBLE",
-    STRING: "STRING",
-    BOOLEAN: "BOOLEAN",
-    FLOAT: "FLOAT",
-    SHORT: "SHORT",
-    CHAR: "CHAR",
-    VOID: "VOID",
-    INVALID: "INVALID"
-  };
-
+// export const TYPES = {
+//     INT: "INT",
+//     DOUBLE: "DOUBLE",
+//     STRING: "STRING",
+//     BOOLEAN: "BOOLEAN",
+//     FLOAT: "FLOAT",
+//     SHORT: "SHORT",
+//     CHAR: "CHAR",
+//     VOID: "VOID",
+//     INVALID: "INVALID"
+//   };
 
 
 function can_assign(varType, expressionType, line) {
     if (varType === TYPES.INT) {
         if (expressionType === TYPES.DOUBLE || expressionType === TYPES.FLOAT){
-            throw new PraxlyErrorException(`incompatible types: possible lossy conversion from ${expressionType}to ${varType}`, line);
+            throw new PraxlyErrorException(`incompatible types: possible lossy conversion from ${expressionType} to ${varType}`, line);
         }
 
       return expressionType === TYPES.INT || expressionType === TYPES.SHORT || expressionType === TYPES.CHAR;
