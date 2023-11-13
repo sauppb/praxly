@@ -124,7 +124,7 @@ export const makeGenerator = () => {
             node.type = "STRING";
             node.value = input.slice(1, -1);
         } else if (input.includes('.')) {
-            node.type = 'DOUBLE';
+            node.type = TYPES.DOUBLE;
 
         }else if (containsOnlyNumbers(input)) {
             node.type = TYPES.INT;
@@ -145,7 +145,7 @@ export const makeGenerator = () => {
             node.type = "STRING";
             node.value = input.slice(1, -1);
         } else if (input.includes('.')) {
-            node.type = 'DOUBLE';
+            node.type = TYPES.DOUBLE;
 
         }else if (containsOnlyNumbers(input)) {
             node.type = TYPES.INT;

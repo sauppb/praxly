@@ -1,24 +1,13 @@
 
 import { TYPES } from "./common";
-import { workspace } from "./main";
-import { tree2blocks } from "./tree2blocks";
 
-// test change
 
 export const tree2text = (blockjson, startIndex, indentation) => {
-    
-    // try {
-        console.log(blockjson.type);
-        // console.log(`startindex is ${startIndex}\n`);
-        
-    // }
-    // catch (error) {
-    //     console.error('An error occurred: could not generate code for the nested block', error);
-    //     return "";
-    // }
+    console.log(blockjson.type);
+
     switch(blockjson.type) {
         case TYPES.INT:
-        case 'BOOLEAN':
+        case TYPES.BOOLEAN:
             
             try {
                 var result = blockjson.value.toString();
@@ -47,7 +36,7 @@ export const tree2text = (blockjson, startIndex, indentation) => {
             catch (error){
                 return " ";
             }
-        case 'STRING':
+        case TYPES.STRING:
             try {
                 var result = '\"' + blockjson.value + '\"';
                 blockjson.startIndex = startIndex;
@@ -392,7 +381,7 @@ export const tree2text = (blockjson, startIndex, indentation) => {
             blockjson.beg = startIndex;
             blockjson.startIndex = startIndex;
             var vartype = blockjson.returnType.toString().toLowerCase();
-            vartype = vartype === "string" ? "String" : vartype;
+            // vartype = vartype === "string" ? "String" : vartype;
             var result = vartype + ' ' + blockjson.name + '(';
             blockjson.endIndex = startIndex + result.length - 1;
             var argsList = blockjson.params;

@@ -1,8 +1,5 @@
 
-import { TYPES } from "./common";
-import { textEditor } from "./lexer-parser";
-
-
+import { TYPES, textEditor } from "./common";
 
 function connectStatements(statements) {
     for (let i = 0; i < statements.length - 1; i++) {
@@ -65,12 +62,12 @@ export const tree2blocks = (workspace, blockjson) => {
             }
             break;
 
-        case 'STRING':
+        case TYPES.STRING:
             var result = workspace.newBlock('praxly_literal_block');
             result.setFieldValue('\"' + blockjson.value + '\"', "LITERAL");
             break;
              
-        case 'DOUBLE':
+        case TYPES.DOUBLE:
         case 'CHAR':
             var result = workspace.newBlock('praxly_literal_block');
             result.setFieldValue(blockjson.value, "LITERAL");
