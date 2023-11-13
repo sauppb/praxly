@@ -40,6 +40,17 @@ export const TYPES = {
     NEGATE: "NEGATE",
 };
 
+
+
+
+/**
+ * the below functions are not yet migrated yet.
+ */
+
+
+
+
+
 export const NODETYPES = {
     ...OP, 
     ...TYPES, 
@@ -83,6 +94,12 @@ export var errorOutput = "";
 export var blockErrorsBuffer = {};
 export var annotationsBuffer = [];
 export var markersBuffer = [];
+
+
+
+// gotten to here
+
+
 
 export function addToPrintBuffer (message){
   printBuffer += message;

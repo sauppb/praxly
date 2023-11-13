@@ -1,4 +1,5 @@
 import ace from 'ace-builds';
+import { MAX_LOOP, TYPES, annotationsBuffer, blockErrorsBuffer, errorOutput, markersBuffer, printBuffer } from './common';
 
 
 ace.config.set('basePath', './node_modules/ace-builds/src-min-noconflict');
@@ -8,24 +9,23 @@ export const textEditor = ace.edit("aceCode", {fontSize: 19, mode: 'ace/mode/jav
 // var AceRange = ace.require('ace/range').Range;
 
 
+// export class PraxlyErrorException extends Error {
+//   constructor(message, line) {
+//     super(`<pre>error occured on line ${line}:\n\t${message}</pre>`);
+//     this.errorMessage = this.message;
+//     appendAnnotation(message, line);
+//     errorOutput += this.message;
 
-export class PraxlyErrorException extends Error {
-  constructor(message, line) {
-    super(`<pre>error occured on line ${line}:\n\t${message}</pre>`);
-    this.errorMessage = this.message;
-    appendAnnotation(message, line);
-    errorOutput += this.message;
+//   }
+// }
+// export const MAX_LOOP = 100;
 
-  }
-}
+// export var printBuffer = "";
+// export var errorOutput = "";
+// export var blockErrorsBuffer = {};
+// export var annotationsBuffer = [];
+// export var markersBuffer = [];
 
-export const MAX_LOOP = 100;
-
-export var printBuffer = "";
-export var errorOutput = "";
-export var blockErrorsBuffer = {};
-export var annotationsBuffer = [];
-export var markersBuffer = [];
 
 export function addToPrintBuffer (message){
   printBuffer += message;
@@ -560,7 +560,7 @@ class Parser {
       this.advance();
       return {
         value: tok.value, 
-        type: tok.token_type,
+        type: TYPES.INT,
         blockID: "code",
         line: line, 
          line, 

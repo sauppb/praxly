@@ -2,27 +2,25 @@ import Blockly from 'blockly';
 import {praxlyDefaultTheme } from "./theme"
 import { PraxlyDark } from './theme';
 import {toolbox} from './toolbox';
-import { PraxlyErrorException, addBlockErrors, annotationsBuffer, textEditor } from './lexer-parser';
-
+import { addBlockErrors, textEditor } from './lexer-parser';
 import { tree2text } from './tree2text';
 import {definePraxlyBlocks} from './newBlocks';
 import { makeGenerator } from './generators';
 import { blocks2tree } from './generators';
 import { createExecutable } from './ast';
-import { printBuffer } from './lexer-parser';
+// import { printBuffer } from './lexer-parser';
 import { clearOutput } from './lexer-parser';
 import ace from 'ace-builds';
 import "ace-builds/src-min-noconflict/theme-twilight";
 import "ace-builds/src-min-noconflict/theme-katzenmilch";
 import { tree2blocks } from './tree2blocks';
-import { errorOutput } from './lexer-parser';
+// import { errorOutput } from './lexer-parser';
 import { text2tree } from './lexer-parser';
 import { generateUrl, loadFromUrl } from './share';
 
 // import { readFileSync } from 'fs';
 import {codeText} from './examples';
-// import { registerDefaultOptions } from 'blockly/core/contextmenu_items';
-
+import { PraxlyErrorException, annotationsBuffer, errorOutput, printBuffer } from './common';
 
 const praxlyGenerator = makeGenerator();
 export const workspace = Blockly.inject('blocklyDiv', {
@@ -188,7 +186,6 @@ function runTasks() {
     
   }
     
-  
 
   // stdError.innerHTML = errorOutput;
   textEditor.session.setAnnotations(annotationsBuffer);

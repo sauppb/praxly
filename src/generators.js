@@ -1,4 +1,5 @@
 import Blockly from 'blockly';
+import { TYPES } from './common';
 
 function containsOnlyNumbers(str) {
     return /^\d+$/.test(str);
@@ -126,7 +127,7 @@ export const makeGenerator = () => {
             node.type = 'DOUBLE';
 
         }else if (containsOnlyNumbers(input)) {
-            node.type = 'INT';
+            node.type = TYPES.INT;
         } else {
             node.type = 'LOCATION';
             node.name = input;
@@ -147,7 +148,7 @@ export const makeGenerator = () => {
             node.type = 'DOUBLE';
 
         }else if (containsOnlyNumbers(input)) {
-            node.type = 'INT';
+            node.type = TYPES.INT;
         } else {
             node.type = 'LOCATION';
             node.name = input;

@@ -1,11 +1,8 @@
 
-import { TYPES } from "./common";
-import { PraxlyErrorException, appendAnnotation, defaultError, sendRuntimeError } from "./lexer-parser";
-import { printBuffer } from "./lexer-parser";
+import { PraxlyErrorException, TYPES, printBuffer } from "./common";
+import { appendAnnotation, defaultError, sendRuntimeError } from "./lexer-parser";
+// import { printBuffer } from "./lexer-parser";
 import { addToPrintBuffer } from "./lexer-parser";
-
-
-
 
 var scopes = {};
 
@@ -42,7 +39,7 @@ export const createExecutable = (blockjson) => {
     
     console.warn(blockjson.type);
     switch(blockjson.type) {
-        case 'INT':
+        case TYPES.INT:
             return new Praxly_int( blockjson.value, blockjson);
         case 'STRING':
             return new Praxly_String(blockjson.value, blockjson);
@@ -840,7 +837,6 @@ class Praxly_assignment {
         return valueEvaluated;
     }
 }
-
 class Praxly_vardecl{
     constructor( json, location, expression){
         this.json = json;
@@ -896,7 +892,6 @@ class Praxly_array_assignment {
 
 
 
-
 class Praxly_variable {
     constructor(json, name, blockjson){
         this.json = blockjson;
@@ -928,7 +923,7 @@ class Praxly_Location{
     evaluate(environment){
         var storage = accessLocation(environment, this.json);
         if (!storage){
-            throw new PraxlyErrorException(`Error: variable name ${this.name} does not currently exist in this scope or its parents scpe: \n ${environment.variableList}`, this.json.line);
+            throw new PraxlyErrorException(`Error: variable name ${this.name} does not currently exist in this scope or its parents scope: \n ${environment.variableList}`, this.json.line);
         }
          if (this.isArray){
             var index = this.index.evaluate(environment).value;
@@ -941,7 +936,6 @@ class Praxly_Location{
             }
     }
 }
-
 
 
 
@@ -1175,7 +1169,7 @@ class Praxly_function_call {
 
         // due to lack of time, these datatypes will be considered the same. 
         if (returnType === 'short'){
-            returnType = 'int';
+            returnType = TYPES.INT;
         }
         if (returnType === 'float'){
             returnType = 'double';

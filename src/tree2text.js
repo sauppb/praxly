@@ -1,4 +1,5 @@
 
+import { TYPES } from "./common";
 import { workspace } from "./main";
 import { tree2blocks } from "./tree2blocks";
 
@@ -16,7 +17,7 @@ export const tree2text = (blockjson, startIndex, indentation) => {
     //     return "";
     // }
     switch(blockjson.type) {
-        case 'INT':
+        case TYPES.INT:
         case 'BOOLEAN':
             
             try {

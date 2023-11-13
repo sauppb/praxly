@@ -1,4 +1,5 @@
 
+import { TYPES } from "./common";
 import { textEditor } from "./lexer-parser";
 
 
@@ -49,8 +50,7 @@ export const tree2blocks = (workspace, blockjson) => {
             result.setFieldValue(blockjson.value, "COMMENT");
             break;     
 
-
-        case 'INT':
+        case TYPES.INT:
             var result = workspace.newBlock('praxly_literal_block');
             result.setFieldValue(blockjson.value, "LITERAL");
             break;
