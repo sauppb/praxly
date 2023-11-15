@@ -9,46 +9,60 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
+# URL to test (localhost or production)
+URL = "https://praxly.github.io/"
 
 # Timeout, in seconds, to find DOM elements.
 WAIT = 10
 
 # How long to sleep before performing actions.
-PAUSE = 1
-
-# URL to test (localhost or production)
-URL = "https://praxly.github.io/"
+PAUSE = 0.5
 
 
-print("\nOpening browser window")
-driver = webdriver.Chrome()
-driver.implicitly_wait(WAIT)
-driver.get(URL)
+def main():
+    """Run each test in a loop until one fails."""
 
-aceCode = driver.find_element(By.ID, "aceCode")
-runButton = driver.find_element(By.ID, "runButton")
-stdout = driver.find_element(By.CLASS_NAME, "stdout")
-driver.execute_script('textEditor = ace.edit("aceCode");')
+    print("Opening browser window")
+    driver = webdriver.Firefox()
+    driver.implicitly_wait(WAIT)
+    driver.get(URL)
 
+    print("Finding DOM elements")
+    refresh = driver.find_element(By.ID, "titleRefresh")
+    editor = driver.find_element(By.ID, "aceCode")
+    play = driver.find_element(By.ID, "runButton")
+    stdout = driver.find_element(By.CLASS_NAME, "stdout")
+    # TODO stderr = driver.find_element(By.CLASS_NAME, "stderr")
 
-with open('tests.csv', newline='') as csvfile:
-    csvfile.readline()  # skip header
-    for row in csv.reader(csvfile):
+    # for each test in the CSV file
+    file = open('tests.csv', newline='')
+    file.readline()  # skip header
+    test_id = 0
+    for row in csv.reader(file):
+        test_id += 1
         name, code, expect_out, expect_err = row
+
+        print(f"Test {test_id}: {name}...", end="", flush=True)
         time.sleep(PAUSE)
+        refresh.click()
+        driver.execute_script(f'ace.edit("aceCode").setValue(`{code}`);')
+        editor.click()
+        play.click()
 
-        print("\nRunning", name)
-        driver.execute_script(f'textEditor.setValue(`{code}`);')
-        aceCode.click()
-        runButton.click()
-
-        actual = stdout.get_attribute("textContent")
-        if actual == expect_out:
+        actual_out = stdout.get_attribute("textContent")
+        # TODO actual_err = stderr.get_attribute("textContent")
+        if actual_out == expect_out:  # TODO and actual_err == expect_err:
             print("PASS")
         else:
             print("FAIL")
-            print(f"  Expect: {expect_out}")
-            print(f"  Actual: {actual}")
+            print(f"  Expect out: {expect_out}")
+            print(f"  Expect err: {expect_err}")
+            print(f"  Actual out: {actual_out}")
+            # TODO print(f"  Actual err: {actual_err}")
+            break
+
+    input("Press Enter to quit...")
 
 
-input("\nPress Enter to quit...")
+if __name__ == "__main__":
+    main()
