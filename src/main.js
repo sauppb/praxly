@@ -173,10 +173,10 @@ function runTasks() {
     stdError.innerHTML = errorOutput;
   //   stdOut.style.color = '#ff0000';
   } 
-  else{
+  // else{
     stdOut.innerHTML = printBuffer;
     stdOut.style.color = darkMode ? '#FFFFFF': '#000000';
-  }
+  // }
     
   textEditor.session.setAnnotations(annotationsBuffer);
   addBlockErrors(workspace);
