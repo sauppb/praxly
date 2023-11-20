@@ -9,17 +9,24 @@ import { MAX_LOOP, TYPES, addToPrintBuffer, annotationsBuffer, blockErrorsBuffer
 export function text2tree () {
   let code = textEditor?.getValue();
 
-    console.log(code);
+    // console.log(code);
     let lexer = new Lexer(code);
-    let tokens = lexer?.lex();
+    let ir;
+    try {
+      let tokens = lexer.lex();
+      console.info('here are the tokens:');
+      console.debug(tokens);
+      let parser = new Parser(tokens);
+      ir = parser?.parse();
+      console.info('here is the tree:');
+      console.debug(textjson);
 
-    console.info('here are the tokens:');
-    console.debug(tokens);
-    let parser = new Parser(tokens);
-    let textjson = parser?.parse();
-    console.info('here is the tree:');
-    console.debug(textjson);
-    return textjson;
+    }
+    catch (error){
+      console.log(error);
+    }
+
+    return ir;
 }
 
 class Token {
@@ -960,7 +967,6 @@ codeBlock(endToken) {
 }
 
 parse_statement() {
-  // while loop here?
   
   var line = this.tokens[this.i].line;
   

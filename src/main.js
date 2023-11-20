@@ -153,9 +153,12 @@ window.onclick = function(event) {
 
 
 
-
+/**
+ * this function gets called everytime the run button is pressed. 
+ */
 function runTasks() {
-  if (mainTree === null){
+  clearOutput();
+  if (!mainTree){
     alert('there is nothing to run :( \n try typing some code or dragging some blocks first.');
   }
   const executable = createExecutable(mainTree);
@@ -167,24 +170,17 @@ function runTasks() {
   } catch (error){
       console.error(error);
       stdError.innerHTML = error.message;
-      // stdOut.style.color = '#ff0000'; 
   }
-  if (errorOutput.length > 0){
+    // I have this twice for compile time vs runtime errors. Might change. 
     stdError.innerHTML = errorOutput;
-  //   stdOut.style.color = '#ff0000';
-  } 
-  // else{
     stdOut.innerHTML = printBuffer;
     stdOut.style.color = darkMode ? '#FFFFFF': '#000000';
-  // }
-    
-  textEditor.session.setAnnotations(annotationsBuffer);
-  addBlockErrors(workspace);
-  // clearOutput();
+    textEditor.session.setAnnotations(annotationsBuffer);
+    addBlockErrors(workspace);
 }
 
 export function turnCodeToBLocks (){
-  // I need to make the listeners only be one at a time
+  // I need to make the listeners only be one at a time to prevent an infinite loop. 
   workspace.removeChangeListener(turnBlocksToCode); 
   clearOutput();
   mainTree = text2tree();
