@@ -1,113 +1,91 @@
-
 h1 {
   font-family: sans-serif;
 }
 
-body {
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    background-color: #a680ff;
-    height: 100%;
-    
-    
-}
-
-.output {
-    box-sizing: border-box;
-    background: #d9dbda;
-    margin: 10px;
-    height: 20vh;
-    padding: 10px;
+html, body {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  height: 100%;
 }
 
 main {
-    display: flex;
-    height: 60vh;
-    width: 100vw;
-    background-color: #ddc8f5;
-    
+  display: flex;
+  height: 60vh;
+  background-color: #ddc8f5;
 }
 
 .resizeBar {
-    width: 5px;
-    cursor: col-resize;
-    background-color: #7e0eff;
+  width: 5px;
+  cursor: col-resize;
+  background-color: #7e0eff;
 }
 
-#blocklyDiv{
-    flex: 1;
-
+#blocklyDiv {
+  flex: 1;
 }
 
- 
 .codeEditor {
-    flex: 1;
-    width: 100%;
-    
+  flex: 1;
+  width: 100%;
 }
-
-
-
-
 
 .menuButtons {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-   
-  }
-  
-  .menuButtons li {
-    float: right;
-  }
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
 
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-    right: 0; /* Adjusted property */
-  }
-  
-  .dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    white-space: nowrap; /* Added property */
-  }
-  
-  .button-text {
-    display: none;
-  }
-  
-  .run-button:hover .button-text {
-    display: inline;
-  }
+.menuButtons li {
+  float: right;
+}
 
-  .run-button::before {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-    border-left: 15px solid white;
-    left: 40%; /* Adjusted value */
-    top: 50%;
-    transform: translateY(-50%);
-    transition: none; /* Removed transition property */
-  }
-  
-  .run-button:hover::before {
-    display: none;
-  }
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  right: 0; /* Adjusted property */
+}
 
-  /* The Modal (background) */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  white-space: nowrap; /* Added property */
+}
+
+.button-text {
+  display: none;
+}
+
+.run-button:hover .button-text {
+  display: inline;
+}
+
+.run-button::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 15px solid white;
+  left: 40%; /* Adjusted value */
+  top: 50%;
+  transform: translateY(-50%);
+  transition: none; /* Removed transition property */
+}
+
+.run-button:hover::before {
+  display: none;
+}
+
+/* The Modal (background) */
 .modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
@@ -122,8 +100,8 @@ main {
   background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
- /* Style the tab */
- .tab {
+/* Style the tab */
+.tab {
   overflow: hidden;
   border: 1px solid #ccc;
   background-color: #f1f1f1;
@@ -157,12 +135,16 @@ main {
   border: 1px solid #ccc;
   border-top: none;
   animation: fadeEffect 1s; /* Fading effect takes 1 second */
-} 
+}
 
 /* Go from zero to full opacity */
 @keyframes fadeEffect {
-  from {opacity: 0;}
-  to {opacity: 1;}
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Modal Content */
@@ -239,17 +221,15 @@ main {
   color: #ffffff;
 }
 
-#exampleTable{
+#exampleTable {
   color: #2196f3;
   background-color: #e7e5e5;
   display: flex;
 
 }
 
-
-
 .example_links {
-  color:blue;
+  color: blue;
   background: none;
   border: none;
   padding: 0;
@@ -261,49 +241,36 @@ main {
 
 #secondary_bar {
   display: flex;
-  background-color:  #e7e5e5;
+  background-color: #e7e5e5;
   border-style: solid;
   border-color: #aaaaaa;
-  
-}
-
-
-body {
-  display: flex;
-  flex-direction: column;
-  background-color: #ffffff;
 }
 
 .output {
+  flex: 1;
   box-sizing: border-box;
-  background: #e3e6e4;
   position: relative;
   margin: 10px;
-  height: 15vh;
+  padding: 10px;
   font-size: large;
   border-radius: 10px;
   overflow: auto; /* Add this */
-  max-height: 200px; /* Adjust the value as needed */
 }
 
-.clearOut{
+.clearOut {
   position: absolute;
   font-size: x-large;
   top: 5px;
-  right: 5px;
-  cursor: pointer; 
+  right: 10px;
+  cursor: pointer;
 }
 
+.stdout {
+  margin-top: 0;
+}
 
-
-.error {
+.stderr {
   color: red;
-}
-
-main {
-  display: flex;
-  height: 60vh;
-  width: 95vw;
 }
 
 .resizeBar {
@@ -325,7 +292,7 @@ main {
   justify-content: space-between;
   align-items: center;
   padding: 5px;
-  background-color:goldenrod
+  background-color: goldenrod
 }
 
 .nav-bar img {
@@ -354,7 +321,7 @@ main {
   position: absolute;
   background-color: #f9f9f9;
   min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
   right: 0;
 }
@@ -372,7 +339,7 @@ main {
   position: absolute;
   background-color: #f9f9f9;
   min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
 }
 
@@ -419,7 +386,6 @@ main {
   display: inline;
 }
 
-
 .dark-mode-button {
   display: flex;
   align-items: center;
@@ -427,7 +393,7 @@ main {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background-image: url("./images/darkmodeicon.png");
+  background-image: url("/images/darkmodeicon.png");
   color: white;
   border: none;
   outline: none;
@@ -581,10 +547,6 @@ main {
   z-index: 9999;
 }
 
-#titleRefresh{
+#titleRefresh {
   cursor: pointer;
-}
-
-.stderr{
-  color: red;
 }
