@@ -10,7 +10,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 
 # URL to test (localhost or production)
-URL = "https://praxly.github.io/"
+URL = "http://localhost:5173/"  # https://praxly.github.io/
 
 # Timeout, in seconds, to find DOM elements.
 WAIT = 10
@@ -32,10 +32,10 @@ def main():
     editor = driver.find_element(By.ID, "aceCode")
     play = driver.find_element(By.ID, "runButton")
     stdout = driver.find_element(By.CLASS_NAME, "stdout")
-    # TODO stderr = driver.find_element(By.CLASS_NAME, "stderr")
+    stderr = driver.find_element(By.CLASS_NAME, "stderr")
 
     # for each test in the CSV file
-    file = open('tests.csv', newline='')
+    file = open("tests.csv", newline="")
     file.readline()  # skip header
     test_id = 0
     for row in csv.reader(file):
@@ -50,17 +50,20 @@ def main():
         play.click()
 
         actual_out = stdout.get_attribute("textContent")
-        # TODO actual_err = stderr.get_attribute("textContent")
-        if actual_out == expect_out:  # TODO and actual_err == expect_err:
+        actual_err = stderr.get_attribute("textContent")
+        if actual_out == expect_out and actual_err == expect_err:
             print("PASS")
         else:
             print("FAIL")
-            print(f"  Expect out: {expect_out}")
-            print(f"  Expect err: {expect_err}")
-            print(f"  Actual out: {actual_out}")
-            # TODO print(f"  Actual err: {actual_err}")
+            if actual_out != expect_out:
+                print(f"  Expect out: {expect_out}")
+                print(f"  Actual out: {actual_out}")
+            if actual_err != expect_err:
+                print(f"  Expect err: {expect_err}")
+                print(f"  Actual err: {actual_err}")
             break
 
+    # that's all folks!
     input("Press Enter to quit...")
 
 
