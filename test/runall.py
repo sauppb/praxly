@@ -2,8 +2,12 @@
 
 This script uses Selenium to drive the web browser.
 https://www.selenium.dev/documentation/webdriver/
+
+Install dependencies before running for first time:
+pip install colorama selenium
 """
 
+import colorama
 import csv
 import time
 from selenium import webdriver
@@ -21,6 +25,11 @@ PAUSE = 0.5
 
 def main():
     """Run each test in a loop until one fails."""
+
+    # set up terminal color support
+    colorama.init(autoreset=True)
+    pass_msg = colorama.Fore.GREEN + "PASS"
+    fail_msg = colorama.Fore.RED + "FAIL"
 
     print("Opening browser window")
     driver = webdriver.Firefox()
@@ -49,12 +58,13 @@ def main():
         editor.click()
         play.click()
 
+        # compare expected with actual output
         actual_out = stdout.get_attribute("textContent")
         actual_err = stderr.get_attribute("textContent")
         if actual_out == expect_out and actual_err == expect_err:
-            print("PASS")
+            print(pass_msg)
         else:
-            print("FAIL")
+            print(fail_msg)
             if actual_out != expect_out:
                 print(f"  Expect out: {expect_out}")
                 print(f"  Actual out: {actual_out}")
