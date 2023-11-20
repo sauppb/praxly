@@ -795,7 +795,7 @@ class Praxly_assignment {
         // if it is a reassignment, the variable must be in the list and have a matching type. 
         let valueEvaluated = this.value.evaluate(environment);
         if (!accessLocation(environment, this.location)){
-             throw new PraxlyErrorException(`Error: variable name ${this.location.name} does not currently exist in this scope: \n ${environment.variableList}`, this.json.line);
+             throw new PraxlyErrorException(`Error: variable name ${this.location.name} does not currently exist in this scope.\n `, this.json.line);
         }
         let currentStoredVariableEvaluated = this.location.evaluate(environment);
         
