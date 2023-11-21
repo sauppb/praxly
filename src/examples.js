@@ -1,9 +1,10 @@
 /**
- * this is my "csv" file for generating example programs. 
+ * this is my "csv" file for generating example programs.
  */
 export const codeText = `
-##Example Programs: 
-## // click on the blue links above to browse 
+
+##Example Programs:
+## // click on the blue links above to browse
 // and try out example code!
 
 
@@ -17,7 +18,6 @@ println "question 2 prints"
 println "1" + 5 + 6
 
 
-
 ##Variables assignment
 ##int a = 4
 int b = 32
@@ -29,6 +29,7 @@ println a
 println b
 println c
 
+
 ##Scope
 ##// The output might surprise you
 int b = 3
@@ -38,7 +39,8 @@ end change
 change(b)
 println b
 
-##gcd 
+
+##gcd
 ##int gcd(int a, int b)
 	int temp = b
 	while (b≠0)
@@ -49,6 +51,7 @@ println b
 end gcd
 println gcd(21, 35)
 
+
 ##Factorial
 ##// this function returns the factorial of a number.
 int fact(int n)
@@ -57,8 +60,9 @@ int fact(int n)
 	end if
 	return n * fact(n - 1)
 end fact
-// try printlning different numbers to test your code!
+// try printing different numbers to test your code!
 println fact(5)
+
 
 ##Fibonacci
 ##int fibonacci(int n)
@@ -69,6 +73,7 @@ else
 end if
 end fibonacci
 println fibonacci(10)
+
 
 ##mystery
 ##//this is from question 12 of the example problems
@@ -84,11 +89,4 @@ end while
 end mystery
 mystery(6)
 
-
-
-
-
-
 `;
-
-

@@ -3,31 +3,28 @@ import { NODETYPES, TYPES } from './common';
 
 function containsOnlyNumbers(str) {
     return /^\d+$/.test(str);
-  }
+}
 
 export const blocks2tree = (workspace, generator) => {
     var topBlocks = workspace.getTopBlocks();
-    
+
     // console.error(topBlocks);
-    if (topBlocks.length === 0){
+    if (topBlocks.length === 0) {
         return {
-            type: NODETYPES.PROGRAM, 
-            blockID: 'blocksRoot', 
+            type: NODETYPES.PROGRAM,
+            blockID: 'blocksRoot',
             value: 0
         };
     }
 
     var result = {
-        type: NODETYPES.PROGRAM, 
-        blockID: 'blocksRoot', 
+        type: NODETYPES.PROGRAM,
+        blockID: 'blocksRoot',
         value: generator['codeBLockJsonBuilder'](topBlocks[0])
     }
-    
 
     return result;
 }
-
-
 
 export const makeGenerator = () => {
     const praxlyGenerator = [];
@@ -36,18 +33,17 @@ export const makeGenerator = () => {
         // console.log('this is the head block');
         // console.log(headBlock);
 
- 
         var codeblock = {
-            type: NODETYPES.CODEBLOCK, 
+            type: NODETYPES.CODEBLOCK,
             blockID: "blocks[]",
         }
         var statements = [];
         let currentBlock = headBlock;
-            while (currentBlock.getNextBlock() != null) {
-                statements.push(praxlyGenerator[currentBlock.type] (currentBlock));
-                currentBlock = currentBlock.getNextBlock();        
-            }
-            statements.push(praxlyGenerator[currentBlock.type] (currentBlock));
+        while (currentBlock.getNextBlock() != null) {
+            statements.push(praxlyGenerator[currentBlock.type](currentBlock));
+            currentBlock = currentBlock.getNextBlock();
+        }
+        statements.push(praxlyGenerator[currentBlock.type](currentBlock));
         codeblock.statements = statements;
         return codeblock;
     }
@@ -58,62 +54,52 @@ export const makeGenerator = () => {
         const b = children[1];
         const node = {
             blockID: block.id,
-            left: praxlyGenerator[a.type](a), 
+            left: praxlyGenerator[a.type](a),
             right: praxlyGenerator[b.type](b)
         }
-
         node.type = block.getFieldValue('OPERATOR');
         return node;
 
     }
     praxlyGenerator['praxly_print_block'] = (block) => {
-        const expression = block.getInputTargetBlock('EXPRESSION'); 
+        const expression = block.getInputTargetBlock('EXPRESSION');
         return {
             blockID: block.id,
-            type: 'PRINT', 
+            type: 'PRINT',
             value: praxlyGenerator[expression.type](expression),
-        } 
+        }
     }
 
     praxlyGenerator['praxly_println_block'] = (block) => {
-        const expression = block.getInputTargetBlock('EXPRESSION'); 
+        const expression = block.getInputTargetBlock('EXPRESSION');
         return {
             blockID: block.id,
-            type: NODETYPES.PRINTLN, 
+            type: NODETYPES.PRINTLN,
             value: praxlyGenerator[expression.type](expression),
-        } 
+        }
     }
 
     praxlyGenerator['praxly_statement_block'] = (block) => {
-        const expression = block.getInputTargetBlock('EXPRESSION'); 
+        const expression = block.getInputTargetBlock('EXPRESSION');
         return {
             blockID: block.id,
-            type: NODETYPES.STATEMENT, 
+            type: NODETYPES.STATEMENT,
             value: praxlyGenerator[expression.type](expression),
-        } 
+        }
     }
-
-
-
-
 
     praxlyGenerator['praxly_array_reference_block'] = (block) => {
         var index = block.getInputTargetBlock("INDEX");
         return {
             blockID: block.id,
-            type: NODETYPES.LOCATION, 
+            type: NODETYPES.LOCATION,
             name: block.getFieldValue("VARIABLENAME"),
             index: praxlyGenerator[index.type](index),
             isArray: true,
-        } 
+        }
     }
 
-    
-
-
-
-
-    praxlyGenerator['praxly_literal_block'] = (block) =>  {
+    praxlyGenerator['praxly_literal_block'] = (block) => {
         const input = block.getFieldValue('LITERAL');
         const node = {
             blockID: block.id,
@@ -126,7 +112,7 @@ export const makeGenerator = () => {
         } else if (input.includes('.')) {
             node.type = TYPES.DOUBLE;
 
-        }else if (containsOnlyNumbers(input)) {
+        } else if (containsOnlyNumbers(input)) {
             node.type = TYPES.INT;
         } else {
             node.type = NODETYPES.LOCATION;
@@ -135,7 +121,7 @@ export const makeGenerator = () => {
         return node;
     }
 
-    praxlyGenerator['praxly_variable_block'] = (block) =>  {
+    praxlyGenerator['praxly_variable_block'] = (block) => {
         const input = block.getFieldValue('LITERAL');
         const node = {
             blockID: block.id,
@@ -147,7 +133,7 @@ export const makeGenerator = () => {
         } else if (input.includes('.')) {
             node.type = TYPES.DOUBLE;
 
-        }else if (containsOnlyNumbers(input)) {
+        } else if (containsOnlyNumbers(input)) {
             node.type = TYPES.INT;
         } else {
             node.type = NODETYPES.LOCATION;
@@ -162,13 +148,11 @@ export const makeGenerator = () => {
         const b = children[1];
         const node = {
             blockID: block.id,
-            left: praxlyGenerator[a.type](a), 
+            left: praxlyGenerator[a.type](a),
             right: praxlyGenerator[b.type](b)
         }
-
         node.type = block.getFieldValue('OPERATOR');
         return node;
-
     }
 
     praxlyGenerator['praxly_compare_block'] = (block) => {
@@ -177,16 +161,12 @@ export const makeGenerator = () => {
         const b = children[1];
         const node = {
             blockID: block.id,
-            left: praxlyGenerator[a.type](a), 
+            left: praxlyGenerator[a.type](a),
             right: praxlyGenerator[b.type](b)
         }
-
         node.type = block.getFieldValue('OPERATOR');
         return node;
-
     }
-
-    
 
     praxlyGenerator['praxly_true_block'] = (block) => {
         return {
@@ -219,56 +199,51 @@ export const makeGenerator = () => {
             type: NODETYPES.SINGLE_LINE_COMMENT,
         };
     }
-    
+
     praxlyGenerator['praxly_if_block'] = (block) => {
         const condition = block.getInputTargetBlock("CONDITION");
         const statements = block.getInputTargetBlock("STATEMENT");
         return {
             type: NODETYPES.IF,
             blockID: block.id,
-            condition: praxlyGenerator[condition.type](condition), 
+            condition: praxlyGenerator[condition.type](condition),
             statement: praxlyGenerator['codeBLockJsonBuilder'](statements)
         }
     }
 
     praxlyGenerator['praxly_if_else_block'] = (block) => {
-
         const condition = block.getInputTargetBlock("CONDITION");
         const statements = block.getInputTargetBlock("STATEMENT");
         const alternative = block.getInputTargetBlock("ALTERNATIVE");
         return {
             type: NODETYPES.IF_ELSE,
             blockID: block.id,
-            condition: praxlyGenerator[condition.type](condition), 
-            statement: praxlyGenerator['codeBLockJsonBuilder'](statements), 
-            alternative: praxlyGenerator['codeBLockJsonBuilder'](alternative), 
+            condition: praxlyGenerator[condition.type](condition),
+            statement: praxlyGenerator['codeBLockJsonBuilder'](statements),
+            alternative: praxlyGenerator['codeBLockJsonBuilder'](alternative),
         }
-    
-
-
     }
 
-    praxlyGenerator['praxly_assignment_block'] = (block)=> {
+    praxlyGenerator['praxly_assignment_block'] = (block) => {
         var varType = block.getFieldValue('VARTYPE');
         console.log(`field input is ${varType}`);
         var variableName = block.getFieldValue('VARIABLENAME');
-        var expression = block.getInputTargetBlock('EXPRESSION'); 
+        var expression = block.getInputTargetBlock('EXPRESSION');
         var value = praxlyGenerator[expression.type](expression);
         return {
-            type: NODETYPES.VARDECL, 
-            name: variableName, 
-            value: value, 
-            blockID: block.id, 
+            type: NODETYPES.VARDECL,
+            name: variableName,
+            value: value,
+            blockID: block.id,
             varType: varType,
             location: {
                 name: variableName,
                 type: NODETYPES.LOCATION,
-              },
-
+            },
         }
     }
 
-    praxlyGenerator['praxly_array_assignment_block'] = (block)=> {
+    praxlyGenerator['praxly_array_assignment_block'] = (block) => {
         var varType = block.getFieldValue('VARTYPE');
         console.log(`field input is ${varType}`);
         var variableName = block.getFieldValue('VARIABLENAME');
@@ -278,98 +253,88 @@ export const makeGenerator = () => {
         argschildren.forEach(element => {
             argsList.push(praxlyGenerator[element.type](element));
         });
-        
+
         return {
-            type: 'ARRAY_ASSIGNMENT', 
-            name: variableName, 
+            type: 'ARRAY_ASSIGNMENT',
+            name: variableName,
             value: {
-                blockID: args.id, 
+                blockID: args.id,
                 params: argsList,
                 type: NODETYPES.ARRAY_LITERAL,
                 isArray: true,
-              }, 
-              location: {
+            },
+            location: {
                 name: variableName,
                 type: NODETYPES.LOCATION,
-              },
-            blockID: block.id, 
+            },
+            blockID: block.id,
             varType: varType,
-
         }
     }
 
-    praxlyGenerator['praxly_reassignment_block'] = (block)=> {
+    praxlyGenerator['praxly_reassignment_block'] = (block) => {
         var varType = block.getFieldValue('VARTYPE');
         console.log(`field input is ${varType}`);
         var variableName = block.getFieldValue('VARIABLENAME');
-        var expression = block.getInputTargetBlock('EXPRESSION'); 
+        var expression = block.getInputTargetBlock('EXPRESSION');
         var value = praxlyGenerator[expression.type](expression);
         return {
-            type: NODETYPES.ASSIGNMENT, 
-            name: variableName, 
-            value: value, 
-            blockID: block.id, 
+            type: NODETYPES.ASSIGNMENT,
+            name: variableName,
+            value: value,
+            blockID: block.id,
             varType: 'reassignment'
-
         }
     }
 
-    praxlyGenerator['praxly_array_reference_reassignment_block'] = (block)=> {
-
+    praxlyGenerator['praxly_array_reference_reassignment_block'] = (block) => {
         var variableName = block.getFieldValue('VARIABLENAME');
-        var expression = block.getInputTargetBlock('EXPRESSION'); 
+        var expression = block.getInputTargetBlock('EXPRESSION');
         var indexInput = block.getInputTargetBlock('INDEX');
         var value = praxlyGenerator[expression.type](expression);
         var index = praxlyGenerator[indexInput.type](indexInput);
         return {
-            type: NODETYPES.ARRAY_REFERENCE_ASSIGNMENT, 
-            name: variableName, 
+            type: NODETYPES.ARRAY_REFERENCE_ASSIGNMENT,
+            name: variableName,
             index: index,
-            value: value, 
-            blockID: block.id, 
-
+            value: value,
+            blockID: block.id,
         }
     }
 
-
-    praxlyGenerator['praxly_assignment_expression_block'] = (block)=> {
+    praxlyGenerator['praxly_assignment_expression_block'] = (block) => {
         var varType = block.getFieldValue('VARTYPE');
         console.log(`field input is ${varType}`);
         var variableName = block.getFieldValue('VARIABLENAME');
-        var expression = block.getInputTargetBlock('EXPRESSION'); 
+        var expression = block.getInputTargetBlock('EXPRESSION');
         var value = praxlyGenerator[expression.type](expression);
         return {
-            type: NODETYPES.VARDECL, 
-            name: variableName, 
-            value: value, 
-            blockID: block.id, 
+            type: NODETYPES.VARDECL,
+            name: variableName,
+            value: value,
+            blockID: block.id,
             varType: varType,
             location: {
                 name: variableName,
                 type: NODETYPES.LOCATION,
-              },
-
+            },
         }
-
-
-
     }
 
-    praxlyGenerator['praxly_reassignment_expression_block'] = (block)=> {
+    praxlyGenerator['praxly_reassignment_expression_block'] = (block) => {
         var varType = block.getFieldValue('VARTYPE');
         // console.log(`field input is ${varType}`);
         var location = block.getInputTargetBlock('LOCATION');
-        var expression = block.getInputTargetBlock('EXPRESSION'); 
-        var  loc = praxlyGenerator[location.type](location);
+        var expression = block.getInputTargetBlock('EXPRESSION');
+        var loc = praxlyGenerator[location.type](location);
         var value = praxlyGenerator[expression.type](expression);
         return {
-            type: NODETYPES.ASSIGNMENT, 
+            type: NODETYPES.ASSIGNMENT,
             name: loc.name,
             location: loc,
-            value: value, 
-            blockID: block.id, 
+            value: value,
+            blockID: block.id,
             varType: varType,
-
         }
     }
 
@@ -377,9 +342,9 @@ export const makeGenerator = () => {
         const condition = block.getInputTargetBlock("CONDITION");
         const statements = block.getInputTargetBlock("STATEMENT");
         return {
-            type: NODETYPES.WHILE, 
+            type: NODETYPES.WHILE,
             blockID: block.id,
-            condition: praxlyGenerator[condition.type](condition), 
+            condition: praxlyGenerator[condition.type](condition),
             statement: praxlyGenerator['codeBLockJsonBuilder'](statements)
         };
     }
@@ -388,9 +353,9 @@ export const makeGenerator = () => {
         const condition = block.getInputTargetBlock("CONDITION");
         const statements = block.getInputTargetBlock("STATEMENT");
         return {
-            type: NODETYPES.DO_WHILE, 
+            type: NODETYPES.DO_WHILE,
             blockID: block.id,
-            condition: praxlyGenerator[condition.type](condition), 
+            condition: praxlyGenerator[condition.type](condition),
             statement: praxlyGenerator['codeBLockJsonBuilder'](statements)
         };
     }
@@ -399,28 +364,29 @@ export const makeGenerator = () => {
         const condition = block.getInputTargetBlock("CONDITION");
         const statements = block.getInputTargetBlock("STATEMENT");
         return {
-            type: NODETYPES.REPEAT_UNTIL, 
+            type: NODETYPES.REPEAT_UNTIL,
             blockID: block.id,
-            condition: praxlyGenerator[condition.type](condition), 
+            condition: praxlyGenerator[condition.type](condition),
             statement: praxlyGenerator['codeBLockJsonBuilder'](statements)
         };
     }
+
     praxlyGenerator['praxly_not_block'] = (block) => {
-        const expression = block.getInputTargetBlock('EXPRESSION'); 
+        const expression = block.getInputTargetBlock('EXPRESSION');
         return {
             blockID: block.id,
-            type: NODETYPES.NOT, 
+            type: NODETYPES.NOT,
             value: praxlyGenerator[expression.type](expression),
-        } 
+        }
     }
 
     praxlyGenerator['praxly_negate_block'] = (block) => {
-        const expression = block.getInputTargetBlock('EXPRESSION'); 
+        const expression = block.getInputTargetBlock('EXPRESSION');
         return {
             blockID: block.id,
-            type: NODETYPES.NEGATE, 
+            type: NODETYPES.NEGATE,
             value: praxlyGenerator[expression.type](expression),
-        } 
+        }
     }
 
     praxlyGenerator['praxly_for_loop_block'] = (block) => {
@@ -429,17 +395,16 @@ export const makeGenerator = () => {
         var reassignment = block.getInputTargetBlock('REASSIGNMENT');
         const statements = block.getInputTargetBlock("CODEBLOCK");
         return {
-            type: NODETYPES.FOR, 
+            type: NODETYPES.FOR,
             blockID: block.id,
-            initialization: praxlyGenerator[initialization.type](initialization), 
-            statement: praxlyGenerator['codeBLockJsonBuilder'](statements), 
+            initialization: praxlyGenerator[initialization.type](initialization),
+            statement: praxlyGenerator['codeBLockJsonBuilder'](statements),
             incriment: praxlyGenerator[reassignment.type](reassignment),
             condition: praxlyGenerator[condition.type](condition),
-
         };
     }
 
-    praxlyGenerator['praxly_procedure_block'] = (block)=> {
+    praxlyGenerator['praxly_procedure_block'] = (block) => {
         var returnType = block.getFieldValue('RETURNTYPE');
         // console.log(`field input is ${varType}`);
         var args = block.getInputTargetBlock('PARAMS');
@@ -452,19 +417,15 @@ export const makeGenerator = () => {
             argsList.push(param);
         });
         var procedureName = block.getFieldValue('PROCEDURE_NAME');
-        const statements = block.getInputTargetBlock("CONTENTS"); 
+        const statements = block.getInputTargetBlock("CONTENTS");
         block.setFieldValue(procedureName, 'END_PROCEDURE_NAME');
-
-        
         return {
-            type: NODETYPES.FUNCDECL, 
-            name: procedureName, 
+            type: NODETYPES.FUNCDECL,
+            name: procedureName,
             params: argsList,
             returnType: returnType,
-            contents: praxlyGenerator['codeBLockJsonBuilder'](statements), 
-            blockID: block.id, 
-            
-
+            contents: praxlyGenerator['codeBLockJsonBuilder'](statements),
+            blockID: block.id,
         }
     }
 
@@ -474,29 +435,24 @@ export const makeGenerator = () => {
         var argschildren = args.getChildren(true);
         var argsList = [];
         argschildren.forEach(element => {
-            
             argsList.push(praxlyGenerator[element.type](element));
         });
         return {
-            blockID: block.id, 
-            type: NODETYPES.FUNCCALL, 
-            name: procedureName, 
-            args: argsList, 
+            blockID: block.id,
+            type: NODETYPES.FUNCCALL,
+            name: procedureName,
+            args: argsList,
         }
     }
 
     praxlyGenerator['praxly_return_block'] = (block) => {
-        const expression = block.getInputTargetBlock('EXPRESSION'); 
+        const expression = block.getInputTargetBlock('EXPRESSION');
         return {
             blockID: block.id,
-            type: NODETYPES.RETURN, 
+            type: NODETYPES.RETURN,
             value: praxlyGenerator[expression.type](expression),
         }
     }
 
-
     return praxlyGenerator;
 }
-
-
-

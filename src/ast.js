@@ -246,7 +246,7 @@ export const createExecutable = (blockjson) => {
             // console.error(createExecutable(blockjson.index));
             return new Praxly_array_reference(blockjson.name, createExecutable(blockjson.index), blockjson);
 
-        // go here
+        //gohere
 
         case NODETYPES.ARRAY_REFERENCE_ASSIGNMENT:
             return new Praxly_array_reference_assignment(blockjson.name, createExecutable(blockjson.index), createExecutable(blockjson.value), blockjson);
