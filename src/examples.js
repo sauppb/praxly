@@ -1,3 +1,6 @@
+/**
+ * this is my "csv" file for generating example programs. 
+ */
 export const codeText = `
 ##Example Programs: 
 ## // click on the blue links above to browse 
@@ -81,31 +84,11 @@ end while
 end mystery
 mystery(6)
 
+
+
+
+
+
 `;
 
 
-// ##Insertion Sort
-// ##int[] arr = {3, 7, 2, 8, 4, 65, 23, 67, 2, 1}
-
-// // WARNING: arrays are currently broken
-
-// // Function definition
-// void insertionSort(int n)
-//     for (int i = 1; i < n; i = i + 1)
-//         int key = arr[i]
-//         int j = i - 1
-//         while (j >= 0 and arr[j] > key)
-//             arr[j + 1] = arr[j]
-//             j = j - 1
-//         end while
-//         arr[j + 1] = key
-//     end for
-// end insertionSort
-
-// // Function call
-// insertionSort(10)
-
-// // println the sorted array
-// for (int i = 0; i < 10; i = i + 1)
-//     println arr[i]
-// end for
