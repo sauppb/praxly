@@ -47,8 +47,8 @@ const darkModeButton = document.getElementById('darkMode');
 const helpButton = document.getElementById("help");
 const manualButton = document.getElementById("reference");
 const resizeBar = document.querySelector('.resizeBar');
-const leftPane = document.querySelector('#blocklyDiv');
-const rightPane = document.querySelector('#aceCode');
+const blockPane = document.querySelector('#blocklyDiv');
+const textPane = document.querySelector('#aceCode');
 const stdOut = document.querySelector('.stdout');
 const stdErr = document.querySelector('.stderr');
 const clearOut = document.querySelector('.clearOut');
@@ -117,19 +117,19 @@ BenButton.addEventListener('click', function () {
 titleRefresh.addEventListener('click', function () {
   window.location.hash = '';
   textEditor.setValue('', -1);
-  rightPane.click();
+  textPane.click();
   stdOut.innerHTML = "";
   stdErr.innerHTML = "";
   textEditor.focus();
 });
 
 // these make it so that the blocks and text take turns.
-leftPane.addEventListener('click', () => {
+blockPane.addEventListener('click', () => {
   workspace.removeChangeListener(turnBlocksToCode);
   workspace.addChangeListener(turnBlocksToCode);
 });
 
-rightPane.addEventListener('click', () => {
+textPane.addEventListener('click', () => {
   textEditor.removeEventListener("input", turnCodeToBLocks);
   textEditor.addEventListener("input", turnCodeToBLocks);
 });
@@ -160,7 +160,7 @@ window.onclick = function (event) {
  * this function gets called every time the run button is pressed.
  */
 function runTasks() {
-  if (!mainTree || !textEditor.getValue()) {
+  if (!mainTree || !textEditor.getValue().trim()) {
     alert('there is nothing to run :( \n try typing some code or dragging some blocks first.');
     return;
   }
@@ -215,9 +215,10 @@ function resizeHandler(e) {
   const leftPaneWidth = (mouseX / containerWidth) * 100;
   const rightPaneWidth = 100 - leftPaneWidth;
 
-  leftPane.style.flex = leftPaneWidth;
-  rightPane.style.flex = rightPaneWidth;
+  textPane.style.flex = leftPaneWidth;
+  blockPane.style.flex = rightPaneWidth;
 }
+
 var toolboxstylesheet = document.getElementById("ToolboxCss");
 
 function setDark() {
@@ -276,22 +277,22 @@ const textButton = document.getElementById('tab2_button');
 const blocksButton = document.getElementById('tab3_button');
 blocksButton.addEventListener('click', function (event) {
   resizeBar.style.display = 'none';
-  rightPane.style.display = 'none';
-  leftPane.style.display = 'block';
+  textPane.style.display = 'none';
+  blockPane.style.display = 'block';
   Blockly.svgResize(workspace);
   textEditor.resize();
 });
 textButton.addEventListener('click', function (event) {
   resizeBar.style.display = 'none';
-  leftPane.style.display = 'none';
-  rightPane.style.display = 'block';
+  blockPane.style.display = 'none';
+  textPane.style.display = 'block';
   Blockly.svgResize(workspace);
   textEditor.resize();
 });
 bothButton.addEventListener('click', function (event) {
   resizeBar.style.display = 'block';
-  leftPane.style.display = 'block';
-  rightPane.style.display = 'block';
+  blockPane.style.display = 'block';
+  textPane.style.display = 'block';
   Blockly.svgResize(workspace);
   textEditor.resize();
 });
@@ -325,7 +326,7 @@ let examples = GenerateExamples();
 function applyExample(exampleName) {
   // append the example to the code
   textEditor.setValue(examples[exampleName], -1);
-  rightPane.click();
+  textPane.click();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
