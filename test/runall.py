@@ -59,8 +59,8 @@ def main():
         play.click()
 
         # compare expected with actual output
-        actual_out = stdout.get_attribute("textContent")
-        actual_err = stderr.get_attribute("textContent")
+        actual_out = stdout.get_attribute("innerText")
+        actual_err = stderr.get_attribute("innerText")
         if actual_out == expect_out and actual_err == expect_err:
             print(pass_msg)
         else:
@@ -71,10 +71,10 @@ def main():
             if actual_err != expect_err:
                 print(f"  Expect err: {expect_err}")
                 print(f"  Actual err: {actual_err}")
-            break
 
-    # that's all folks!
-    input("Press Enter to quit...")
+            yesno = input("Continue? [Y/n] ")
+            if yesno not in ["", "y", "Y"]:
+                break
 
 
 if __name__ == "__main__":
