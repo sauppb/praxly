@@ -1,15 +1,16 @@
 import Blockly from 'blockly';
-import {praxlyDefaultTheme } from "./theme"
+import { praxlyDefaultTheme } from "./theme"
 import { PraxlyDark } from './theme';
-import {toolbox} from './toolbox';
+import { toolbox } from './toolbox';
+
 // import {textEditor } from './lexer-parser';
 import { tree2text } from './tree2text';
-import {definePraxlyBlocks} from './newBlocks';
+import { definePraxlyBlocks } from './newBlocks';
 import { makeGenerator } from './generators';
 import { blocks2tree } from './generators';
 import { createExecutable } from './ast';
 
-import ace from 'ace-builds';
+// import ace from 'ace-builds';
 import "ace-builds/src-min-noconflict/theme-twilight";
 import "ace-builds/src-min-noconflict/theme-katzenmilch";
 import { tree2blocks } from './tree2blocks';
@@ -18,8 +19,8 @@ import { text2tree } from './lexer-parser';
 import { generateUrl, loadFromUrl } from './share';
 
 // import { readFileSync } from 'fs';
-import {codeText} from './examples';
-import { PraxlyErrorException, addBlockErrors, annotationsBuffer, clearErrors, clearOutput, errorOutput, printBuffer, textEditor } from './common';
+import { codeText } from './examples';
+import { addBlockErrors, annotationsBuffer, clearErrors, clearOutput, errorOutput, printBuffer, textEditor } from './common';
 
 const praxlyGenerator = makeGenerator();
 export const workspace = Blockly.inject('blocklyDiv', {
@@ -28,15 +29,15 @@ export const workspace = Blockly.inject('blocklyDiv', {
   horizontalLayout: false,
   toolboxPosition: "start",
   theme: praxlyDefaultTheme,
-  zoom:
-         {controls: true,
-          wheel: true,
-          startScale: 1.0,
-          maxScale: 3,
-          minScale: 0.3,
-          scaleSpeed: 1.2,
-          pinch: true},
-
+  zoom: {
+    controls: true,
+    wheel: true,
+    startScale: 1.0,
+    maxScale: 3,
+    minScale: 0.3,
+    scaleSpeed: 1.2,
+    pinch: true
+  },
   renderer: 'zelos'
 });
 
@@ -68,96 +69,91 @@ let live = true;
 let isResizing = false;
 
 runButton.addEventListener('mouseup', runTasks);
-darkModeButton.addEventListener('click', ()=> {darkMode ? setLight() : setDark();});
-clearOut.addEventListener('click', ()=>{stdOut.textContent  = "";});
+darkModeButton.addEventListener('click', () => { darkMode ? setLight() : setDark(); });
+clearOut.addEventListener('click', () => { stdOut.textContent = ""; });
 definePraxlyBlocks(workspace);
 
 // blockUpdatesButton.innerText = 'block updates: live ';
-workspace.addChangeListener( turnBlocksToCode); 
+workspace.addChangeListener(turnBlocksToCode);
 textEditor.addEventListener("input", turnCodeToBLocks);
 
 //resizing things with the purple bar
-resizeBar.addEventListener('mousedown', function(e) {
+resizeBar.addEventListener('mousedown', function (e) {
   isResizing = true;
   document.addEventListener('mousemove', resizeHandler);
 });
-document.addEventListener('mouseup', function(e) {
+document.addEventListener('mouseup', function (e) {
   isResizing = false;
   document.removeEventListener('mousemove', resizeHandler);
   Blockly.svgResize(workspace);
   textEditor.resize();
 });
-manualButton.addEventListener('click', function() {
+manualButton.addEventListener('click', function () {
   var linkUrl = 'pseudocode.html';
   window.open(linkUrl, '_blank');
 });
-bugButton.addEventListener('click', function(){
+bugButton.addEventListener('click', function () {
   window.open("BugsList.html", '_blank');
 });
-changelogButton.addEventListener('click', function(){
+changelogButton.addEventListener('click', function () {
   window.open("changelog.html", '_blank');
 });
-featuresButton.addEventListener('click', function(){
+featuresButton.addEventListener('click', function () {
   window.open("features.html", '_blank');
 });
-githubButton.addEventListener('click', function(){
+githubButton.addEventListener('click', function () {
   window.open("https://github.com/sauppb/praxly", '_blank');
 });
-BenButton.addEventListener('click', function() {
+BenButton.addEventListener('click', function () {
   window.open('https://sauppb.github.io/website/');
 });
 
-titleRefresh.addEventListener('click', function(){
+titleRefresh.addEventListener('click', function () {
   window.location.hash = '';
   textEditor.setValue('', -1);
 });
 
-
-// these make it so that the blocks and text take turns. 
+// these make it so that the blocks and text take turns.
 leftPane.addEventListener('click', () => {
-  workspace.removeChangeListener(turnBlocksToCode); 
-  workspace.addChangeListener( turnBlocksToCode);
+  workspace.removeChangeListener(turnBlocksToCode);
+  workspace.addChangeListener(turnBlocksToCode);
 });
 rightPane.addEventListener('click', () => {
   textEditor.removeEventListener("input", turnCodeToBLocks);
   textEditor.addEventListener("input", turnCodeToBLocks);
 });
 
-
 var span = document.getElementsByClassName("close")[0];
 
-// When the user clicks the button, open the modal 
-helpButton.onclick = function() {
+// When the user clicks the button, open the modal
+helpButton.onclick = function () {
   setLight();
   modal.style.display = "block";
 }
 
-manualButton.onclick = function() {
+manualButton.onclick = function () {
   manual.style.display = "block";
 }
 
-
 // When the user clicks on <span> (x), close the modal
-span.onclick = function() {
+span.onclick = function () {
   modal.style.display = "none";
   manual.style.display = "none";
 }
 
 // When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
+window.onclick = function (event) {
   if (event.target == modal || event.target == manual) {
     modal.style.display = "none";
     manual.style.display = "none";
   }
 }
 
-
-
 /**
- * this function gets called everytime the run button is pressed. 
+ * this function gets called every time the run button is pressed.
  */
 function runTasks() {
-  if (!mainTree){
+  if (!mainTree) {
     alert('there is nothing to run :( \n try typing some code or dragging some blocks first.');
   }
   const executable = createExecutable(mainTree);
@@ -166,22 +162,22 @@ function runTasks() {
   try {
     executable.evaluate();
 
-  } catch (error){
-      console.error(error);
-      stdError.innerHTML = error.message;
+  } catch (error) {
+    console.error(error);
+    stdError.innerHTML = error.message;
   }
-    // I have this twice for compile time vs runtime errors. Might change. 
-    stdError.innerHTML = errorOutput;
-    stdOut.innerHTML = printBuffer;
-    stdOut.style.color = darkMode ? '#FFFFFF': '#000000';
-    textEditor.session.setAnnotations(annotationsBuffer);
-    addBlockErrors(workspace);
-    clearOutput();
+  // I have this twice for compile time vs runtime errors. Might change.
+  stdError.innerHTML = errorOutput;
+  stdOut.innerHTML = printBuffer;
+  stdOut.style.color = darkMode ? '#FFFFFF' : '#000000';
+  textEditor.session.setAnnotations(annotationsBuffer);
+  addBlockErrors(workspace);
+  clearOutput();
 }
 
-export function turnCodeToBLocks (){
-  // I need to make the listeners only be one at a time to prevent an infinite loop. 
-  workspace.removeChangeListener(turnBlocksToCode); 
+export function turnCodeToBLocks() {
+  // I need to make the listeners only be one at a time to prevent an infinite loop.
+  workspace.removeChangeListener(turnBlocksToCode);
   clearOutput();
   clearErrors();
   mainTree = text2tree();
@@ -192,7 +188,6 @@ export function turnCodeToBLocks (){
   addBlockErrors(workspace);
 }
 
-
 function turnBlocksToCode() {
   textEditor.removeEventListener("input", turnCodeToBLocks);
   clearOutput();
@@ -202,7 +197,6 @@ function turnBlocksToCode() {
   console.debug(mainTree);
   const text = tree2text(mainTree, 0, 0);
   textEditor.setValue(text, -1);
-
 };
 
 function resizeHandler(e) {
@@ -218,7 +212,7 @@ function resizeHandler(e) {
 }
 var toolboxstylesheet = document.getElementById("ToolboxCss");
 
-function setDark(){
+function setDark() {
   darkMode = true;
   workspace.setTheme(PraxlyDark);
   textEditor.setTheme("ace/theme/twilight");
@@ -230,10 +224,10 @@ function setDark(){
     elements[i].style.backgroundColor = "#303030";
     elements[i].style.color = "white";
   }
-  toolboxstylesheet.href = "darkThemeToolbox.css";
+  toolboxstylesheet.href = "toolbox-dark.css";
 }
 
-function setLight(){
+function setLight() {
   darkMode = false;
   workspace.setTheme(praxlyDefaultTheme);
   textEditor.setTheme('ace/theme/katzenmilch');
@@ -244,52 +238,49 @@ function setLight(){
     elements[i].style.backgroundColor = "#e3e6e4";
     elements[i].style.color = "black";
   }
-  toolboxstylesheet.href = "toolbox.css";
+  toolboxstylesheet.href = "toolbox-light.css";
 }
 
-
-// this is how you add custom keybinds! 
-editorElement.addEventListener("keydown", function(event) {
+// this is how you add custom keybinds!
+editorElement.addEventListener("keydown", function (event) {
   // Check if the event key is 's' and Ctrl or Command key is pressed
-  if ((event.key === 's' || event.key === 'S') && (event.ctrlKey || event.metaKey)|| event.key === 'F5') {
+  if ((event.key === 's' || event.key === 'S') && (event.ctrlKey || event.metaKey) || event.key === 'F5') {
     // Prevent the default save action (e.g., opening the save dialog)
     event.preventDefault();
     const output = document.querySelector('.output');
     // const error = document.querySelector('.error');
     output.innerHTML = "";
     const trees = createExecutable(mainTree);
-    trees.evaluate(); 
+    trees.evaluate();
     output.innerHTML = printBuffer;
     stdError.innerHTML = errorOutput;
     console.log(trees);
   }
 });
 
-//share button 
+//share button
 shareButton.addEventListener('click', generateUrl);
 
 loadFromUrl(turnCodeToBLocks);
 
-
-
 const bothButton = document.getElementById("tab1_button");
 const textButton = document.getElementById('tab2_button');
 const blocksButton = document.getElementById('tab3_button');
-blocksButton.addEventListener('click', function(event){
+blocksButton.addEventListener('click', function (event) {
   resizeBar.style.display = 'none';
   rightPane.style.display = 'none';
   leftPane.style.display = 'block';
   Blockly.svgResize(workspace);
   textEditor.resize();
 });
-textButton.addEventListener('click', function(event){
+textButton.addEventListener('click', function (event) {
   resizeBar.style.display = 'none';
   leftPane.style.display = 'none';
   rightPane.style.display = 'block';
   Blockly.svgResize(workspace);
   textEditor.resize();
 });
-bothButton.addEventListener('click', function(event){
+bothButton.addEventListener('click', function (event) {
   resizeBar.style.display = 'block';
   leftPane.style.display = 'block';
   rightPane.style.display = 'block';
@@ -300,7 +291,6 @@ bothButton.click();
 
 function GenerateExamples() {
   const dataArray = codeText.split('##');
-
   const result = {};
 
   for (let i = 1; i < dataArray.length - 1; i += 2) {
@@ -308,11 +298,11 @@ function GenerateExamples() {
     var newButton = document.createElement("button");
     newButton.textContent = label;
     newButton.classList.add("example_links");
-    newButton.addEventListener('click', function(){
+    newButton.addEventListener('click', function () {
       // generateUrl();
       applyExample(label);
     });
-    exampleDiv.appendChild(newButton);    
+    exampleDiv.appendChild(newButton);
 
     const value = dataArray[i + 1].trim();
     result[label] = value;
@@ -320,13 +310,12 @@ function GenerateExamples() {
 
   return result;
 }
-let examples = GenerateExamples();
-console.log(`the examples are: ${Object.keys(examples)}`);
 
-function applyExample (exampleName){
+let examples = GenerateExamples();
+// console.log(`the examples are: ${Object.keys(examples)}`);
+
+function applyExample(exampleName) {
   // append the example to the code
   textEditor.setValue(examples[exampleName], -1);
   rightPane.click();
 }
-
-
