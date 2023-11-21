@@ -1,5 +1,5 @@
 
-import { TYPES, textEditor } from "./common";
+import { NODETYPES, TYPES, textEditor } from "./common";
 
 function connectStatements(statements) {
     for (let i = 0; i < statements.length - 1; i++) {
@@ -38,11 +38,11 @@ export const tree2blocks = (workspace, blockjson) => {
     }
     
     switch(blockjson?.type) {
-        case 'COMMENT':
+        case NODETYPES.COMMENT:
             var result = workspace.newBlock('praxly_comment_block');
             result.setFieldValue(blockjson.value, "COMMENT");
             break;     
-        case 'SINGLE_LINE_COMMENT':
+        case NODETYPES.SINGLE_LINE_COMMENT:
             var result = workspace.newBlock('praxly_single_line_comment_block');
             result.setFieldValue(blockjson.value, "COMMENT");
             break;     
@@ -52,7 +52,7 @@ export const tree2blocks = (workspace, blockjson) => {
             result.setFieldValue(blockjson.value, "LITERAL");
             break;
 
-        case 'BOOLEAN':
+        case NODETYPES.BOOLEAN:
             var result = 0;
             if (blockjson.value === 'true') {
                 result = workspace.newBlock('praxly_true_block');                  
@@ -73,12 +73,12 @@ export const tree2blocks = (workspace, blockjson) => {
             result.setFieldValue(blockjson.value, "LITERAL");
             break;
              
-        case 'ADD':         
-        case 'SUBTRACT':
-        case 'MULTIPLY':
-        case 'DIVIDE':
-        case 'EXPONENT':
-        case 'MOD':
+        case NODETYPES.ADDITION:         
+        case NODETYPES.SUBTRACTION:
+        case NODETYPES.MULTIPLICATION:
+        case NODETYPES.DIVISION:
+        case NODETYPES.EXPONENTIATION:
+        case NODETYPES.MODULUS:
             var result = workspace.newBlock('praxly_arithmetic_block');
             var a = tree2blocks(workspace, blockjson?.left);
             var b = tree2blocks(workspace, blockjson?.right);
@@ -87,8 +87,8 @@ export const tree2blocks = (workspace, blockjson) => {
             result.getInput('B_OPERAND').connection.connect(b?.outputConnection);
             break;
              
-        case 'AND':
-        case 'OR':
+        case NODETYPES.AND:
+        case NODETYPES.OR:
             var result = workspace.newBlock('praxly_boolean_operators_block');
             var a = tree2blocks(workspace, blockjson?.left);
             var b = tree2blocks(workspace, blockjson?.right);
@@ -97,12 +97,12 @@ export const tree2blocks = (workspace, blockjson) => {
             result.getInput('B_OPERAND').connection.connect(b?.outputConnection);
             break;
 
-        case 'EQUALS':
-        case 'LESS_THAN_EQUAL':
-        case 'GREATER_THAN_EQUAL':
-        case 'GREATER_THAN':
-        case 'LESS_THAN':
-        case 'NOT_EQUAL':
+        case NODETYPES.EQUALITY:
+        case NODETYPES.LESS_THAN_OR_EQUAL:
+        case NODETYPES.GREATER_THAN_OR_EQUAL:
+        case NODETYPES.GREATER_THAN:
+        case NODETYPES.LESS_THAN:
+        case NODETYPES.INEQUALITY:
             var result = workspace.newBlock('praxly_compare_block');
             var a = tree2blocks(workspace, blockjson?.left);
             var b = tree2blocks(workspace, blockjson?.right);
@@ -111,19 +111,19 @@ export const tree2blocks = (workspace, blockjson) => {
             result.setFieldValue(blockjson.type, "OPERATOR");
             break;
         
-        case 'PRINT':
+        case NODETYPES.PRINT:
             var result = workspace.newBlock('praxly_print_block');
             var child = tree2blocks(workspace, blockjson?.value);
             result.getInput('EXPRESSION').connection.connect(child?.outputConnection);
             break;
 
-        case 'PRINTLN':
+        case NODETYPES.PRINTLN:
             var result = workspace.newBlock('praxly_println_block');
             var child = tree2blocks(workspace, blockjson?.value);
             result.getInput('EXPRESSION').connection.connect(child?.outputConnection);
             break;
             
-        case 'CODEBLOCK':
+        case NODETYPES.CODEBLOCK:
             var statements = blockjson.statements.map(element => {
                 try {
                     return tree2blocks(workspace, element);
@@ -136,15 +136,15 @@ export const tree2blocks = (workspace, blockjson) => {
             });
             connectStatements(statements);
             return statements;
-        case 'PROGRAM':
+        case NODETYPES.PROGRAM:
             return tree2blocks(workspace, blockjson.value);
-        case 'STATEMENT':
+        case NODETYPES.STATEMENT:
             var result = workspace.newBlock('praxly_statement_block');
             var child =  tree2blocks(workspace, blockjson?.value);
             result.getInput('EXPRESSION').connection.connect(child?.outputConnection);
             break;
             
-        case 'IF':
+        case NODETYPES.IF:
             var result = workspace.newBlock('praxly_if_block');
             var condition = tree2blocks(workspace, blockjson?.condition);
             var codeblocks = tree2blocks(workspace, blockjson?.statement);
@@ -152,7 +152,7 @@ export const tree2blocks = (workspace, blockjson) => {
             result.getInput('STATEMENT').connection.connect(codeblocks[0]?.previousConnection);
             break;
              
-        case 'IF_ELSE':
+        case NODETYPES.IF_ELSE:
             var result = workspace.newBlock('praxly_if_else_block');
             var condition = tree2blocks(workspace, blockjson?.condition);
             var statements = tree2blocks(workspace, blockjson?.statement);
@@ -162,7 +162,7 @@ export const tree2blocks = (workspace, blockjson) => {
             result.getInput('ALTERNATIVE').connection.connect(alternatives[0]?.previousConnection);
             break;
              
-        case 'LOCATION':
+        case NODETYPES.LOCATION:
             if (blockjson.isArray){
                 
                 var result = workspace.newBlock('praxly_array_reference_block');
@@ -178,27 +178,17 @@ export const tree2blocks = (workspace, blockjson) => {
             }
              
 
-        case 'ASSIGNMENT':
+        case NODETYPES.ASSIGNMENT:
             var expression = tree2blocks(workspace, blockjson?.value); 
             
                 var result = workspace.newBlock('praxly_reassignment_expression_block');
 
-                // if (blockjson.varType === 'Praxly_array'){
-                //     result = workspace.newBlock('praxly_array_assignment_block');
-                //     result.setFieldValue('int[]', "VARTYPE");
-                // } else{
-                //     var vartype = blockjson.varType.toLowerCase();
-                //     vartype = vartype === "string" ? "String" : vartype;
-                //     result.setFieldValue(vartype, "VARTYPE");
-                    
-                // }
-            // }
             var location = tree2blocks(workspace, blockjson.location);
             result.getInput('EXPRESSION').connection.connect(expression?.outputConnection);
             result.getInput('LOCATION').connection.connect(location?.outputConnection);
             break;
              
-        case "VARDECL":
+        case NODETYPES.VARDECL:
             var result = workspace.newBlock('praxly_assignment_block');
             var expression = tree2blocks(workspace, blockjson?.value);
             // expression.initSvg();
@@ -207,7 +197,7 @@ export const tree2blocks = (workspace, blockjson) => {
             result.getInput('EXPRESSION').connection.connect(expression.outputConnection);
             break;
 
-        case 'WHILE':
+        case NODETYPES.WHILE:
             var result = workspace.newBlock('praxly_while_loop_block');
             var condition = tree2blocks(workspace, blockjson?.condition);
             var codeblocks = tree2blocks(workspace, blockjson?.statement);
@@ -215,7 +205,7 @@ export const tree2blocks = (workspace, blockjson) => {
             result.getInput('STATEMENT').connection.connect(codeblocks[0]?.previousConnection);
             break;
              
-        case 'DO_WHILE':
+        case NODETYPES.DO_WHILE:
             var result = workspace.newBlock('praxly_do_while_loop_block');
             var condition = tree2blocks(workspace, blockjson?.condition);
             var codeblocks = tree2blocks(workspace, blockjson?.statement);
@@ -223,7 +213,7 @@ export const tree2blocks = (workspace, blockjson) => {
             result.getInput('STATEMENT').connection.connect(codeblocks[0]?.previousConnection);
             break;
              
-        case 'REPEAT_UNTIL':
+        case NODETYPES.REPEAT_UNTIL:
             var result = workspace.newBlock('praxly_repeat_until_loop_block');
             var condition = tree2blocks(workspace, blockjson?.condition);
             var codeblocks = tree2blocks(workspace, blockjson?.statement);
@@ -231,25 +221,25 @@ export const tree2blocks = (workspace, blockjson) => {
             result.getInput('STATEMENT').connection.connect(codeblocks[0]?.previousConnection);
             break;
              
-        case 'NOT':
+        case NODETYPES.NOT:
             var result = workspace.newBlock('praxly_not_block');
             var child = tree2blocks(workspace, blockjson?.value);
             result.getInput('EXPRESSION').connection.connect(child?.outputConnection);
             break;
 
-        case 'NEGATE':
+        case NODETYPES.NEGATE:
             var result = workspace.newBlock('praxly_negate_block');
             var child = tree2blocks(workspace, blockjson?.value);
             result.getInput('EXPRESSION').connection.connect(child?.outputConnection);
             break;
             
-        case 'RETURN':
+        case NODETYPES.RETURN:
             var result = workspace.newBlock('praxly_return_block');
             var child = tree2blocks(workspace, blockjson?.value);
             result.getInput('EXPRESSION').connection.connect(child?.outputConnection);
             break;
 
-        case 'FUNCTION_CALL':
+        case NODETYPES.FUNCCALL:
             var result = workspace.newBlock('praxly_function_call_block');
             var params = workspace.newBlock('praxly_parameter_block');
             result.setFieldValue(blockjson?.name, 'PROCEDURE_NAME');
@@ -265,7 +255,7 @@ export const tree2blocks = (workspace, blockjson) => {
             params.initSvg();
             break;
 
-        case 'FUNCDECL':
+        case NODETYPES.FUNCDECL:
             var returnType = blockjson?.returnType;
             var argsList = blockjson?.params;
             var result = workspace.newBlock('praxly_procedure_block');
@@ -287,7 +277,7 @@ export const tree2blocks = (workspace, blockjson) => {
             params.initSvg();
             break;
             
-        case 'FOR':
+        case NODETYPES.FOR:
 
             var result = workspace.newBlock('praxly_for_loop_block');
             try {
@@ -317,7 +307,7 @@ export const tree2blocks = (workspace, blockjson) => {
 
             }
             break;
-        case 'ARRAY_LITERAL':    
+        case NODETYPES.ARRAY_LITERAL:    
             var argsList = blockjson?.params;
             var params = workspace.newBlock('praxly_parameter_block');
             for (var i = 0; i < ( argsList?.length ?? 0); i++){
@@ -329,7 +319,7 @@ export const tree2blocks = (workspace, blockjson) => {
             break;
 
 
-        case 'ARRAY_REFERENCE_ASSIGNMENT':
+        case NODETYPES.ARRAY_REFERENCE_ASSIGNMENT:
             var result = workspace.newBlock('praxly_array_reference_reassignment_block');
             console.error(`reached here`);
             result.setFieldValue(blockjson.name, "VARIABLENAME");
@@ -339,7 +329,7 @@ export const tree2blocks = (workspace, blockjson) => {
             result.getInput('EXPRESSION').connection.connect(expression?.outputConnection);
             break;
 
-        case 'ARRAY_ASSIGNMENT':
+        case NODETYPES.ARRAY_ASSIGNMENT:
             var expression = tree2blocks(workspace, blockjson?.value); 
             var result = workspace.newBlock('praxly_array_assignment_block');
             result.setFieldValue(blockjson?.varType, 'VARTYPE');
@@ -347,11 +337,12 @@ export const tree2blocks = (workspace, blockjson) => {
             result.getInput('EXPRESSION').connection.connect(expression?.outputConnection);
             break;
 
-        default: 
-            return null;
+        // default: 
+        //     return null;
 
 
     }
+    // console.warn(blockjson.type)
     blockjson.blockID = result.id;
     result.initSvg();
     return result;

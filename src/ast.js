@@ -1,5 +1,5 @@
 
-import { PraxlyErrorException, TYPES, addToPrintBuffer, appendAnnotation, defaultError, errorOutput, printBuffer } from "./common";
+import { NODETYPES, PraxlyErrorException, TYPES, addToPrintBuffer, appendAnnotation, defaultError, errorOutput, printBuffer } from "./common";
 
 
 var scopes = {};
@@ -32,48 +32,48 @@ export const createExecutable = (blockjson) => {
             return new Praxly_int( blockjson.value, blockjson);
         case TYPES.STRING:
             return new Praxly_String(blockjson.value, blockjson);
-         case 'CHAR':
+         case NODETYPES.CHAR:
             return new Praxly_char(blockjson.value, blockjson);
         case TYPES.BOOLEAN:
             return new Praxly_boolean( blockjson.value, blockjson);
         case TYPES.DOUBLE:
             return new Praxly_double( blockjson.value, blockjson);
-        case 'ADD':
+        case NODETYPES.ADDITION:
             return new Praxly_addition(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
-        case 'SUBTRACT':
+        case NODETYPES.SUBTRACTION:
             return new Praxly_subtraction(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
-        case 'MULTIPLY':
+        case NODETYPES.MULTIPLICATION:
             return new Praxly_multiplication(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
-        case 'DIVIDE':
+        case NODETYPES.DIVISION:
             return new Praxly_division(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
-        case 'EXPONENT':
+        case NODETYPES.EXPONENTIATION:
             return new Praxly_exponent(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
-        case 'MOD':
+        case NODETYPES.MODULUS:
             return new Praxly_modulo(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
-        case 'AND':
+        case NODETYPES.AND:
             return new Praxly_and(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
-        case 'OR':
+        case NODETYPES.OR:
             return new Praxly_or(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
-        case 'EQUALS':
+        case NODETYPES.EQUALITY:
             return new Praxly_equals(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
-        case 'LESS_THAN_EQUAL':
+        case NODETYPES.LESS_THAN_OR_EQUAL:
             return new Praxly_less_than_equal(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
-        case 'GREATER_THAN_EQUAL':
+        case NODETYPES.GREATER_THAN_OR_EQUAL:
             return new Praxly_greater_than_equal(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
-        case 'GREATER_THAN':
+        case NODETYPES.GREATER_THAN:
             return new Praxly_greater_than(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
-        case 'LESS_THAN':
+        case NODETYPES.LESS_THAN:
             return new Praxly_less_than(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
-        case 'NOT_EQUAL':
+        case NODETYPES.INEQUALITY:
             return new Praxly_not_equals(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
             
-        case 'PRINT':
+        case NODETYPES.PRINT:
             return new Praxly_print(createExecutable(blockjson.value), blockjson);
 
-        case 'PRINTLN':
+        case NODETYPES.PRINTLN:
             return new Praxly_println(createExecutable(blockjson.value), blockjson);
 
-        case 'CODEBLOCK':
+        case NODETYPES.CODEBLOCK:
             let statements = blockjson.statements;
             
             let result = statements.map((statement) => {
@@ -82,7 +82,7 @@ export const createExecutable = (blockjson) => {
             });
             return new Praxly_codeBlock(result);
 
-        case 'PROGRAM':
+        case NODETYPES.PROGRAM:
             // variableList = {};
             scopes = {
                 global: {
@@ -94,11 +94,11 @@ export const createExecutable = (blockjson) => {
             };
             return new Praxly_program(createExecutable( blockjson.value));
             
-        case 'STATEMENT':
+        case NODETYPES.STATEMENT:
             return new Praxly_statement( createExecutable(blockjson.value), blockjson);
             
 
-        case 'IF':
+        case NODETYPES.IF:
             try{
                 return new Praxly_if(createExecutable(blockjson.condition), createExecutable(blockjson.statement), blockjson);
             }
@@ -109,7 +109,7 @@ export const createExecutable = (blockjson) => {
                 // console.error('An error occurred: empty statement', error);
                 return  new Praxly_statement(null);
             }
-        case 'IF_ELSE':
+        case NODETYPES.IF_ELSE:
             try{
                 return new Praxly_if_else(createExecutable(blockjson.condition), createExecutable(blockjson.statement), createExecutable(blockjson.alternative), blockjson);
             }
@@ -118,7 +118,7 @@ export const createExecutable = (blockjson) => {
                 // console.error('An error occurred: empty statement', error);
                 return  new Praxly_statement(null);
             }
-        case 'ASSIGNMENT':
+        case NODETYPES.ASSIGNMENT:
             try {
                 return new Praxly_assignment(blockjson, createExecutable(blockjson.location), createExecutable(blockjson.value), blockjson);
             } 
@@ -127,11 +127,11 @@ export const createExecutable = (blockjson) => {
                 console.error('assignment error: ', error);
                 return null;
             }
-        case 'VARDECL':
+        case NODETYPES.VARDECL:
             var location = createExecutable(blockjson.location);
             return new Praxly_vardecl(blockjson, location, createExecutable(blockjson.value));
 
-        case 'ARRAY_ASSIGNMENT':
+        case NODETYPES.ARRAY_ASSIGNMENT:
             try {
                 return new Praxly_array_assignment(blockjson, createExecutable(blockjson.location), createExecutable(blockjson.value));
             } 
@@ -142,7 +142,7 @@ export const createExecutable = (blockjson) => {
             }
 
         
-        case 'LOCATION':
+        case NODETYPES.LOCATION:
             try {
                 var index = null;
                 if (blockjson.isArray){
@@ -155,7 +155,7 @@ export const createExecutable = (blockjson) => {
                 // console.error('assignment error: ', error);
                 return;
             }
-        case 'FOR':
+        case NODETYPES.FOR:
             try{
                 var initialization = createExecutable(blockjson.initialization);
                 var condition = createExecutable(blockjson.condition);
@@ -167,7 +167,7 @@ export const createExecutable = (blockjson) => {
                 console.error( error);
                 return  new Praxly_statement(null);
             }
-        case 'WHILE':
+        case NODETYPES.WHILE:
             try{
                 var condition = createExecutable(blockjson.condition);
                 var statement = createExecutable(blockjson.statement);
@@ -177,7 +177,7 @@ export const createExecutable = (blockjson) => {
                 console.error( error);
                 return  new Praxly_statement(null);
             }
-        case 'DO_WHILE':
+        case NODETYPES.DO_WHILE:
             try{
                 var condition = createExecutable(blockjson.condition);
                 var statement = createExecutable(blockjson.statement);
@@ -187,7 +187,7 @@ export const createExecutable = (blockjson) => {
                 console.error('An error occurred: empty statement', error);
                 return  new Praxly_statement(null);
             }
-        case 'REPEAT_UNTIL':
+        case NODETYPES.REPEAT_UNTIL:
             try{
                 var condition = createExecutable(blockjson.condition);
                 var statement = createExecutable(blockjson.statement);
@@ -197,39 +197,39 @@ export const createExecutable = (blockjson) => {
                 console.error('An error occurred: empty statement', error);
                 return  new Praxly_statement(null);
             }
-        case 'NOT':
+        case NODETYPES.NOT:
             return new Praxly_not(createExecutable(blockjson.value), blockjson);
-        case 'NEGATE':
+        case NODETYPES.NEGATE:
             return new Praxly_negate(createExecutable(blockjson.value), blockjson);
         
-        case 'COMMENT':
+        case NODETYPES.COMMENT:
             return  new Praxly_comment(blockjson.value, blockjson);
-        case 'SINGLE_LINE_COMMENT':
+        case NODETYPES.SINGLE_LINE_COMMENT:
             return  new Praxly_single_line_comment(blockjson.value, blockjson);
-        case 'FUNCDECL':
+        case NODETYPES.FUNCDECL:
             var contents = createExecutable(blockjson.contents);
             return new Praxly_function_declaration(blockjson.returnType, blockjson.name, blockjson.params, contents, blockjson);
-        case 'FUNCTION_CALL':
+        case NODETYPES.FUNCCALL:
             var args = [];
             blockjson.args.forEach((arg) => {
                 args.push(createExecutable(arg));
             });
             return new Praxly_function_call(blockjson.name, args, blockjson);
-        case 'RETURN':
+        case NODETYPES.RETURN:
             return new Praxly_return(createExecutable(blockjson.value), blockjson);
 
-        case 'ARRAY_LITERAL':
+        case NODETYPES.ARRAY_LITERAL:
             var args = [];
             blockjson.params.forEach((arg) => {
                 args.push(createExecutable(arg));
             });
             return new Praxly_array_literal( args, blockjson);
-        case 'ARRAY_REFERENCE':
+        case NODETYPES.ARRAY_REFERENCE:
             // console.error(createExecutable(blockjson.index));
             return new Praxly_array_reference(blockjson.name, createExecutable(blockjson.index), blockjson);
             //go here
 
-        case 'ARRAY_REFERENCE_ASSIGNMENT':
+        case NODETYPES.ARRAY_REFERENCE_ASSIGNMENT:
             return new Praxly_array_reference_assignment(blockjson.name, createExecutable(blockjson.index), createExecutable(blockjson.value), blockjson);
         
         case 'INVALID':
@@ -1111,7 +1111,7 @@ class Praxly_function_call {
         };
         for (let i = 0; i < this.args.length; i++){
             let parameterName = functionParams[i][1];
-            let parameterType = functionParams[i][0].toUpperCase();
+            let parameterType = functionParams[i][0];
             let argument = this.args[i].evaluate(environment);
 
 
@@ -1148,8 +1148,8 @@ class Praxly_function_call {
         if (returnType === 'float'){
             returnType = TYPES.DOUBLE;
         }
-        if ((result === "Exit_Success" && returnType !== 'VOID') || (returnType !== (result?.realType ?? "VOID"))){
-            throw new PraxlyErrorException(`this function has an invalid return type.\n\t Expected: ${returnType}\n\t Actual: ${result?.realType ?? "void"} `, this.json.line);
+        if ((result === "Exit_Success" && returnType !== TYPES.VOID) || (returnType !== (result?.realType ?? TYPES.VOID))){
+            throw new PraxlyErrorException(`this function has an invalid return type.\n\t Expected: ${returnType}\n\t Actual: ${result?.realType?? TYPES.VOID} `, this.json.line);
             
             // console.error(`invalid return type: ${returnType} `);
         }

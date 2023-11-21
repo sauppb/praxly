@@ -11,14 +11,14 @@ export const blocks2tree = (workspace, generator) => {
     // console.error(topBlocks);
     if (topBlocks.length === 0){
         return {
-            type: NODETYPES.PRORAM, 
+            type: NODETYPES.PROGRAM, 
             blockID: 'blocksRoot', 
             value: 0
         };
     }
 
     var result = {
-        type: NODETYPES.PRORAM, 
+        type: NODETYPES.PROGRAM, 
         blockID: 'blocksRoot', 
         value: generator['codeBLockJsonBuilder'](topBlocks[0])
     }
@@ -259,7 +259,7 @@ export const makeGenerator = () => {
             name: variableName, 
             value: value, 
             blockID: block.id, 
-            varType: varType.toUpperCase(),
+            varType: varType,
             location: {
                 name: variableName,
                 type: NODETYPES.LOCATION,
@@ -293,7 +293,7 @@ export const makeGenerator = () => {
                 type: NODETYPES.LOCATION,
               },
             blockID: block.id, 
-            varType: varType.toUpperCase(),
+            varType: varType,
 
         }
     }
@@ -343,7 +343,7 @@ export const makeGenerator = () => {
             name: variableName, 
             value: value, 
             blockID: block.id, 
-            varType: varType.toUpperCase(),
+            varType: varType,
             location: {
                 name: variableName,
                 type: NODETYPES.LOCATION,
@@ -440,7 +440,7 @@ export const makeGenerator = () => {
     }
 
     praxlyGenerator['praxly_procedure_block'] = (block)=> {
-        var returnType = block.getFieldValue('RETURNTYPE').toUpperCase();
+        var returnType = block.getFieldValue('RETURNTYPE');
         // console.log(`field input is ${varType}`);
         var args = block.getInputTargetBlock('PARAMS');
         var argschildren = args.getChildren(true);

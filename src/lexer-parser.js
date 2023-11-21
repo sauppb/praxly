@@ -1,5 +1,5 @@
 
-import { MAX_LOOP, TYPES, addToPrintBuffer, annotationsBuffer, blockErrorsBuffer, errorOutput, markersBuffer, printBuffer, textEditor, textError } from './common';
+import { MAX_LOOP, NODETYPES, TYPES, addToPrintBuffer, annotationsBuffer, blockErrorsBuffer, errorOutput, markersBuffer, printBuffer, textEditor, textError } from './common';
 
 
 /**
@@ -19,7 +19,8 @@ export function text2tree () {
       let parser = new Parser(tokens);
       ir = parser?.parse();
       console.info('here is the tree:');
-      console.debug(textjson);
+      console.log(ir);
+
 
     }
     catch (error){
@@ -474,7 +475,7 @@ class Parser {
       let result = {
         blockID: 'code', 
         line: line, 
-        type: 'ARRAY_LITERAL',
+        type: NODETYPES.ARRAY_LITERAL,
       };
       var args = [];
       this.advance();
@@ -516,7 +517,7 @@ class Parser {
         this.advance();
         var value = this.parse_boolean_operation()
         l = {
-          type: 'ASSIGNMENT',
+          type: NODETYPES.ASSIGNMENT,
           blockID: "code",
           line: line,
           location: l,
@@ -536,7 +537,7 @@ class Parser {
         }
         this.match_and_discard_next_token(')');
         l = {
-          type: 'FUNCTION_CALL',
+          type: NODETYPES.FUNCCALL,
           blockID: "code",
           line: line,
           name: l.name,
@@ -567,7 +568,7 @@ class Parser {
       l ={
               left: l, 
               right: r,
-              type: "EXPONENT", 
+              type: NODETYPES.EXPONENTIATION, 
               blockID: "code", 
               line: line
 
@@ -596,7 +597,7 @@ class Parser {
         l ={
             left: l, 
             right: r,
-            type: "MULTIPLY", 
+            type: NODETYPES.MULTIPLICATION, 
             blockID: "code", 
             line: line, 
              
@@ -609,7 +610,7 @@ class Parser {
         l ={
             left: l, 
             right: r,
-            type: "DIVIDE", 
+            type: NODETYPES.DIVISION, 
             blockID: "code", 
             line: line, 
              
@@ -622,7 +623,7 @@ class Parser {
         l ={
             left: l, 
             right: r,
-            type: "MOD", 
+            type: NODETYPES.MODULUS, 
             blockID: "code", 
             line: line, 
              
@@ -649,7 +650,7 @@ class Parser {
         l ={
             left: l, 
             right: r,
-            type: "SUBTRACT", 
+            type: NODETYPES.SUBTRACTION, 
             blockID: "code", 
             line: line, 
              
@@ -662,7 +663,7 @@ class Parser {
         l ={
             left: l, 
             right: r,
-            type: "ADD", 
+            type: NODETYPES.ADDITION, 
             blockID: "code", 
             line: line, 
              
@@ -686,14 +687,14 @@ class Parser {
       if (this.has('not')){
         this.advance();
         var expression = this.parse_atom();
-        result.type = 'NOT';
+        result.type = NODETYPES.NOT;
         result.value = expression;
         return result;
       }
       else if (this.has("SUBTRACT")){
       this.advance();
         var expression = this.parse_atom();
-        result.type = 'NEGATE';
+        result.type = NODETYPES.NEGATE;
         result.value = expression;
     }
 
@@ -719,7 +720,7 @@ class Parser {
         l ={
             left: l, 
             right: r,
-            type: "LESS_THAN_EQUAL", 
+            type: NODETYPES.LESS_THAN_OR_EQUAL, 
             blockID: "code", 
             line: line, 
              
@@ -732,7 +733,7 @@ class Parser {
         l ={
             left: l, 
             right: r,
-            type: "GREATER_THAN_EQUAL", 
+            type: NODETYPES.GREATER_THAN_OR_EQUAL, 
             blockID: "code", 
             line: line, 
              
@@ -745,7 +746,7 @@ class Parser {
         l ={
             left: l, 
             right: r,
-            type: "LESS_THAN", 
+            type: NODETYPES.LESS_THAN, 
             blockID: "code", 
             line: line, 
              
@@ -758,7 +759,7 @@ class Parser {
         l ={
             left: l, 
             right: r,
-            type: "GREATER_THAN", 
+            type: NODETYPES.GREATER_THAN, 
             blockID: "code", 
             line: line, 
              
@@ -771,7 +772,7 @@ class Parser {
         l ={
             left: l, 
             right: r,
-            type: "EQUALS", 
+            type: NODETYPES.EQUALITY, 
             blockID: "code", 
             line: line, 
              
@@ -784,7 +785,7 @@ class Parser {
         l ={
             left: l, 
             right: r,
-            type: "NOT_EQUAL", 
+            type: NODETYPES.INEQUALITY, 
             blockID: "code", 
             line: line, 
              
@@ -798,7 +799,7 @@ return l;
 
 parse_location(){
   var result = {
-    type: "LOCATION", 
+    type: NODETYPES.LOCATION, 
     name: this.tokens[this.i].value,
     isArray: false,
     blockID: 'code',
@@ -818,14 +819,14 @@ parse_location(){
 //this one kinda a mess ngl, but my goal is to support variable initialization and assignment all together
 parse_funcdecl_or_vardecl(){
   var isArray = false;
-  var type = "VARDECL";
-  var vartype = this.tokens[this.i].value.toUpperCase();
+  var type = NODETYPES.VARDECL;
+  var vartype = this.tokens[this.i].value;
   this.advance();
   if (this.has('[')){
     this.advance();
     if (this.has(']')){
       this.advance();
-      type = "ARRAY_ASSIGNMENT"
+      type = NODETYPES.ARRAY_ASSIGNMENT;
       isArray = true;
     }
   }
@@ -847,15 +848,15 @@ parse_funcdecl_or_vardecl(){
       this.advance();
     }
   } if (this.has('(')){
-    result.type = "FUNCDECL";
-    result.returnType = vartype.toUpperCase();
+    result.type = NODETYPES.FUNCDECL;
+    result.returnType = vartype;
     this.match_and_discard_next_token('(');
     var params = [];
       var stopLoop = 0;
       while (this.hasNot(')') && stopLoop < MAX_LOOP) {
         var param = [];
         if (this.has_type()){
-          param.push(this.tokens[this.i].value.toUpperCase());
+          param.push(this.tokens[this.i].value);
           this.advance();
         }
         if (this.has('Location')){
@@ -914,7 +915,7 @@ parse_boolean_operation() {
       l ={
           left: l, 
           right: r,
-          type: "AND", 
+          type: NODETYPES.AND, 
           blockID: "code", 
           line: line, 
            
@@ -927,7 +928,7 @@ parse_boolean_operation() {
       l ={
           left: l, 
           right: r,
-          type: "OR", 
+          type: NODETYPES.OR, 
           blockID: "code", 
           line: line, 
            
@@ -963,7 +964,7 @@ codeBlock(endToken) {
     this.advance();
    }
    return {
-      type: "CODEBLOCK", 
+      type: NODETYPES.CODEBLOCK, 
       statements: praxly_blocks,
       blockID: "code"
    }
@@ -981,7 +982,7 @@ parse_statement() {
   };
   if (this.has("if")) {
 
-    result.type = "IF";
+    result.type = NODETYPES.IF;
     this.advance();
     result.condition = this.parse_boolean_operation();
     if (this.has('\n')){
@@ -992,7 +993,7 @@ parse_statement() {
         if (this.has('\n')){
           this.advance();
         } 
-        result.type = "IF_ELSE";
+        result.type = NODETYPES.IF_ELSE;
         result.alternative = this.codeBlock('end if');  
       }
       if (this.has('end if')) {
@@ -1009,7 +1010,7 @@ parse_statement() {
     } 
   } 
   else if (this.has('for')){
-    result.type = "FOR";
+    result.type = NODETYPES.FOR;
     this.advance();
     if (this.hasNot('(')){
       return result;
@@ -1050,7 +1051,7 @@ parse_statement() {
 
   }
   else if (this.has('while')){
-    result.type = "WHILE";
+    result.type = NODETYPES.WHILE;
     this.advance();
     result.condition = this.parse_boolean_operation();
     if (this.has('\n')){
@@ -1069,7 +1070,7 @@ parse_statement() {
   } 
    
   else if (this.has('do')){
-    result.type = "DO_WHILE";
+    result.type = NODETYPES.DO_WHILE;
     this.advance();
     if (this.has('\n')){
       this.advance();
@@ -1099,7 +1100,7 @@ parse_statement() {
   }
 
   else if (this.has('repeat')){
-    result.type = "REPEAT_UNTIL";
+    result.type = NODETYPES.REPEAT_UNTIL;
     this.advance();
     if (this.has('\n')){
       this.advance();
@@ -1136,7 +1137,7 @@ parse_statement() {
       }
       if (this.has('\n')){
         // this.advance();
-        result.type = 'PRINT';
+        result.type = NODETYPES.PRINT;
         result.value = expression;
          
         return result;
@@ -1152,7 +1153,7 @@ parse_statement() {
       }
       if (this.has('\n')){
         // this.advance();
-        result.type = 'PRINTLN';
+        result.type = NODETYPES.PRINTLN;
         result.value = expression;
          
         return result;
@@ -1168,20 +1169,20 @@ parse_statement() {
       }
       if (this.has('\n')){
         // this.advance();
-        result.type = 'RETURN';
+        result.type = NODETYPES.RETURN;
         result.value = expression;
          
         return result;
       }
 
   }else if (this.has('comment')){
-    result.type = 'COMMENT', 
+    result.type = NODETYPES.COMMENT, 
     result.value = this.tokens[this.i].value;
     
     return result;
   
   } else if (this.has('single_line_comment')){
-    result.type = 'SINGLE_LINE_COMMENT', 
+    result.type = NODETYPES.SINGLE_LINE_COMMENT, 
     result.value = this.tokens[this.i].value;
     
     return result;
@@ -1205,7 +1206,7 @@ parse_statement() {
     if (this.has('\n')){
 
       result = {
-        type: "STATEMENT", 
+        type: NODETYPES.STATEMENT, 
         value: contents, 
         blockID: "code"
       };

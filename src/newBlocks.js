@@ -1,4 +1,5 @@
 import Blockly, { Block } from 'blockly';
+import { NODETYPES } from './common';
 
 export function definePraxlyBlocks(workspace) {
 
@@ -276,27 +277,27 @@ export function definePraxlyBlocks(workspace) {
                 "options": [
                   [
                     "==",
-                    "EQUALS"
+                    NODETYPES.EQUALITY
                   ],
                   [
                     "<=",
-                    "LESS_THAN_EQUAL"
+                    NODETYPES.LESS_THAN_OR_EQUAL
                   ],
                   [
                     ">=",
-                    "GREATER_THAN_EQUAL"
+                    NODETYPES.GREATER_THAN_OR_EQUAL
                   ],
                   [
                     "≠",
-                    "NOT_EQUAL"
+                    NODETYPES.INEQUALITY
                   ],
                   [
                     "<",
-                    "LESS_THAN"
+                    NODETYPES.LESS_THAN
                   ],
                   [
                     ">",
-                    "GREATER_THAN"
+                    NODETYPES.GREATER_THAN
                   ]
                 ]
               },
@@ -329,27 +330,27 @@ export function definePraxlyBlocks(workspace) {
                 "options": [
                   [
                     "+",
-                    "ADD"
+                    NODETYPES.ADDITION
                   ],
                   [
                     "-",
-                    "SUBTRACT"
+                    NODETYPES.SUBTRACTION
                   ],
                   [
                     "*",
-                    "MULTIPLY"
+                    NODETYPES.MULTIPLICATION
                   ],
                   [
                     "/",
-                    "DIVIDE"
+                    NODETYPES.DIVISION
                   ],
                   [
                     "%",
-                    "MOD"
+                    NODETYPES.MODULUS
                   ],
                   [
                     "^",
-                    "EXPONENT"
+                    NODETYPES.EXPONENTIATION
                   ]
                 ]
               },
@@ -387,11 +388,11 @@ export function definePraxlyBlocks(workspace) {
                 "options": [
                   [
                     "and",
-                    "AND"
+                    NODETYPES.AND
                   ],
                   [
                     "or",
-                    "OR"
+                    NODETYPES.OR
                   ]
                 ]
               },
@@ -477,14 +478,14 @@ export function definePraxlyBlocks(workspace) {
                 "type": "field_dropdown",
                 "name": "RETURNTYPE",
                 "options": [
-                  ["int", "int"],
-                  ['void', 'void'],
-                  ["boolean", "boolean"],
-                  ["double", "double"],
-                  ["char", "char"],
-                  ["String", "String"],
-                  ["float", "float"], 
-                  ['short', 'short']
+                  ["int", NODETYPES.INT],
+                  ['void', NODETYPES.VOID],
+                  ["boolean", NODETYPES.BOOLEAN],
+                  ["double", NODETYPES.DOUBLE],
+                  ["char", NODETYPES.CHAR],
+                  ["String", NODETYPES.STRING],
+                  ["float", NODETYPES.FLOAT], 
+                  ['short', NODETYPES.SHORT]
                 ]
               },
               {
@@ -555,31 +556,31 @@ export function definePraxlyBlocks(workspace) {
     "options": [
       [
         "int",
-        "int"
+        NODETYPES.INT
       ],
       [
         "boolean",
-        "boolean"
+        NODETYPES.BOOLEAN
       ],
       [
         "double",
-        "double"
+        NODETYPES.DOUBLE
       ],
       [
         "char",
-        "char"
+        NODETYPES.CHAR
       ],
       [
         "String",
-        "String"
+        NODETYPES.STRING
       ],
       [
         "float",
-        "float"
+        NODETYPES.FLOAT
       ], 
       [
         'short', 
-        'short'
+        NODETYPES.SHORT
       ],
       
     ]
@@ -840,32 +841,33 @@ export function definePraxlyBlocks(workspace) {
           "options": [
             [
               "int",
-              "int"
+              NODETYPES.INT
             ],
             [
               "boolean",
-              "boolean"
+              NODETYPES.BOOLEAN
             ],
             [
               "double",
-              "double"
+              NODETYPES.DOUBLE
             ],
             [
               "char",
-              "char"
+              NODETYPES.CHAR
             ],
             [
               "String",
-              "String"
+              NODETYPES.STRING
             ],
             [
               "float",
-              "float"
+              NODETYPES.FLOAT
             ], 
             [
               'short', 
-              'short'
-            ]
+              NODETYPES.SHORT
+            ],
+            
           ]
         },
       
@@ -981,32 +983,33 @@ export function definePraxlyBlocks(workspace) {
                       "options": [
                         [
                           "int",
-                          "int"
+                          NODETYPES.INT
                         ],
                         [
                           "boolean",
-                          "boolean"
+                          NODETYPES.BOOLEAN
                         ],
                         [
                           "double",
-                          "double"
+                          NODETYPES.DOUBLE
                         ],
                         [
                           "char",
-                          "char"
+                          NODETYPES.CHAR
                         ],
                         [
                           "String",
-                          "String"
+                          NODETYPES.STRING
                         ],
                         [
                           "float",
-                          "float"
+                          NODETYPES.FLOAT
                         ], 
                         [
                           'short', 
-                          'short'
-                        ]
+                          NODETYPES.SHORT
+                        ],
+                        
                       ]
                     },
                   
@@ -1035,31 +1038,31 @@ export function definePraxlyBlocks(workspace) {
                             "options": [
                               [
                                 "int",
-                                "INT"
+                                NODETYPES.INT
                               ],
                               [
                                 "boolean",
-                                "BOOLEAN"
+                                NODETYPES.BOOLEAN
                               ],
                               [
                                 "double",
-                                "DOUBLE"
+                                NODETYPES.DOUBLE
                               ],
                               [
                                 "char",
-                                "CHAR"
+                                NODETYPES.CHAR
                               ],
                               [
                                 "String",
-                                "STRING"
+                                NODETYPES.STRING
                               ],
                               [
                                 "float",
-                                "STRING"
+                                NODETYPES.FLOAT
                               ], 
                               [
                                 'short', 
-                                'SHORT'
+                                NODETYPES.SHORT
                               ],
                               
                             ]
