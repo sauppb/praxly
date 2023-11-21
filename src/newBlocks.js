@@ -266,11 +266,11 @@ export function definePraxlyBlocks(workspace) {
               NODETYPES.EQUALITY
             ],
             [
-              "<=",
+              "≤",
               NODETYPES.LESS_THAN_OR_EQUAL
             ],
             [
-              ">=",
+              "≥",
               NODETYPES.GREATER_THAN_OR_EQUAL
             ],
             [

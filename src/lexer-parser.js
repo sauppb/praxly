@@ -179,12 +179,20 @@ class Lexer {
           this.emit_token("Less_Than");
         }
 
+      } else if (this.has("≤")) {
+        this.capture();
+        this.emit_token("Less_Than_Equal_To");
+
       } else if (this.has("!")) {
         this.capture();
         if (this.has("=")) {
           this.capture();
           this.emit_token("Not_Equal");
         }
+
+      } else if (this.has("≠")) {
+        this.capture();
+        this.emit_token("Not_Equal");
 
       } else if (this.has("=") || this.has('←')) {
         this.capture();
@@ -203,6 +211,10 @@ class Lexer {
         } else {
           this.emit_token("Greater_Than");
         }
+
+      } else if (this.has("≥")) {
+        this.capture();
+        this.emit_token("Greater_Than_Equal_To");
 
       } else if (this.has_digit()) {
         while (this.i < this.length && this.has_digit()) {
@@ -434,7 +446,7 @@ class Parser {
       this.advance();
       return {
         value: tok.value,
-        type: "CHAR",
+        type: TYPES.CHAR,
         blockID: "code",
         line: line,
       };

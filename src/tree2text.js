@@ -104,13 +104,13 @@ export const tree2text = (blockjson, indentation) => {
 
         case NODETYPES.LESS_THAN_OR_EQUAL:
             var a_operand = tree2text(blockjson.left, indentation);
-            var operator = " <= ";
+            var operator = " ≤ ";
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
             return a_operand + operator + b_operand;
 
         case NODETYPES.GREATER_THAN_OR_EQUAL:
             var a_operand = tree2text(blockjson.left, indentation);
-            var operator = " >= ";
+            var operator = " ≥ ";
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
             return a_operand + operator + b_operand;
 
@@ -128,7 +128,7 @@ export const tree2text = (blockjson, indentation) => {
 
         case NODETYPES.INEQUALITY:
             var a_operand = tree2text(blockjson.left, indentation);
-            var operator = "≠";
+            var operator = " ≠ ";
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
             return a_operand + operator + b_operand;
 
