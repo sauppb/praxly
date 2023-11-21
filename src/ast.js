@@ -1,4 +1,4 @@
-import { NODETYPES, PraxlyErrorException, TYPES, addToPrintBuffer, defaultError, errorOutput } from "./common";
+import { NODETYPES, PraxlyErrorException, TYPES, addToPrintBuffer, defaultError, errorOutput, printBuffer } from "./common";
 
 var scopes = {};
 
@@ -419,7 +419,6 @@ class Praxly_print {
     }
 
     evaluate(environment) {
-        // console.log(this.expression.evaluate(environment));
         var child = this.expression.evaluate(environment);
         var result = child.value.toString();
         if ((child.realType === TYPES.DOUBLE || child.realType === TYPES.FLOAT) && result.indexOf('.') === -1) {
@@ -436,15 +435,18 @@ class Praxly_println {
         this.json = blockjson;
         this.expression = value;
     }
-
+    
     evaluate(environment) {
         // console.log(this.expression.evaluate(environment));
         var child = this.expression.evaluate(environment);
+        console.warn(child);
         var result = child.value.toString();
+        
         if ((child.realType === TYPES.DOUBLE || child.realType === TYPES.FLOAT) && result.indexOf('.') === -1) {
             result += '.0';
         }
         addToPrintBuffer(result + '<br>');
+        
         return null;
     }
 }
@@ -781,18 +783,16 @@ class Praxly_codeBlock {
 
 // searches through the linked list to find the nearest match to enable shadowing.
 function accessLocation(environment, json) {
+    // console.error(`looking for ${json.name}`);
+    // console.warn(environment.variableList);
+
     if (environment.variableList.hasOwnProperty(json.name)) {
-        // if (json.isArray){
-        //     return environment.variableList[this.name].elements[index.evaluate(environment).value].evaluate(environment);
-        // } else{
-        // return environment.variableList[json.name].evaluate(environment);
-        // }
         return environment.variableList;
     } else if (environment.parent === "root") {
         return null;
         // throw new PraxlyErrorException(`Error: variable name ${json.name} does not currently exist in this scope: \n ${environment.variableList}`, json.line);
     } else {
-        return accessLocation(json.name, environment.parent);
+        return accessLocation(environment.parent, json);
     }
 }
 
@@ -808,32 +808,18 @@ class Praxly_assignment {
     evaluate(environment) {
         // if it is a reassignment, the variable must be in the list and have a matching type.
         let valueEvaluated = this.value.evaluate(environment);
-        if (!accessLocation(environment, this.location)) {
+        var storage = accessLocation(environment, this.location);
+        if (!storage) {
             throw new PraxlyErrorException(`Error: variable name ${this.location.name} does not currently exist in this scope.\n `, this.json.line);
         }
         let currentStoredVariableEvaluated = this.location.evaluate(environment);
-
-        // console.log(variableList);
-        // if (!environment.variableList.hasOwnProperty(this.name)){
-        //     throw new PraxlyErrorException(`Error: variable name ${this.name} does not currently exist in this scope: \n ${environment.variableList}`, this.json.line);
-        // }
 
         if (!can_assign(currentStoredVariableEvaluated.realType, valueEvaluated.realType, this.json.line)) {
             throw new PraxlyErrorException(`Error: variable reassignment does not match declared type: \n\t Expected: `
                 + `${currentStoredVariableEvaluated.realType}, \n\t Actual: ${valueEvaluated.realType}`, this.json.line);
         }
 
-        // else {
-        //     if (environment.variableList.hasOwnProperty(this.name)){
-        //         throw new PraxlyErrorException(`variable ${this.name} has already been declared in this scope. `, this.json.line);
-        //     }
-        //     if (!can_assign(this.type, valueEvaluated.realType, this.json.line)){
-        //         throw new PraxlyErrorException(`variable assignment does not match declared type:\n\texpected type: ${this.type} \n\texpression type: ${valueEvaluated.realType}`, this.json.line);
-        //     }
-        //     // environment.variableList[this.name] = this.expression;
-        // }
 
-        let storage = accessLocation(environment, this.location);
         // console.warn(storage);
         if (this.location.isArray) {
             storage[this.location.name].elements[this.location.index.evaluate(environment).value] = valueEvaluated;
@@ -865,7 +851,7 @@ class Praxly_vardecl {
             throw new PraxlyErrorException(`variable assignment does not match declared type:\n\texpected type: ${this.type} \n\texpression type: ${valueEvaluated.realType}`, this.json.line);
         }
         environment.variableList[this.name] = valueEvaluated;
-        console.log(environment);
+        // console.log(environment);
         return;
     }
 }
@@ -922,6 +908,7 @@ class Praxly_Location {
         if (!storage) {
             throw new PraxlyErrorException(`Error: variable name ${this.name} does not currently exist in this scope or its parents scope: \n ${environment.variableList}`, this.json.line);
         }
+        
         if (this.isArray) {
             var index = this.index.evaluate(environment).value;
             if (index >= storage[this.name].elements.length) {
@@ -929,6 +916,10 @@ class Praxly_Location {
             }
             return storage[this.name].elements[this.index.evaluate(environment).value].evaluate(environment);
         } else {
+            // console.warn(storage);
+            // console.warn(this.name);
+            // console.warn(storage[this.name]);
+            // console.warn(storage[this.name].evaluate(environment));
             return storage[this.name].evaluate(environment);
         }
     }
@@ -1139,8 +1130,9 @@ class Praxly_function_call {
                 result = error.errorData;
                 // console.log(res)
             }
-            // console.error(`return `, error);
-            // console.error(error.errorData);
+            else{
+                console.error(error);
+            }
         }
 
         // due to lack of time, these datatypes will be considered the same.
