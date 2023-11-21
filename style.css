@@ -430,6 +430,7 @@ main {
   font-size: large;
   border-radius: 10px;
   overflow: auto; /* Add this */
+  min-height: 2.5em;
 }
 
 .clearOut {
