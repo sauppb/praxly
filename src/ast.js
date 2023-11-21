@@ -764,17 +764,21 @@ class Praxly_codeBlock {
     }
 
     evaluate(environment) {
-        // let exitLoop = false;
+        var newScope = {
+            parent: environment,
+            functionList: {},
+            variableList: {},
+        };
 
         for (let i = 0; i < this.praxly_blocks.length; i++) {
             const element = this.praxly_blocks[i];
 
             //aborts if it detects a return statement. Hopefully this doesn't cause problems later ahaha
             if (element?.isreturn) {
-                return element.evaluate(environment);
+                return element.evaluate(newScope);
             } else {
                 // console.error(element);
-                element.evaluate(environment);
+                element.evaluate(newScope);
             }
         }
         return "Exit_Success";
@@ -1092,12 +1096,9 @@ class Praxly_function_call {
         var returnType = func.returnType;
         if (functionParams.length !== this.args.length) {
             throw new PraxlyErrorException(`incorrect amount of arguments passed, expected ${functionParams.length}, was ${this.args.length}`, this.json.line);
-            // console.log(`incorrect amount of arguments passed, expected ${functionParams.length}, was ${this.args.length}`);
-            // return new Praxly_invalid(this.json);
+
         }
-        // copy the new parameters to the duplicate of the global scope
-        // var newScope = JSON.parse(JSON.stringify(environment));
-        // var newScope = Object.assign({}, environment);
+     
 
         //NEW: parameter list is now a linkedList. expect some errors till I fix it.
         var newScope = {
