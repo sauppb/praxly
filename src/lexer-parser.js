@@ -243,7 +243,8 @@ class Token {
               // throw new PraxlyErrorException('looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\").', this.currentLine);
               textError('lexing', 'looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\").',stringStart);
               this.i -= 1;
-              this.emit_token();
+              this.token_so_far = "";
+              this.emit_token("String");
             }
         
           } else if (this.has_letter()) {
@@ -842,6 +843,9 @@ parse_funcdecl_or_vardecl(){
   if (this.has('Assignment')){
     this.advance();
     result.value = this.parse_boolean_operation();
+    if (this.has(';')){
+      this.advance();
+    }
   } if (this.has('(')){
     result.type = "FUNCDECL";
     result.returnType = vartype.toUpperCase();

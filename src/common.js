@@ -47,29 +47,58 @@ export const TYPES = {
 export const NODETYPES = {
     ...OP, 
     ...TYPES, 
-    PRINT:                          "print", 
-    PRINTLN:                        "println", 
-    CODEBLOCK:                      "codeblock", 
-    PRORAM:                         "program", 
-    STATEMENT:                      "statement", 
-    IF:                             "if", 
-    IF_ELSE:                        "if_else", 
-    VARDECL:                        "vardecl", 
-    ARRAY_ASSIGNMENT:               "array_assignment", 
-    LOCATION:                       "location", 
-    FOR:                            "for", 
-    WHILE:                          "while", 
-    DO_WHILE:                       "do_while", 
-    REPEAT_UNTIL:                   "repeat until", 
-    COMMENT:                        "comment", 
-    SINGLE_LINE_COMMENT:            "single line comment", 
-    FUNCDECL:                       "funcdecl", 
-    FUNCCALL:                       "function call", 
-    RETURN:                         "return", 
-    ARRAY_LITERAL:                  "array literal", 
-    ARRAY_REFERENCE:                "array reference", 
+    PRINT:                          "PRINT", 
+    PRINTLN:                        "PRINTLN", 
+    CODEBLOCK:                      "CODEBLOCK", 
+    PRORAM:                         "PROGRAM", 
+    STATEMENT:                      "STATEMENT", 
+    IF:                             "IF", 
+    IF_ELSE:                        "IF_ELSE", 
+    VARDECL:                        "VARDECL", 
+    ARRAY_ASSIGNMENT:               "ARRAY_ASSIGNMENT", 
+    LOCATION:                       "LOCATION", 
+    FOR:                            "FOR", 
+    WHILE:                          "WHILE", 
+    DO_WHILE:                       "DO_WHILE", 
+    REPEAT_UNTIL:                   "REPEAT_UNTIL", 
+    COMMENT:                        "COMMENT", 
+    SINGLE_LINE_COMMENT:            "SINGLE_LINE_COMMENT", 
+    FUNCDECL:                       "FUNCDECL", 
+    FUNCCALL:                       "FUNCTION_CALL", 
+    RETURN:                         "RETURN", 
+    ARRAY_LITERAL:                  "ARRAY_LITERAL", 
+    ARRAY_REFERENCE:                "ARRAY_REFERENCE", 
     ARRAY_REFERENCE_ASSIGNMENT:     "ARRAY_REFERENCE_ASSIGNMENT", // remove?
 }
+
+
+// export const NODETYPES = {
+//   ...OP, 
+//   ...TYPES, 
+//   PRINT:                          "print", 
+//   PRINTLN:                        "println", 
+//   CODEBLOCK:                      "codeblock", 
+//   PROGRAM:                         "program", 
+//   STATEMENT:                      "statement", 
+//   IF:                             "if", 
+//   IF_ELSE:                        "if_else", 
+//   VARDECL:                        "vardecl", 
+//   ARRAY_ASSIGNMENT:               "array_assignment", 
+//   LOCATION:                       "location", 
+//   FOR:                            "for", 
+//   WHILE:                          "while", 
+//   DO_WHILE:                       "do_while", 
+//   REPEAT_UNTIL:                   "repeat_until", 
+//   COMMENT:                        "comment", 
+//   SINGLE_LINE_COMMENT:            "single_line_comment", 
+//   FUNCDECL:                       "funcdecl", 
+//   FUNCCALL:                       "function_call", 
+//   RETURN:                         "return", 
+//   ARRAY_LITERAL:                  "array_literal", 
+//   ARRAY_REFERENCE:                "array_reference", 
+//   ARRAY_REFERENCE_ASSIGNMENT:     "array_reference_assignment", // remove?
+// }
+
 
 export class PraxlyErrorException extends Error {
   constructor(message, line) {
@@ -97,17 +126,27 @@ export function addToPrintBuffer (message){
  * It also clears all of the ace error annotations. 
  */
 export function clearOutput() {
-    annotationsBuffer = [];
     printBuffer = "";
-    errorOutput = "";
+    // annotationsBuffer = [];
+    // errorOutput = "";
+    // blockErrorsBuffer = {};
+    // markersBuffer.forEach((markerId)=> {
+    //   textEditor.session.removeMarker(markerId);
+    // });
+  }
+
+export function clearErrors(){
+  annotationsBuffer = [];
+  errorOutput = "";
     blockErrorsBuffer = {};
     markersBuffer.forEach((markerId)=> {
       textEditor.session.removeMarker(markerId);
     });
-  }
+}
 
 /**
- * This is a unique function that will throw a compiling error. 
+ * This is a unique function that will throw a compiling error. This is commonly used for
+ *  lexing and parsing errors so that the correct tree is infered but there is an error thrown for bad syntax. 
  * @param {string} type the type of error
  * @param {string} error the error message
  * @param {number} line the error line number 

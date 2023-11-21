@@ -1,12 +1,13 @@
 
-import { PraxlyErrorException, TYPES, addToPrintBuffer, appendAnnotation, defaultError, printBuffer } from "./common";
+import { PraxlyErrorException, TYPES, addToPrintBuffer, appendAnnotation, defaultError, errorOutput, printBuffer } from "./common";
 
 
 var scopes = {};
 
 
-// new 08/24/23
-// this will be the error that will halt execution and return code. 
+/**
+ * this is meant to halt the execution wherever it is at for return statements. 
+ */
 class ReturnException extends Error {
     constructor(errorData) {
       super(`attempting to return. this should return ${errorData}`);
@@ -16,25 +17,16 @@ class ReturnException extends Error {
   }
 
 
-// export function clearOutput() {
-//     printBuffer = "";
-//     errorOutput = "";
-//     blockErrorsBuffer = {};
-// }
-
-
-
 
 export const createExecutable = (blockjson) => {
-    if (typeof blockjson === 'undefined' || typeof blockjson.type === 'undefined'  ) {
-        defaultError("invalid program.");
-        console.error(blockjson);
+    if (typeof blockjson === 'undefined' || typeof blockjson.type === 'undefined' ) {
+        if(errorOutput.length === 0) {
+            defaultError("invalid program.");
+        }
+        // console.error(blockjson);
         return new Praxly_invalid(blockjson);
-      }
-      
-
-    
-    console.warn(blockjson.type);
+      }    
+    // console.warn(blockjson.type);
     switch(blockjson.type) {
         case TYPES.INT:
             return new Praxly_int( blockjson.value, blockjson);

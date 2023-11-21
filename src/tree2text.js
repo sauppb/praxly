@@ -11,10 +11,6 @@ export const tree2text = (blockjson, startIndex, indentation) => {
             
             try {
                 var result = blockjson.value.toString();
-                blockjson.startIndex = startIndex;
-                blockjson.endIndex = startIndex + result.length;
-                blockjson.beg = startIndex;
-                blockjson.end = startIndex + result.length;
                 return  result;
             }
             catch (error){
@@ -23,10 +19,6 @@ export const tree2text = (blockjson, startIndex, indentation) => {
         case "LOCATION":
             try {
                 var result = blockjson.name.toString();
-                blockjson.startIndex = startIndex;
-                blockjson.endIndex = startIndex + result.length;
-                blockjson.beg = startIndex;
-                blockjson.end = startIndex + result.length;
                 if (blockjson.isArray){
                     result += `[${tree2text(blockjson.index)}]`;
                 }
@@ -39,10 +31,6 @@ export const tree2text = (blockjson, startIndex, indentation) => {
         case TYPES.STRING:
             try {
                 var result = '\"' + blockjson.value + '\"';
-                blockjson.startIndex = startIndex;
-                blockjson.endIndex = startIndex + result.length;
-                blockjson.beg = startIndex;
-                blockjson.end = startIndex + result.length;
                 return  result;
                 
             }
@@ -52,10 +40,6 @@ export const tree2text = (blockjson, startIndex, indentation) => {
         case 'COMMENT':
             try {
                 var result = '\t'.repeat(indentation) + '/*' + blockjson.value + '*/\n';
-                blockjson.startIndex = startIndex;
-                blockjson.endIndex = artIndex + result.length;
-                blockjson.beg = startIndex;
-                blockjson.end = startIndex + result.length;
                 return  result;
                 
             }
@@ -65,10 +49,6 @@ export const tree2text = (blockjson, startIndex, indentation) => {
         case 'SINGLE_LINE_COMMENT':
             try {
                 var result = '\t'.repeat(indentation) + '//' + blockjson.value + '\n';
-                blockjson.startIndex = startIndex;
-                blockjson.endIndex = startIndex + result.length;
-                blockjson.beg = startIndex;
-                blockjson.end = startIndex + result.length;
                 return  result;
                 
             }
@@ -76,130 +56,125 @@ export const tree2text = (blockjson, startIndex, indentation) => {
                 return " ";
             }
         case 'ADD':
-            blockjson.beg = startIndex;
             var a_operand = tree2text(blockjson.left, startIndex, indentation);
-            blockjson.startIndex = a_operand.length;
             var operator = " + ";
-            blockjson.endIndex = blockjson.startIndex + operator.length;
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
-            blockjson.end = blockjson.endIndex + b_operand.length;
             return a_operand + operator + b_operand;
         case 'SUBTRACT':
-            blockjson.beg = startIndex;
             var a_operand = tree2text(blockjson.left, startIndex, indentation);
-            blockjson.startIndex = a_operand.length;
+            
             var operator = " - ";
-            blockjson.endIndex = blockjson.startIndex + operator.length;
+            
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
-            blockjson.end = blockjson.endIndex + b_operand.length;
+            
             return a_operand + operator + b_operand;
         case 'MULTIPLY':
             blockjson.beg = startIndex;
             var a_operand = tree2text(blockjson.left, startIndex, indentation);
-            blockjson.startIndex = a_operand.length;
+            
             var operator = " * ";
-            blockjson.endIndex = blockjson.startIndex + operator.length;
+            
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
-            blockjson.end = blockjson.endIndex + b_operand.length;
+            
             return a_operand + operator + b_operand;
         case 'DIVIDE':
             blockjson.beg = startIndex;
             var a_operand = tree2text(blockjson.left, startIndex, indentation);
-            blockjson.startIndex = a_operand.length;
+            
             var operator = " / ";
-            blockjson.endIndex = blockjson.startIndex + operator.length;
+            
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
-            blockjson.end = blockjson.endIndex + b_operand.length;
+            
             return a_operand + operator + b_operand;
         case 'EXPONENT':
             blockjson.beg = startIndex;
             var a_operand = tree2text(blockjson.left, startIndex, indentation);
-            blockjson.startIndex = a_operand.length;
+            
             var operator = " ^ ";
-            blockjson.endIndex = blockjson.startIndex + operator.length;
+            
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
-            blockjson.end = blockjson.endIndex + b_operand.length;
+            
             return a_operand + operator + b_operand;
         case 'MOD':
             blockjson.beg = startIndex;
             var a_operand = tree2text(blockjson.left, startIndex, indentation);
-            blockjson.startIndex = a_operand.length;
+            
             var operator = " % ";
-            blockjson.endIndex = blockjson.startIndex + operator.length;
+            
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
-            blockjson.end = blockjson.endIndex + b_operand.length;
+            
             return a_operand + operator + b_operand;
         case 'AND':
             blockjson.beg = startIndex;
             var a_operand = tree2text(blockjson.left, startIndex, indentation);
-            blockjson.startIndex = a_operand.length;
+            
             var operator = " and ";
-            blockjson.endIndex = blockjson.startIndex + operator.length;
+            
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
-            blockjson.end = blockjson.endIndex + b_operand.length;
+            
             return a_operand + operator + b_operand;
         case 'OR':
             blockjson.beg = startIndex;
             var a_operand = tree2text(blockjson.left, startIndex, indentation);
-            blockjson.startIndex = a_operand.length;
+            
             var operator = " or ";
-            blockjson.endIndex = blockjson.startIndex + operator.length;
+            
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
-            blockjson.end = blockjson.endIndex + b_operand.length;
+            
             return a_operand + operator + b_operand;
         case 'EQUALS':
             blockjson.beg = startIndex;
             var a_operand = tree2text(blockjson.left, startIndex, indentation);
-            blockjson.startIndex = a_operand.length;
+            
             var operator = " == ";
-            blockjson.endIndex = blockjson.startIndex + operator.length;
+            
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
-            blockjson.end = blockjson.endIndex + b_operand.length;
+            
             return a_operand + operator + b_operand;
         case 'LESS_THAN_EQUAL':
             blockjson.beg = startIndex;
             var a_operand = tree2text(blockjson.left, startIndex, indentation);
-            blockjson.startIndex = a_operand.length;
+            
             var operator = " <= ";
-            blockjson.endIndex = blockjson.startIndex + operator.length;
+            
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
-            blockjson.end = blockjson.endIndex + b_operand.length;
+            
             return a_operand + operator + b_operand;
         case 'GREATER_THAN_EQUAL':
             blockjson.beg = startIndex;
             var a_operand = tree2text(blockjson.left, startIndex, indentation);
-            blockjson.startIndex = a_operand.length;
+            
             var operator = " >= ";
-            blockjson.endIndex = blockjson.startIndex + operator.length;
+            
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
-            blockjson.end = blockjson.endIndex + b_operand.length;
+            
             return a_operand + operator + b_operand;
         case 'GREATER_THAN':
             blockjson.beg = startIndex;
             var a_operand = tree2text(blockjson.left, startIndex, indentation);
-            blockjson.startIndex = a_operand.length;
+            
             var operator = " > ";
-            blockjson.endIndex = blockjson.startIndex + operator.length;
+            
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
-            blockjson.end = blockjson.endIndex + b_operand.length;
+            
             return a_operand + operator + b_operand;
         case 'LESS_THAN':
             blockjson.beg = startIndex;
             var a_operand = tree2text(blockjson.left, startIndex, indentation);
-            blockjson.startIndex = a_operand.length;
+            
             var operator = " < ";
-            blockjson.endIndex = blockjson.startIndex + operator.length;
+            
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
-            blockjson.end = blockjson.endIndex + b_operand.length;
+            
             return a_operand + operator + b_operand;
         case 'NOT_EQUAL':
             blockjson.beg = startIndex;
             var a_operand = tree2text(blockjson.left, startIndex, indentation);
-            blockjson.startIndex = a_operand.length;
+            
             var operator = "≠";
-            blockjson.endIndex = blockjson.startIndex + operator.length;
+            
             var b_operand = tree2text(blockjson.right, blockjson.endIndex, indentation);
-            blockjson.end = blockjson.endIndex + b_operand.length;
+            
             return a_operand + operator + b_operand;   
         case 'PRINT':
             
@@ -286,8 +261,8 @@ export const tree2text = (blockjson, startIndex, indentation) => {
                     var varname = tree2text(blockjson.location, blockjson.endIndex, indentation);
                     blockjson.startIndex = startIndex + varname.length;
                     var operator = ' ← ';
-                    blockjson.endIndex = blockjson.startIndex + operator.length;
-                    blockjson.endIndex = blockjson.startIndex + operator.length;
+                    
+                    
                     var expression = tree2text(blockjson.value, blockjson.endIndex, indentation);
                     blockjson.end = blockjson.endIndex + expression.length;
                     return '\t'.repeat(indentation) + varname + operator + expression;
@@ -473,7 +448,7 @@ export const tree2text = (blockjson, startIndex, indentation) => {
                 var varname = blockjson.name.toString() + '[' + index;
                 blockjson.startIndex = startIndex + varname.length;
                 var operator = ' ← ';
-                blockjson.endIndex = blockjson.startIndex + operator.length;
+                
                 var expression = tree2text(blockjson.value, blockjson.endIndex, indentation) + '\n';
                 blockjson.end = blockjson.endIndex + expression.length;
                 return '\t'.repeat(indentation) + varname + operator + expression;
