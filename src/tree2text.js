@@ -234,11 +234,11 @@ export const tree2text = (blockjson, indentation) => {
             var initialization = " (" + tree2text(blockjson.initialization, indentation);
             initialization = initialization.slice(0, -1) + '; ';
             var condition = tree2text(blockjson.condition, indentation) + '; ';
-            var incriment = tree2text(blockjson.incriment, indentation);
-            incriment = incriment + ")\n";
+            var increment = tree2text(blockjson.increment, indentation);
+            increment = increment + ")\n";
             var contents = '\t'.repeat(indentation) + tree2text(blockjson.statement, indentation + 1) +
                 '\t'.repeat(indentation) + 'end for\n';
-            return result + initialization + condition + incriment + contents;
+            return result + initialization + condition + increment + contents;
 
         case NODETYPES.FUNCDECL:
             var vartype = blockjson.returnType.toString();

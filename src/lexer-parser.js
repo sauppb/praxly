@@ -560,7 +560,7 @@ class Parser {
     return l;
   }
 
-  multiplicitive() {
+  multiplicative() {
     let l = this.exponent();
     while (this.has("MULTIPLY") || this.has("DIVIDE") || this.has("MOD")) {
 
@@ -606,13 +606,13 @@ class Parser {
   }
 
   additive() {
-    let l = this.multiplicitive();
+    let l = this.multiplicative();
     while (this.has("ADD") || this.has("SUBTRACT")) {
 
       var line = this.tokens[this.i].line;
       if (this.has("SUBTRACT")) {
         this.advance();
-        const r = this.multiplicitive();
+        const r = this.multiplicative();
         // l =new Operators.Subtraction(left, right);
         l = {
           left: l,
@@ -624,7 +624,7 @@ class Parser {
 
       } else if (this.has("ADD")) {
         this.advance();
-        const r = this.multiplicitive();
+        const r = this.multiplicative();
         // l =new Operators.Addition(left, right);
         l = {
           left: l,
@@ -960,7 +960,7 @@ class Parser {
       // this.advance();
       if (this.has(';')) {
         this.advance();
-        result.incriment = this.parse_atom();
+        result.increment = this.parse_atom();
         if (this.hasNot(')')) {
           return result;
         }

@@ -272,8 +272,8 @@ export const tree2blocks = (workspace, blockjson) => {
             var result = workspace.newBlock('praxly_for_loop_block');
             try {
                 var initialization = workspace.newBlock('praxly_assignment_expression_block');
-                // var incriment = workspace.newBlock('praxly_reassignment_expression_block');
-                var incriment = tree2blocks(workspace, blockjson?.incriment)
+                // var increment = workspace.newBlock('praxly_reassignment_expression_block');
+                var increment = tree2blocks(workspace, blockjson?.increment)
                 var expression = tree2blocks(workspace, blockjson?.initialization.value);
                 initialization.setFieldValue(blockjson?.initialization.varType.toUpperCase(), "VARTYPE");
                 initialization.setFieldValue(blockjson?.initialization.name, "VARIABLENAME");
@@ -281,19 +281,19 @@ export const tree2blocks = (workspace, blockjson) => {
                 result.getInput('INITIALIZATION').connection.connect(initialization?.outputConnection);
                 var condition = tree2blocks(workspace, blockjson?.condition);
                 result.getInput('CONDITION').connection.connect(condition.outputConnection);
-                // var expression2 = tree2blocks(workspace, blockjson?.incriment.value);
-                // incriment.setFieldValue(blockjson?.incriment.name, "VARIABLENAME");
-                // incriment.getInput('EXPRESSION').connection.connect(expression2?.outputConnection);
-                result.getInput('REASSIGNMENT').connection.connect(incriment?.outputConnection);
+                // var expression2 = tree2blocks(workspace, blockjson?.increment.value);
+                // increment.setFieldValue(blockjson?.increment.name, "VARIABLENAME");
+                // increment.getInput('EXPRESSION').connection.connect(expression2?.outputConnection);
+                result.getInput('REASSIGNMENT').connection.connect(increment?.outputConnection);
                 var codeblocks = tree2blocks(workspace, blockjson?.statement);
                 result.getInput('CODEBLOCK').connection.connect(codeblocks[0]?.previousConnection);
                 initialization.initSvg();
-                // incriment.initSvg();
+                // increment.initSvg();
             }
             catch (error) {
                 console.error('An error occurred: could not generate the nested block', error);
                 initialization.dispose();
-                incriment.dispose();
+                increment.dispose();
             }
             break;
 

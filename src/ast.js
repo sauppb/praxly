@@ -167,9 +167,9 @@ export const createExecutable = (blockjson) => {
             try {
                 var initialization = createExecutable(blockjson.initialization);
                 var condition = createExecutable(blockjson.condition);
-                var incrimentation = createExecutable(blockjson.incriment);
+                var incrementation = createExecutable(blockjson.increment);
                 var statement = createExecutable(blockjson.statement);
-                return new Praxly_for(initialization, condition, incrimentation, statement, blockjson);
+                return new Praxly_for(initialization, condition, incrementation, statement, blockjson);
             }
             catch (error) {
                 console.error(error);
@@ -936,11 +936,11 @@ class Praxly_Location {
 
 class Praxly_for {
 
-    constructor(initialization, condition, incrimentation, statement, blockjson) {
+    constructor(initialization, condition, incrementation, statement, blockjson) {
         this.json = blockjson;
         this.initialization = initialization;
         this.condition = condition;
-        this.incrimentation = incrimentation;
+        this.incrementation = incrementation;
         this.statement = statement;
     }
 
@@ -950,7 +950,7 @@ class Praxly_for {
         while (loopLimit < 500 && this.condition.evaluate(environment).value) {
             this.statement.evaluate(environment);
             loopLimit += 1;
-            this.incrimentation.evaluate(environment);
+            this.incrementation.evaluate(environment);
             if (loopLimit === 499) {
                 throw new PraxlyErrorException(`This is probably an infinite loop.`, this.json.line);
             }

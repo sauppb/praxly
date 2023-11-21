@@ -399,7 +399,7 @@ export const makeGenerator = () => {
             blockID: block.id,
             initialization: praxlyGenerator[initialization.type](initialization),
             statement: praxlyGenerator['codeBLockJsonBuilder'](statements),
-            incriment: praxlyGenerator[reassignment.type](reassignment),
+            increment: praxlyGenerator[reassignment.type](reassignment),
             condition: praxlyGenerator[condition.type](condition),
         };
     }
