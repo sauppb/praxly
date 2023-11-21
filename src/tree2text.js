@@ -192,7 +192,7 @@ export const tree2text = (blockjson,  indentation) => {
             var result = '\t'.repeat(indentation) + "while";
 
             var condition = " (" + tree2text(blockjson.condition, indentation) + ")\n";
-            var contents = '\t'.repeat(indentation) + tree2text(blockjson.statement, indentation + 1) +
+            var contents = tree2text(blockjson.statement, indentation + 1) +
                 '\t'.repeat(indentation) + 'end while\n';
 
             return result + condition + contents;

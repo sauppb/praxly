@@ -343,7 +343,7 @@ export const tree2blocks = (workspace, blockjson) => {
 
     }
     // console.warn(blockjson.type)
-    blockjson.blockID = result.id;
+    blockjson.blockID = result?.id;
     result.initSvg();
     return result;
      

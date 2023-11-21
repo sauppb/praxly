@@ -1017,8 +1017,8 @@ parse_statement() {
     }
     this.advance();
     result.initialization = this.parse_statement();
-    if (this.has(';')) {
-      this.advance();
+    // if (this.has(';')) {
+    //   this.advance();
       result.condition = this.parse_boolean_operation();
       // this.advance();
       if (this.has(';')) {
@@ -1042,7 +1042,7 @@ parse_statement() {
         }
       }
       
-    }
+    // }
     console.log(`parser messing up, current token is ${this.tokens[this.i].token_type}`);
     return result;
    
