@@ -58,7 +58,7 @@ const featuresButton = document.getElementById('FeaturesButton');
 const bugButton = document.getElementById("BugButton");
 const changelogButton = document.getElementById('ChangelogButton');
 const exampleDiv = document.getElementById('exampleTable');
-const editorElement = textEditor.container;
+const editorArea = document.getElementsByTagName("textarea")[0];
 const githubButton = document.getElementById('GitHubButton');
 const BenButton = document.getElementById('AboutButton');
 const titleRefresh = document.getElementById('titleRefresh');
@@ -118,8 +118,10 @@ BenButton.addEventListener('click', function () {
 titleRefresh.addEventListener('click', function () {
   window.location.hash = '';
   textEditor.setValue('', -1);
+  rightPane.click();
   stdOut.innerHTML = "";
   stdErr.innerHTML = "";
+  textEditor.focus();
 });
 
 // these make it so that the blocks and text take turns.
@@ -163,8 +165,9 @@ window.onclick = function (event) {
  * this function gets called every time the run button is pressed.
  */
 function runTasks() {
-  if (!mainTree) {
+  if (!mainTree || editorArea.value.trim().length == 0) {
     alert('there is nothing to run :( \n try typing some code or dragging some blocks first.');
+    return;
   }
   const executable = createExecutable(mainTree);
   console.info('here is the executable');
@@ -182,6 +185,7 @@ function runTasks() {
   textEditor.session.setAnnotations(annotationsBuffer);
   addBlockErrors(workspace);
   clearOutput();
+  textEditor.focus();
 }
 
 export function turnCodeToBLocks() {
@@ -256,13 +260,14 @@ document.addEventListener("keydown", function (event) {
   if ((event.key === 's' || event.key === 'S') && (event.ctrlKey || event.metaKey) || event.key === 'F5') {
     // Prevent the default save action (e.g., opening the save dialog, reloading the page)
     event.preventDefault();
-    clearOutput();
-    clearErrors();
-    const trees = createExecutable(mainTree);
-    trees.evaluate();
-    stdOut.innerHTML = printBuffer;
-    stdErr.innerHTML = errorOutput;
-    console.log(trees);
+    runTasks();
+    // clearOutput();
+    // clearErrors();
+    // const trees = createExecutable(mainTree);
+    // trees.evaluate();
+    // stdOut.innerHTML = printBuffer;
+    // stdErr.innerHTML = errorOutput;
+    // console.log(trees);
   }
 });
 
@@ -327,3 +332,7 @@ function applyExample(exampleName) {
   textEditor.setValue(examples[exampleName], -1);
   rightPane.click();
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  textEditor.focus();
+});

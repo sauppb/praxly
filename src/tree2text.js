@@ -317,7 +317,7 @@ export const tree2text = (blockjson, indentation) => {
             }
 
         default:
-            console.warn(blockjson.type);
+            console.warn("Unknown blockjson.type");
             break;
     }
 }

@@ -208,7 +208,7 @@ function highlightLine(line, debug = false) {
   var existingStyleTag = document.getElementById('custom-style');
   if (!existingStyleTag) {
     // If it doesn't exist, create a new style tag and set its ID
-    console.error(`couldn\'t find the stylesheet`);
+    console.log(`couldn\'t find the stylesheet`);
     existingStyleTag = document.createElement('style');
     existingStyleTag.setAttribute('id', 'custom-style');
     document.head.appendChild(existingStyleTag);

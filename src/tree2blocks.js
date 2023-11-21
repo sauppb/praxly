@@ -184,10 +184,9 @@ export const tree2blocks = (workspace, blockjson) => {
         case NODETYPES.VARDECL:
             var result = workspace.newBlock('praxly_assignment_block');
             var expression = tree2blocks(workspace, blockjson?.value);
-            // expression.initSvg();
-            result.setFieldValue(blockjson.varType.toLowerCase(), "VARTYPE");
+            result.setFieldValue(blockjson.varType, "VARTYPE");
             result.setFieldValue(blockjson.name, "VARIABLENAME");
-            result.getInput('EXPRESSION').connection.connect(expression.outputConnection);
+            result.getInput('EXPRESSION').connection.connect(expression?.outputConnection);
             break;
 
         case NODETYPES.WHILE:
@@ -272,23 +271,28 @@ export const tree2blocks = (workspace, blockjson) => {
             var result = workspace.newBlock('praxly_for_loop_block');
             try {
                 var initialization = workspace.newBlock('praxly_assignment_expression_block');
-                // var increment = workspace.newBlock('praxly_reassignment_expression_block');
-                var increment = tree2blocks(workspace, blockjson?.increment)
-                var expression = tree2blocks(workspace, blockjson?.initialization.value);
-                initialization.setFieldValue(blockjson?.initialization.varType.toUpperCase(), "VARTYPE");
-                initialization.setFieldValue(blockjson?.initialization.name, "VARIABLENAME");
+                var expression = tree2blocks(workspace, blockjson?.initialization?.value);
+                initialization.setFieldValue(blockjson?.initialization?.varType, "VARTYPE");
+                initialization.setFieldValue(blockjson?.initialization?.name, "VARIABLENAME");
                 initialization.getInput('EXPRESSION').connection.connect(expression?.outputConnection);
-                result.getInput('INITIALIZATION').connection.connect(initialization?.outputConnection);
-                var condition = tree2blocks(workspace, blockjson?.condition);
-                result.getInput('CONDITION').connection.connect(condition.outputConnection);
-                // var expression2 = tree2blocks(workspace, blockjson?.increment.value);
-                // increment.setFieldValue(blockjson?.increment.name, "VARIABLENAME");
-                // increment.getInput('EXPRESSION').connection.connect(expression2?.outputConnection);
-                result.getInput('REASSIGNMENT').connection.connect(increment?.outputConnection);
-                var codeblocks = tree2blocks(workspace, blockjson?.statement);
-                result.getInput('CODEBLOCK').connection.connect(codeblocks[0]?.previousConnection);
                 initialization.initSvg();
+
+                // var increment = workspace.newBlock('praxly_reassignment_expression_block');
+                // var expression2 = tree2blocks(workspace, blockjson?.increment?.value);
+                // increment.setFieldValue(blockjson?.increment?.name, "VARIABLENAME");
+                // increment.getInput('EXPRESSION').connection.connect(expression2?.outputConnection);
                 // increment.initSvg();
+
+                var condition = tree2blocks(workspace, blockjson?.condition);
+                var increment = tree2blocks(workspace, blockjson?.increment);
+                var codeblocks = tree2blocks(workspace, blockjson?.statement);
+
+                result.getInput('INITIALIZATION').connection.connect(initialization?.outputConnection);
+                result.getInput('CONDITION').connection.connect(condition?.outputConnection);
+                result.getInput('REASSIGNMENT').connection.connect(increment?.outputConnection);
+                if (codeblocks && codeblocks.length > 0) {
+                    result.getInput('CODEBLOCK').connection.connect(codeblocks[0]?.previousConnection);
+                }
             }
             catch (error) {
                 console.error('An error occurred: could not generate the nested block', error);
@@ -325,13 +329,12 @@ export const tree2blocks = (workspace, blockjson) => {
             result.setFieldValue(blockjson?.name, 'VARIABLENAME');
             result.getInput('EXPRESSION').connection.connect(expression?.outputConnection);
             break;
-
-        // default:
-        //     return null;
-
     }
-    // console.warn(blockjson.type)
-    blockjson.blockID = result?.id;
-    result.initSvg();
+
+    // update blocks only if result is valid
+    if (blockjson && result) {
+        blockjson.blockID = result?.id;
+        result.initSvg();
+    }
     return result;
 }
