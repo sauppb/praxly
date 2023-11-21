@@ -15,7 +15,8 @@ export const TYPES = {
     SHORT:          "short",
     CHAR:           "char",
     VOID:           "void",
-    INVALID:        "INVALID"
+    INVALID:        "INVALID",
+    NULL:           "null"
   };
 
 
