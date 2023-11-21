@@ -50,7 +50,7 @@ const resizeBar = document.querySelector('.resizeBar');
 const leftPane = document.querySelector('#blocklyDiv');
 const rightPane = document.querySelector('#aceCode');
 const stdOut = document.querySelector('.stdout');
-const stdError = document.querySelector('.stderr');
+const stdErr = document.querySelector('.stderr');
 const clearOut = document.querySelector('.clearOut');
 var modal = document.getElementById("myModal");
 var manual = document.getElementById("manual");
@@ -70,7 +70,7 @@ let isResizing = false;
 
 runButton.addEventListener('mouseup', runTasks);
 darkModeButton.addEventListener('click', () => { darkMode ? setLight() : setDark(); });
-clearOut.addEventListener('click', () => { stdOut.textContent = ""; });
+clearOut.addEventListener('click', () => { stdOut.innerHTML = ""; stdErr.innerHTML = ""; });
 definePraxlyBlocks(workspace);
 
 // blockUpdatesButton.innerText = 'block updates: live ';
@@ -82,28 +82,35 @@ resizeBar.addEventListener('mousedown', function (e) {
   isResizing = true;
   document.addEventListener('mousemove', resizeHandler);
 });
+
 document.addEventListener('mouseup', function (e) {
   isResizing = false;
   document.removeEventListener('mousemove', resizeHandler);
   Blockly.svgResize(workspace);
   textEditor.resize();
 });
+
 manualButton.addEventListener('click', function () {
   var linkUrl = 'pseudocode.html';
   window.open(linkUrl, '_blank');
 });
+
 bugButton.addEventListener('click', function () {
   window.open("BugsList.html", '_blank');
 });
+
 changelogButton.addEventListener('click', function () {
   window.open("changelog.html", '_blank');
 });
+
 featuresButton.addEventListener('click', function () {
   window.open("features.html", '_blank');
 });
+
 githubButton.addEventListener('click', function () {
   window.open("https://github.com/sauppb/praxly", '_blank');
 });
+
 BenButton.addEventListener('click', function () {
   window.open('https://sauppb.github.io/website/');
 });
@@ -111,6 +118,8 @@ BenButton.addEventListener('click', function () {
 titleRefresh.addEventListener('click', function () {
   window.location.hash = '';
   textEditor.setValue('', -1);
+  stdOut.innerHTML = "";
+  stdErr.innerHTML = "";
 });
 
 // these make it so that the blocks and text take turns.
@@ -118,6 +127,7 @@ leftPane.addEventListener('click', () => {
   workspace.removeChangeListener(turnBlocksToCode);
   workspace.addChangeListener(turnBlocksToCode);
 });
+
 rightPane.addEventListener('click', () => {
   textEditor.removeEventListener("input", turnCodeToBLocks);
   textEditor.addEventListener("input", turnCodeToBLocks);
@@ -161,13 +171,12 @@ function runTasks() {
   console.log(executable);
   try {
     executable.evaluate();
-
   } catch (error) {
     console.error(error);
-    stdError.innerHTML = error.message;
+    stdErr.innerHTML = error.message;
   }
   // I have this twice for compile time vs runtime errors. Might change.
-  stdError.innerHTML = errorOutput;
+  stdErr.innerHTML = errorOutput;
   stdOut.innerHTML = printBuffer;
   stdOut.style.color = darkMode ? '#FFFFFF' : '#000000';
   textEditor.session.setAnnotations(annotationsBuffer);
@@ -219,7 +228,7 @@ function setDark() {
   // textEditor.setMode("ace/modes/java")
   var bodyElement = document.body;
   // bodyElement.style.backgroundColor = "black";
-  var elements = document.querySelectorAll(".output, .error, #secondary_bar, example_links, #exampleTable");
+  var elements = document.querySelectorAll(".output, #secondary_bar, example_links, #exampleTable");
   for (var i = 0; i < elements.length; i++) {
     elements[i].style.backgroundColor = "#303030";
     elements[i].style.color = "white";
@@ -233,7 +242,7 @@ function setLight() {
   textEditor.setTheme('ace/theme/katzenmilch');
   var bodyElement = document.body;
   // bodyElement.style.backgroundColor = "white";
-  var elements = document.querySelectorAll(".output, .error, #secondary_bar, example_links, #exampleTable");
+  var elements = document.querySelectorAll(".output, #secondary_bar, example_links, #exampleTable");
   for (var i = 0; i < elements.length; i++) {
     elements[i].style.backgroundColor = "#e3e6e4";
     elements[i].style.color = "black";
@@ -242,18 +251,17 @@ function setLight() {
 }
 
 // this is how you add custom keybinds!
-editorElement.addEventListener("keydown", function (event) {
+document.addEventListener("keydown", function (event) {
   // Check if the event key is 's' and Ctrl or Command key is pressed
   if ((event.key === 's' || event.key === 'S') && (event.ctrlKey || event.metaKey) || event.key === 'F5') {
-    // Prevent the default save action (e.g., opening the save dialog)
+    // Prevent the default save action (e.g., opening the save dialog, reloading the page)
     event.preventDefault();
-    const output = document.querySelector('.output');
-    // const error = document.querySelector('.error');
-    output.innerHTML = "";
+    clearOutput();
+    clearErrors();
     const trees = createExecutable(mainTree);
     trees.evaluate();
-    output.innerHTML = printBuffer;
-    stdError.innerHTML = errorOutput;
+    stdOut.innerHTML = printBuffer;
+    stdErr.innerHTML = errorOutput;
     console.log(trees);
   }
 });
