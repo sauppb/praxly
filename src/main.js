@@ -58,7 +58,6 @@ const featuresButton = document.getElementById('FeaturesButton');
 const bugButton = document.getElementById("BugButton");
 const changelogButton = document.getElementById('ChangelogButton');
 const exampleDiv = document.getElementById('exampleTable');
-const editorArea = document.getElementsByTagName("textarea")[0];
 const githubButton = document.getElementById('GitHubButton');
 const BenButton = document.getElementById('AboutButton');
 const titleRefresh = document.getElementById('titleRefresh');
@@ -143,10 +142,6 @@ helpButton.onclick = function () {
   modal.style.display = "block";
 }
 
-manualButton.onclick = function () {
-  manual.style.display = "block";
-}
-
 // When the user clicks on <span> (x), close the modal
 span.onclick = function () {
   modal.style.display = "none";
@@ -165,7 +160,7 @@ window.onclick = function (event) {
  * this function gets called every time the run button is pressed.
  */
 function runTasks() {
-  if (!mainTree || editorArea.value.trim().length == 0) {
+  if (!mainTree || !textEditor.getValue()) {
     alert('there is nothing to run :( \n try typing some code or dragging some blocks first.');
     return;
   }

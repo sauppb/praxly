@@ -10,7 +10,7 @@ export function generateUrl() {
     window.location.hash = `code=${encoded}`
     saveToLocal();
     var dummy = document.createElement('input');
-    text = window.location.href;
+    var text = window.location.href;
     document.body.appendChild(dummy);
     dummy.value = text;
     dummy.select();

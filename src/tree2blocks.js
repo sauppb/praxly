@@ -148,7 +148,9 @@ export const tree2blocks = (workspace, blockjson) => {
             var condition = tree2blocks(workspace, blockjson?.condition);
             var codeblocks = tree2blocks(workspace, blockjson?.statement);
             result.getInput('CONDITION').connection.connect(condition?.outputConnection);
-            result.getInput('STATEMENT').connection.connect(codeblocks[0]?.previousConnection);
+            if (codeblocks && codeblocks.length > 0) {
+                result.getInput('STATEMENT').connection.connect(codeblocks[0]?.previousConnection);
+            }
             break;
 
         case NODETYPES.IF_ELSE:
@@ -157,8 +159,12 @@ export const tree2blocks = (workspace, blockjson) => {
             var statements = tree2blocks(workspace, blockjson?.statement);
             var alternatives = tree2blocks(workspace, blockjson?.alternative);
             result.getInput('CONDITION').connection.connect(condition?.outputConnection);
-            result.getInput('STATEMENT').connection.connect(statements[0]?.previousConnection);
-            result.getInput('ALTERNATIVE').connection.connect(alternatives[0]?.previousConnection);
+            if (statements && statements.length > 0) {
+                result.getInput('STATEMENT').connection.connect(statements[0]?.previousConnection);
+            }
+            if (alternatives && alternatives.length > 0) {
+                result.getInput('ALTERNATIVE').connection.connect(alternatives[0]?.previousConnection);
+            }
             break;
 
         case NODETYPES.LOCATION:
@@ -194,7 +200,9 @@ export const tree2blocks = (workspace, blockjson) => {
             var condition = tree2blocks(workspace, blockjson?.condition);
             var codeblocks = tree2blocks(workspace, blockjson?.statement);
             result.getInput('CONDITION').connection.connect(condition?.outputConnection);
-            result.getInput('STATEMENT').connection.connect(codeblocks[0]?.previousConnection);
+            if (codeblocks && codeblocks.length > 0) {
+                result.getInput('STATEMENT').connection.connect(codeblocks[0]?.previousConnection);
+            }
             break;
 
         case NODETYPES.DO_WHILE:
@@ -202,7 +210,9 @@ export const tree2blocks = (workspace, blockjson) => {
             var condition = tree2blocks(workspace, blockjson?.condition);
             var codeblocks = tree2blocks(workspace, blockjson?.statement);
             result.getInput('CONDITION').connection.connect(condition?.outputConnection);
-            result.getInput('STATEMENT').connection.connect(codeblocks[0]?.previousConnection);
+            if (codeblocks && codeblocks.length > 0) {
+                result.getInput('STATEMENT').connection.connect(codeblocks[0]?.previousConnection);
+            }
             break;
 
         case NODETYPES.REPEAT_UNTIL:
@@ -210,7 +220,9 @@ export const tree2blocks = (workspace, blockjson) => {
             var condition = tree2blocks(workspace, blockjson?.condition);
             var codeblocks = tree2blocks(workspace, blockjson?.statement);
             result.getInput('CONDITION').connection.connect(condition?.outputConnection);
-            result.getInput('STATEMENT').connection.connect(codeblocks[0]?.previousConnection);
+            if (codeblocks && codeblocks.length > 0) {
+                result.getInput('STATEMENT').connection.connect(codeblocks[0]?.previousConnection);
+            }
             break;
 
         case NODETYPES.NOT:
@@ -255,7 +267,9 @@ export const tree2blocks = (workspace, blockjson) => {
             result.setFieldValue(blockjson?.name, 'END_PROCEDURE_NAME');
             result.getInput('PARAMS').connection.connect(params?.outputConnection);
             var contents = tree2blocks(workspace, blockjson?.contents);
-            result.getInput('CONTENTS').connection.connect(contents[0]?.previousConnection);
+            if (contents && contents.length > 0) {
+                result.getInput('CONTENTS').connection.connect(contents[0]?.previousConnection);
+            }
             for (var i = 0; i < (argsList?.length ?? 0); i++) {
                 params.appendValueInput(`PARAM_${i}`);
                 var parameterBlock = workspace.newBlock('praxly_singular_param_block');

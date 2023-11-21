@@ -12,12 +12,12 @@ export function text2tree() {
   let ir;
   try {
     let tokens = lexer.lex();
-    console.info('here are the tokens:');
-    console.debug(tokens);
+    // console.info('here are the tokens:');
+    // console.debug(tokens);
     let parser = new Parser(tokens);
     ir = parser?.parse();
-    console.info('here is the tree:');
-    console.log(ir);
+    // console.info('here is the tree:');
+    // console.log(ir);
   }
   catch (error) {
     console.log(error);
@@ -934,15 +934,11 @@ class Parser {
           result.alternative = this.codeBlock('end if');
         }
         if (this.has('end if')) {
-
           this.advance();
           return result;
         }
         else {
           textError('compile time', "missing the \'end if\' token", result.line);
-          return {
-            type: 'INVALID'
-          };
         }
       }
 
