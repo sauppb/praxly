@@ -50,13 +50,16 @@ export const tree2blocks = (workspace, blockjson) => {
             break;
 
         case NODETYPES.BOOLEAN:
-            var result = 0;
-            if (blockjson.value === 'true') {
+            var result;
+            if (blockjson.value) {
                 result = workspace.newBlock('praxly_true_block');
-            }
-            if (blockjson.value === 'false') {
+            } else {
                 result = workspace.newBlock('praxly_false_block');
             }
+            break;
+
+        case TYPES.NULL:
+            result = workspace.newBlock('praxly_null_block');
             break;
 
         case TYPES.STRING:
