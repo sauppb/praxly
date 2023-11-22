@@ -3,10 +3,13 @@ Print once,"print ""Hello, World!""","Hello, World!",
 Println twice,"println ""1st""
 println ""2nd""","1st
 2nd",
+Declare integer,"int x
+print x",0,
 Assign integer,"int x ← 5
 print x",5,
-Declare variable,int x,,"error occurred on line 1:
-	incomplete assignment to variable x"
+Declare assign,"int x
+x ← 5
+print x",5,
 Basic types,"boolean b ← true
 char c ← 'a'
 double d ← 1.23
@@ -30,7 +33,7 @@ nine",
 Assign float to int,int x ← 1.2,,"error occurred on line 1:
 	incompatible types: possible lossy conversion from double to int"
 Assign int to float,"float y = 1
-print y",1,
+print y",1.0,
 Assign str to int,String s = 1,,"error occurred on line 1:
 	incompatible types: int cannot be converted to String"
 Assign int to str,"int i = ""0""",,"error occurred on line 1:

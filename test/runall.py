@@ -9,7 +9,10 @@ pip install colorama selenium
 
 import colorama
 import csv
+import os
+import sys
 import time
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
@@ -17,13 +20,13 @@ from selenium.webdriver.common.by import By
 URL = "http://localhost:5173/"  # https://praxly.github.io/
 
 # Timeout, in seconds, to find DOM elements.
-WAIT = 10
+WAIT = 3
 
 # How long to sleep before performing actions.
-PAUSE = 0.5
+PAUSE = 0.25
 
 
-def main():
+def main(filename):
     """Run each test in a loop until one fails."""
 
     # set up terminal color support
@@ -44,7 +47,8 @@ def main():
     stderr = driver.find_element(By.CLASS_NAME, "stderr")
 
     # for each test in the CSV file
-    file = open("tests.csv", encoding="utf-8", newline="")
+    print("Reading", filename)
+    file = open(filename, encoding="utf-8", newline="")
     file.readline()  # skip header
     test_id = 0
     for row in csv.reader(file):
@@ -81,4 +85,14 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+
+    # optional command-line argument
+    if len(sys.argv) > 1:
+        main(sys.argv[1])
+    else:
+        main("basic_tests.csv")
+
+    # remove the log file if blank
+    if os.path.exists("geckodriver.log"):
+        if os.path.getsize("geckodriver.log") == 0:
+            os.remove("geckodriver.log")

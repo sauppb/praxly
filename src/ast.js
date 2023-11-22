@@ -350,7 +350,7 @@ class Praxly_float {
     constructor(value, blockjson) {
         this.jsonType = 'Praxly_double';
         this.json = blockjson;
-        this.value = parseFloat(value).toFixed(1);
+        this.value = parseFloat(value);
         this.realType = TYPES.FLOAT;
     }
 
