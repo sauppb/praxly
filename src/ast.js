@@ -40,6 +40,9 @@ export const createExecutable = (blockjson) => {
         case TYPES.DOUBLE:
             return new Praxly_double(blockjson.value, blockjson);
 
+        case TYPES.NULL:
+            return new Praxly_null(blockjson.value, blockjson);
+
         case NODETYPES.ADDITION:
             return new Praxly_addition(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
 
@@ -391,6 +394,20 @@ class Praxly_String {
         this.json = blockjson;
         this.value = value;
         this.realType = TYPES.STRING;
+    }
+
+    evaluate(environment) {
+        return this;
+    }
+}
+
+class Praxly_null {
+
+    constructor(value, blockjson) {
+        this.jsonType = 'Praxly_null';
+        this.json = blockjson;
+        this.value = value;
+        this.realType = TYPES.NULL;
     }
 
     evaluate(environment) {
@@ -855,7 +872,7 @@ class Praxly_vardecl {
         }
         // console.error(this.json);
         if (!can_assign(this.json.varType, valueEvaluated.realType, this.json.line)) {
-            throw new PraxlyErrorException(`variable assignment does not match declared type:\n\texpected type: ${this.type} \n\texpression type: ${valueEvaluated.realType}`, this.json.line);
+            throw new PraxlyErrorException(`incompatible types: ${valueEvaluated.realType} cannot be converted to ${this.json.varType}`, this.json.line);
         }
         environment.variableList[this.name] = valueEvaluated;
         // console.log(environment);
@@ -1205,7 +1222,7 @@ function can_assign(varType, expressionType, line) {
     } else if (varType === TYPES.DOUBLE) {
         return expressionType === TYPES.INT || expressionType === TYPES.DOUBLE || expressionType === TYPES.FLOAT;
     } else if (varType === TYPES.STRING) {
-        return expressionType === TYPES.STRING;
+        return expressionType === TYPES.STRING || expressionType === TYPES.NULL;
     } else if (varType === TYPES.BOOLEAN) {
         return expressionType === TYPES.BOOLEAN;
     } else if (varType === TYPES.FLOAT) {
