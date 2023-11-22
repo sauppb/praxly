@@ -1,4 +1,4 @@
-import { NODETYPES, PraxlyErrorException, TYPES, addToPrintBuffer, defaultError, errorOutput } from "./common";
+import { NODETYPES, PraxlyError, TYPES, addToPrintBuffer, defaultError, errorOutput } from "./common";
 
 var scopes = {};
 
@@ -811,7 +811,7 @@ function accessLocation(environment, json) {
         return environment.variableList;
     } else if (environment.parent === "root") {
         return null;
-        // throw new PraxlyErrorException(`Variable ${json.name} does not exist.`, json.line);
+        // throw new PraxlyError(`Variable ${json.name} does not exist.`, json.line);
     } else {
         return accessLocation(environment.parent, json);
     }
@@ -865,12 +865,12 @@ class Praxly_assignment {
         let valueEvaluated = this.value.evaluate(environment);
         var storage = accessLocation(environment, this.location);
         if (!storage) {
-            throw new PraxlyErrorException(`Variable ${this.location.name} does not exist.`, this.json.line);
+            throw new PraxlyError(`Variable ${this.location.name} does not exist.`, this.json.line);
         }
 
         let currentStoredVariableEvaluated = this.location.evaluate(environment);
         if (!can_assign(currentStoredVariableEvaluated.realType, valueEvaluated.realType, this.json.line)) {
-            throw new PraxlyErrorException(`Error: variable reassignment does not match declared type: \n\t Expected: `
+            throw new PraxlyError(`Error: variable reassignment does not match declared type: \n\t Expected: `
                 + `${currentStoredVariableEvaluated.realType}, \n\t Actual: ${valueEvaluated.realType}`, this.json.line);
         }
 
@@ -898,7 +898,7 @@ class Praxly_vardecl {
     evaluate(environment) {
         let valueEvaluated = this.value.evaluate(environment);
         if (!valueEvaluated) {
-            // throw new PraxlyErrorException(`incomplete assignment to variable ${this.name}`, this.json.line);
+            // throw new PraxlyError(`incomplete assignment to variable ${this.name}`, this.json.line);
 
             // assign default value (declaration without assignment)
             switch (this.json.varType) {
@@ -929,11 +929,11 @@ class Praxly_vardecl {
             }
         }
         if (environment.variableList.hasOwnProperty(this.name)) {
-            throw new PraxlyErrorException(`variable ${this.name} has already been declared in this scope. `, this.json.line);
+            throw new PraxlyError(`variable ${this.name} has already been declared in this scope. `, this.json.line);
         }
         // console.error(this.json);
         if (!can_assign(this.json.varType, valueEvaluated.realType, this.json.line)) {
-            throw new PraxlyErrorException(`incompatible types: ${valueEvaluated.realType} cannot be converted to ${this.json.varType}`, this.json.line);
+            throw new PraxlyError(`incompatible types: ${valueEvaluated.realType} cannot be converted to ${this.json.varType}`, this.json.line);
         }
         valueEvaluated = typeCoercion(this.json.varType, valueEvaluated);
         environment.variableList[this.name] = valueEvaluated;
@@ -957,7 +957,7 @@ class Praxly_array_assignment {
         let valueEvaluated = this.value.evaluate(environment);
         for (var k = 0; k < valueEvaluated.elements.length; k++) {
             if (!can_assign(this.json.varType, valueEvaluated.elements[k].realType)) {
-                throw new PraxlyErrorException(`at least one element in the array did not match declared type:\n\texpected type: ${this.json.varType} \n\texpression type: ${valueEvaluated.realType}`, this.json.line);
+                throw new PraxlyError(`at least one element in the array did not match declared type:\n\texpected type: ${this.json.varType} \n\texpression type: ${valueEvaluated.realType}`, this.json.line);
             }
             valueEvaluated.elements[k] = typeCoercion(this.json.varType, valueEvaluated.elements[k]);
         }
@@ -974,7 +974,7 @@ class Praxly_variable {
 
     evaluate(environment) {
         if (!environment.variableList.hasOwnProperty(this.name)) {
-            throw new PraxlyErrorException(`the variable \'${this.name}\' is not recognized by the program. \n\tPerhaps you forgot to initialize it?`, this.json.line);
+            throw new PraxlyError(`the variable \'${this.name}\' is not recognized by the program. \n\tPerhaps you forgot to initialize it?`, this.json.line);
             // return new Praxly_invalid(this.json);
         }
         return environment.variableList[this.name];
@@ -993,13 +993,13 @@ class Praxly_Location {
     evaluate(environment) {
         var storage = accessLocation(environment, this.json);
         if (!storage) {
-            throw new PraxlyErrorException(`Variable ${this.name} does not exist.`, this.json.line);
+            throw new PraxlyError(`Variable ${this.name} does not exist.`, this.json.line);
         }
 
         if (this.isArray) {
             var index = this.index.evaluate(environment).value;
             if (index >= storage[this.name].elements.length) {
-                throw new PraxlyErrorException(`index ${index} out of bounds for array named ${this.name}`, this.json.line);
+                throw new PraxlyError(`index ${index} out of bounds for array named ${this.name}`, this.json.line);
             }
             return storage[this.name].elements[this.index.evaluate(environment).value].evaluate(environment);
         } else {
@@ -1030,7 +1030,7 @@ class Praxly_for {
             loopLimit += 1;
             this.incrementation.evaluate(environment);
             if (loopLimit === 499) {
-                throw new PraxlyErrorException(`This is probably an infinite loop.`, this.json.line);
+                throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
             }
         }
     }
@@ -1048,7 +1048,7 @@ class Praxly_while {
             this.statement.evaluate(environment);
             loopLimit += 1;
             if (loopLimit === 499) {
-                throw new PraxlyErrorException(`This is probably an infinite loop.`, this.json.line);
+                throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
             }
         }
     }
@@ -1069,7 +1069,7 @@ class Praxly_do_while {
             this.statement.evaluate(environment);
             loopLimit += 1;
             if (loopLimit === 499) {
-                throw new PraxlyErrorException(`This is probably an infinite loop.`, this.json.line);
+                throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
             }
         }
     }
@@ -1090,7 +1090,7 @@ class Praxly_repeat_until {
             this.statement.evaluate(environment);
             loopLimit += 1;
             if (loopLimit === 499) {
-                throw new PraxlyErrorException(`This is probably an infinite loop.`, this.json.line);
+                throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
             }
         }
     }
@@ -1157,7 +1157,7 @@ function findFunction(name, environment, json) {
     if (environment.functionList.hasOwnProperty(name)) {
         return environment.functionList[name];
     } else if (environment.parent === "root") {
-        throw new PraxlyErrorException(`Error: function ${name} does not exist.`, json.line);
+        throw new PraxlyError(`Error: function ${name} does not exist.`, json.line);
     } else {
         return findFunction(name, environment.parent);
     }
@@ -1178,7 +1178,7 @@ class Praxly_function_call {
         var functionContents = func.contents;
         var returnType = func.returnType;
         if (functionParams.length !== this.args.length) {
-            throw new PraxlyErrorException(`incorrect amount of arguments passed, expected ${functionParams.length}, was ${this.args.length}`, this.json.line);
+            throw new PraxlyError(`incorrect amount of arguments passed, expected ${functionParams.length}, was ${this.args.length}`, this.json.line);
         }
 
         //NEW: parameter list is now a linkedList. expect some errors till I fix it.
@@ -1194,7 +1194,7 @@ class Praxly_function_call {
 
             //TODO: typecheck
             if (parameterType != argument.realType) {
-                throw new PraxlyErrorException(`argument ${parameterName} does not match parameter type.\n\tExpected: ${parameterType}\n\tActual: ${argument.realType}`);
+                throw new PraxlyError(`argument ${parameterName} does not match parameter type.\n\tExpected: ${parameterType}\n\tActual: ${argument.realType}`);
             }
 
             newScope.variableList[parameterName] = argument;
@@ -1225,7 +1225,7 @@ class Praxly_function_call {
             returnType = TYPES.DOUBLE;
         }
         if ((result === "Exit_Success" && returnType !== TYPES.VOID) || (returnType !== (result?.realType ?? TYPES.VOID))) {
-            throw new PraxlyErrorException(`this function has an invalid return type.\n\t Expected: ${returnType}\n\t Actual: ${result?.realType ?? TYPES.VOID} `, this.json.line);
+            throw new PraxlyError(`this function has an invalid return type.\n\t Expected: ${returnType}\n\t Actual: ${result?.realType ?? TYPES.VOID} `, this.json.line);
             // console.error(`invalid return type: ${returnType} `);
         }
         return result;
@@ -1279,7 +1279,7 @@ export const OP = {
 function can_assign(varType, expressionType, line) {
     if (varType === TYPES.INT || varType === TYPES.SHORT) {
         if (expressionType === TYPES.DOUBLE || expressionType === TYPES.FLOAT) {
-            throw new PraxlyErrorException(`incompatible types: possible lossy conversion from ${expressionType} to ${varType}`, line);
+            throw new PraxlyError(`incompatible types: possible lossy conversion from ${expressionType} to ${varType}`, line);
         }
         return expressionType === TYPES.INT || expressionType === TYPES.SHORT;
     } else if (varType === TYPES.DOUBLE || varType === TYPES.FLOAT) {
@@ -1307,7 +1307,7 @@ function can_add(operation, type1, type2, json) {
             return TYPES.DOUBLE; // Result is promoted to double for numeric types
         }
     }
-    throw new PraxlyErrorException(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid addition
+    throw new PraxlyError(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid addition
 }
 
 function can_subtract(operation, type1, type2, json) {
@@ -1319,7 +1319,7 @@ function can_subtract(operation, type1, type2, json) {
             return TYPES.DOUBLE; // Result is promoted to double for numeric types
         }
     }
-    throw new PraxlyErrorException(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid subtraction
+    throw new PraxlyError(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid subtraction
 }
 
 function can_multiply(operation, type1, type2, json) {
@@ -1331,7 +1331,7 @@ function can_multiply(operation, type1, type2, json) {
             return TYPES.DOUBLE; // Result is promoted to double for numeric types
         }
     }
-    throw new PraxlyErrorException(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid multiplication
+    throw new PraxlyError(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid multiplication
 }
 
 function can_divide(operation, type1, type2, json) {
@@ -1347,7 +1347,7 @@ function can_divide(operation, type1, type2, json) {
             }
         }
     }
-    throw new PraxlyErrorException(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid division
+    throw new PraxlyError(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid division
 }
 
 function can_modulus(operation, type1, type2, json) {
@@ -1359,7 +1359,7 @@ function can_modulus(operation, type1, type2, json) {
             return TYPES.INT; // Modulus of integers is an integer
         }
     }
-    throw new PraxlyErrorException(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid modulus
+    throw new PraxlyError(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid modulus
 }
 
 function can_boolean_operation(operation, type1, type2, json) {
@@ -1368,7 +1368,7 @@ function can_boolean_operation(operation, type1, type2, json) {
     } else if (operation === OP.NOT && type1 === TYPES.BOOLEAN) {
         return TYPES.BOOLEAN;
     }
-    throw new PraxlyErrorException(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid boolean operation
+    throw new PraxlyError(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid boolean operation
 }
 
 function can_compare(operation, type1, type2, json) {
@@ -1377,8 +1377,8 @@ function can_compare(operation, type1, type2, json) {
             return TYPES.BOOLEAN; // Result of comparison is always a boolean
         }
     }
-    throw new PraxlyErrorException(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);
-    // throw new PraxlyErrorException(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid comparison operation
+    throw new PraxlyError(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);
+    // throw new PraxlyError(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid comparison operation
 }
 
 // yea I know this is sloppy but I am getting tired and I'm running outta time
@@ -1392,8 +1392,8 @@ function can_negate(operation, type1, json) {
             return type1;
         }
     }
-    throw new PraxlyErrorException(`bad operand types for ${operation}, \n\tchild: ${type1}`, json.line);
-    // throw new PraxlyErrorException(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid comparison operation
+    throw new PraxlyError(`bad operand types for ${operation}, \n\tchild: ${type1}`, json.line);
+    // throw new PraxlyError(`bad operand types for ${operation}, \n\tleft: ${type1}\n\tright: ${type2}`, json.line);// Invalid comparison operation
 }
 
 /**
@@ -1407,7 +1407,7 @@ function can_negate(operation, type1, json) {
  */
 function binop_typecheck(operation, type1, type2, json) {
     if (type1 === undefined || type2 === undefined) {
-        throw new PraxlyErrorException(`missing operand type for ${operation}`, json.line);
+        throw new PraxlyError(`missing operand type for ${operation}`, json.line);
     }
     switch (operation) {
 
@@ -1444,7 +1444,7 @@ function binop_typecheck(operation, type1, type2, json) {
             return can_compare(operation, type1, type2, json);
 
         default:
-            throw new PraxlyErrorException(`typecheck called when it shouldn't have been`, json.line);// Invalid operation
+            throw new PraxlyError(`typecheck called when it shouldn't have been`, json.line);// Invalid operation
     }
 }
 

@@ -98,7 +98,7 @@ export const NODETYPES = {
 //   ARRAY_REFERENCE_ASSIGNMENT:     "array_reference_assignment", // remove?
 // }
 
-export class PraxlyErrorException extends Error {
+export class PraxlyError extends Error {
   constructor(message, line) {
     super(`<pre>error occurred on line ${line}:\n\t${message}</pre>`);
     this.errorMessage = this.message;

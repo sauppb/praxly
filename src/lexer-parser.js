@@ -129,7 +129,7 @@ class Lexer {
         }
         else {
           textError('lexing', 'looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.', commentStart, this.currentLine);
-          // throw new PraxlyErrorException('looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.', this.currentLine);
+          // throw new PraxlyError('looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.', this.currentLine);
           this.i -= 1;
           this.emit_token();
         }
@@ -254,7 +254,7 @@ class Lexer {
           this.emit_token("String");
         }
         else {
-          // throw new PraxlyErrorException('looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\").', this.currentLine);
+          // throw new PraxlyError('looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\").', this.currentLine);
           textError('lexing', 'looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\").', stringStart);
           this.i -= 1;
           this.token_so_far = "";
