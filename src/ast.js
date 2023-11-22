@@ -811,7 +811,7 @@ function accessLocation(environment, json) {
         return environment.variableList;
     } else if (environment.parent === "root") {
         return null;
-        // throw new PraxlyErrorException(`Error: variable name ${json.name} does not currently exist in this scope: \n ${environment.variableList}`, json.line);
+        // throw new PraxlyErrorException(`Variable ${json.name} does not exist.`, json.line);
     } else {
         return accessLocation(environment.parent, json);
     }
@@ -831,7 +831,7 @@ class Praxly_assignment {
         let valueEvaluated = this.value.evaluate(environment);
         var storage = accessLocation(environment, this.location);
         if (!storage) {
-            throw new PraxlyErrorException(`Error: variable name ${this.location.name} does not currently exist in this scope.\n `, this.json.line);
+            throw new PraxlyErrorException(`Variable ${this.location.name} does not exist.`, this.json.line);
         }
         let currentStoredVariableEvaluated = this.location.evaluate(environment);
 
@@ -865,7 +865,35 @@ class Praxly_vardecl {
     evaluate(environment) {
         let valueEvaluated = this.value.evaluate(environment);
         if (!valueEvaluated) {
-            throw new PraxlyErrorException(`incomplete assignment to variable ${this.name}`, this.json.line);
+            // throw new PraxlyErrorException(`incomplete assignment to variable ${this.name}`, this.json.line);
+
+            // assign default value (declaration without assignment)
+            switch (this.json.varType) {
+                case NODETYPES.BOOLEAN:
+                    valueEvaluated = new Praxly_boolean(false);
+                    break;
+                case NODETYPES.CHAR:
+                    valueEvaluated = new Praxly_char('?');
+                    break;
+                case NODETYPES.DOUBLE:
+                    valueEvaluated = new Praxly_double(0.0);
+                    break;
+                case NODETYPES.FLOAT:
+                    valueEvaluated = new Praxly_float(0.0);
+                    break;
+                case NODETYPES.INT:
+                    valueEvaluated = new Praxly_int(0);
+                    break;
+                case NODETYPES.SHORT:
+                    valueEvaluated = new Praxly_short(0);
+                    break;
+                case NODETYPES.STRING:
+                    valueEvaluated = new Praxly_String("");
+                    break;
+                default:
+                    console.error("Unhandled varType:" + this.json.varType);
+                    break;
+            }
         }
         if (environment.variableList.hasOwnProperty(this.name)) {
             throw new PraxlyErrorException(`variable ${this.name} has already been declared in this scope. `, this.json.line);
@@ -930,7 +958,7 @@ class Praxly_Location {
     evaluate(environment) {
         var storage = accessLocation(environment, this.json);
         if (!storage) {
-            throw new PraxlyErrorException(`Error: variable name ${this.name} does not currently exist in this scope or its parents scope: \n ${environment.variableList}`, this.json.line);
+            throw new PraxlyErrorException(`Variable ${this.name} does not exist.`, this.json.line);
         }
 
         if (this.isArray) {
@@ -1094,7 +1122,7 @@ function findFunction(name, environment, json) {
     if (environment.functionList.hasOwnProperty(name)) {
         return environment.functionList[name];
     } else if (environment.parent === "root") {
-        throw new PraxlyErrorException(`Error: function name ${name} does not currently exist in this scope: \n ${environment.variableList}`, json.line);
+        throw new PraxlyErrorException(`Error: function ${name} does not exist.`, json.line);
     } else {
         return findFunction(name, environment.parent);
     }
@@ -1149,7 +1177,7 @@ class Praxly_function_call {
                 result = error.errorData;
                 // console.log(res)
             }
-            else{
+            else {
                 console.error(error);
             }
         }
