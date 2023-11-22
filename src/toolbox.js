@@ -326,7 +326,7 @@ export const toolbox = {
                   },
                 },
                 'fields': {
-                  'OPERATOR': 'LESS_THAN'
+                  'OPERATOR': 'LESS THAN'
                 }
               }
             },

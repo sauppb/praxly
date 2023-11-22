@@ -1,7 +1,10 @@
 import { NODETYPES, TYPES } from "./common";
 
 export const tree2text = (blockjson, indentation) => {
-    console.log(blockjson.type);
+    if (!blockjson.type) {
+        return;  // undefined
+    }
+    // console.log(blockjson.type);
 
     switch (blockjson.type) {
         case TYPES.INT:
@@ -317,7 +320,7 @@ export const tree2text = (blockjson, indentation) => {
             }
 
         default:
-            console.warn("Unknown blockjson.type");
+            console.warn("Unknown blockjson.type:" + blockjson.type);
             break;
     }
 }
