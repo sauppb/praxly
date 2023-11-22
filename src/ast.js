@@ -817,6 +817,40 @@ function accessLocation(environment, json) {
     }
 }
 
+// converts the evaluated value to the variable's type when assigned.
+function typeCoercion(varType, praxlyObj) {
+    if (varType === praxlyObj.realType) {
+        return praxlyObj;
+    }
+    var newValue;
+    switch (varType) {
+        case NODETYPES.BOOLEAN:
+            newValue = Boolean(praxlyObj.value);
+            return new Praxly_boolean(newValue, praxlyObj.json);
+        case NODETYPES.CHAR:
+            newValue = String.fromCharCode(praxlyObj.value);
+            return new Praxly_char(newValue, praxlyObj.json);
+        case NODETYPES.DOUBLE:
+            newValue = Number(praxlyObj.value);
+            return new Praxly_double(newValue, praxlyObj.json);
+        case NODETYPES.FLOAT:
+            newValue = Number(praxlyObj.value);
+            return new Praxly_float(newValue, praxlyObj.json);
+        case NODETYPES.INT:
+            newValue = Math.trunc(praxlyObj.value);
+            return new Praxly_int(newValue, praxlyObj.json);
+        case NODETYPES.SHORT:
+            newValue = Math.trunc(praxlyObj.value);
+            return new Praxly_short(newValue, praxlyObj.json);
+        case NODETYPES.STRING:
+            newValue = String(praxlyObj.value);
+            return new Praxly_String(newValue, praxlyObj.json);
+        default:
+            console.error("Unhandled varType:" + varType);
+            return praxlyObj;
+    }
+}
+
 class Praxly_assignment {
 
     constructor(json, location, expression, blockjson) {
@@ -833,21 +867,20 @@ class Praxly_assignment {
         if (!storage) {
             throw new PraxlyErrorException(`Variable ${this.location.name} does not exist.`, this.json.line);
         }
-        let currentStoredVariableEvaluated = this.location.evaluate(environment);
 
+        let currentStoredVariableEvaluated = this.location.evaluate(environment);
         if (!can_assign(currentStoredVariableEvaluated.realType, valueEvaluated.realType, this.json.line)) {
             throw new PraxlyErrorException(`Error: variable reassignment does not match declared type: \n\t Expected: `
                 + `${currentStoredVariableEvaluated.realType}, \n\t Actual: ${valueEvaluated.realType}`, this.json.line);
         }
 
-
         // console.warn(storage);
+        valueEvaluated = typeCoercion(currentStoredVariableEvaluated.realType, valueEvaluated);
         if (this.location.isArray) {
             storage[this.location.name].elements[this.location.index.evaluate(environment).value] = valueEvaluated;
         } else {
             storage[this.location.name] = valueEvaluated;
         }
-
         return valueEvaluated;
     }
 }
@@ -902,6 +935,7 @@ class Praxly_vardecl {
         if (!can_assign(this.json.varType, valueEvaluated.realType, this.json.line)) {
             throw new PraxlyErrorException(`incompatible types: ${valueEvaluated.realType} cannot be converted to ${this.json.varType}`, this.json.line);
         }
+        valueEvaluated = typeCoercion(this.json.varType, valueEvaluated);
         environment.variableList[this.name] = valueEvaluated;
         // console.log(environment);
         return;
@@ -922,9 +956,10 @@ class Praxly_array_assignment {
         // if it is a reassignment, the variable must be in the list and have a matching type.
         let valueEvaluated = this.value.evaluate(environment);
         for (var k = 0; k < valueEvaluated.elements.length; k++) {
-            if (valueEvaluated.elements[k].realType !== this.json.varType) {
+            if (!can_assign(this.json.varType, valueEvaluated.elements[k].realType)) {
                 throw new PraxlyErrorException(`at least one element in the array did not match declared type:\n\texpected type: ${this.json.varType} \n\texpression type: ${valueEvaluated.realType}`, this.json.line);
             }
+            valueEvaluated.elements[k] = typeCoercion(this.json.varType, valueEvaluated.elements[k]);
         }
         environment.variableList[this.name] = valueEvaluated;
     }
@@ -1242,21 +1277,17 @@ export const OP = {
 //   };
 
 function can_assign(varType, expressionType, line) {
-    if (varType === TYPES.INT) {
+    if (varType === TYPES.INT || varType === TYPES.SHORT) {
         if (expressionType === TYPES.DOUBLE || expressionType === TYPES.FLOAT) {
             throw new PraxlyErrorException(`incompatible types: possible lossy conversion from ${expressionType} to ${varType}`, line);
         }
-        return expressionType === TYPES.INT || expressionType === TYPES.SHORT || expressionType === TYPES.CHAR;
-    } else if (varType === TYPES.DOUBLE) {
-        return expressionType === TYPES.INT || expressionType === TYPES.DOUBLE || expressionType === TYPES.FLOAT;
+        return expressionType === TYPES.INT || expressionType === TYPES.SHORT;
+    } else if (varType === TYPES.DOUBLE || varType === TYPES.FLOAT) {
+        return expressionType === TYPES.INT || expressionType === TYPES.DOUBLE || expressionType === TYPES.FLOAT || expressionType === TYPES.SHORT;
     } else if (varType === TYPES.STRING) {
         return expressionType === TYPES.STRING || expressionType === TYPES.NULL;
     } else if (varType === TYPES.BOOLEAN) {
         return expressionType === TYPES.BOOLEAN;
-    } else if (varType === TYPES.FLOAT) {
-        return expressionType === TYPES.INT || expressionType === TYPES.DOUBLE || expressionType === TYPES.FLOAT;
-    } else if (varType === TYPES.SHORT) {
-        return expressionType === TYPES.SHORT || expressionType === TYPES.CHAR || expressionType === TYPES.INT;
     } else if (varType === TYPES.CHAR) {
         return expressionType === TYPES.CHAR;
     } else {

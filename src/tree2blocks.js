@@ -45,6 +45,7 @@ export const tree2blocks = (workspace, blockjson) => {
             break;
 
         case TYPES.INT:
+        case TYPES.SHORT:
             var result = workspace.newBlock('praxly_literal_block');
             result.setFieldValue(blockjson.value, "LITERAL");
             break;
@@ -62,13 +63,18 @@ export const tree2blocks = (workspace, blockjson) => {
             result = workspace.newBlock('praxly_null_block');
             break;
 
+        case TYPES.CHAR:
+            var result = workspace.newBlock('praxly_literal_block');
+            result.setFieldValue('\'' + blockjson.value + '\'', "LITERAL");
+            break;
+
         case TYPES.STRING:
             var result = workspace.newBlock('praxly_literal_block');
             result.setFieldValue('\"' + blockjson.value + '\"', "LITERAL");
             break;
 
         case TYPES.DOUBLE:
-        case 'CHAR':
+        case TYPES.FLOAT:
             var result = workspace.newBlock('praxly_literal_block');
             result.setFieldValue(blockjson.value, "LITERAL");
             break;

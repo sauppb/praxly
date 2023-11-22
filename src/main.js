@@ -165,8 +165,8 @@ function runTasks() {
     return;
   }
   const executable = createExecutable(mainTree);
-  console.info('here is the executable');
-  console.log(executable);
+  // console.info('here is the executable');
+  // console.log(executable);
   try {
     executable.evaluate();
   } catch (error) {
