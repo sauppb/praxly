@@ -43,7 +43,7 @@ class Lexer {
     this.i = 0;
     this.length = this.source?.length;
     this.token_so_far = "";
-    this.keywords = ["if", "else", "end", "print", "println", "for", "while", 'and', 'or', 'do', 'repeat', 'until', 'not', 'return'];
+    this.keywords = ["if", "else", "end", "print", "println", "for", "while", 'and', 'or', 'do', 'repeat', 'until', 'not', 'return', 'null'];
     this.types = ['int', 'double', 'String', 'char', 'float', 'boolean', 'short', 'void'];
     this.startToken = 0;
     this.currentLine = 1;
@@ -423,7 +423,15 @@ class Parser {
     if (this.has(',')) {
       return;
     }
-
+    else if (this.has('null')){
+      this.advance();
+      return {
+        value: tok.value,
+        type: TYPES.NULL,
+        blockID: "code",
+        line: line,
+      };
+    }
     else if (this.has("INT")) {
       this.advance();
       return {
@@ -463,7 +471,7 @@ class Parser {
     } else if (this.has("boolean")) {
       this.advance();
       return {
-        value: tok.value,
+        value: tok.value === 'true',
         type: TYPES.BOOLEAN,
         blockID: "code",
         line: line,
