@@ -41,3 +41,23 @@ println f1 / f2","0
 0.5
 1.0
 0.5",
+Redeclare,"double a = 3.5 * 2.1
+double a = 3.5 * 2.1
+print a",,"error occurred on line 2:
+	variable a has already been declared in this scope."
+Number arrays,"int[] a ⟵ {5, 9, 2, 10, 15};
+println a
+double[] b ⟵ {5, 9, 2, 10, 15};
+println b","{5, 9, 2, 10, 15}
+{5.0, 9.0, 2.0, 10.0, 15.0}",
+Local vars,"// procedure definition
+void printSum()
+    int a ⟵ 10;
+    int b ⟵ 15;
+    print a + b;
+end printSum
+
+// main program
+printSum();
+print a * b; // ERROR!",25,"error occurred on line 10:
+	Variable a does not exist."

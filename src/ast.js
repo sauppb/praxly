@@ -428,6 +428,22 @@ class Praxly_array_literal {
     }
 }
 
+function valueToString(child) {
+    var result;
+    if (child.jsonType === 'Praxly_array') {
+        let values = child.elements.map(valueToString);
+        result = '{' + values.join(", ") + '}';
+    } else {
+        result = child.value.toString();
+        if (child.realType === TYPES.DOUBLE || child.realType === TYPES.FLOAT) {
+            if (result.indexOf('.') === -1) {
+                result += '.0';
+            }
+        }
+    }
+    return result;
+}
+
 class Praxly_print {
 
     constructor(value, blockjson) {
@@ -437,10 +453,7 @@ class Praxly_print {
 
     evaluate(environment) {
         var child = this.expression.evaluate(environment);
-        var result = child.value.toString();
-        if ((child.realType === TYPES.DOUBLE || child.realType === TYPES.FLOAT) && result.indexOf('.') === -1) {
-            result += '.0';
-        }
+        var result = valueToString(child);
         addToPrintBuffer(result);
         return null;
     }
@@ -456,14 +469,8 @@ class Praxly_println {
     evaluate(environment) {
         // console.log(this.expression.evaluate(environment));
         var child = this.expression.evaluate(environment);
-        console.warn(child);
-        var result = child.value.toString();
-
-        if ((child.realType === TYPES.DOUBLE || child.realType === TYPES.FLOAT) && result.indexOf('.') === -1) {
-            result += '.0';
-        }
+        var result = valueToString(child);
         addToPrintBuffer(result + '<br>');
-
         return null;
     }
 }
@@ -1354,8 +1361,8 @@ function can_modulus(operation, type1, type2, json) {
     if (type1 === type2) {
         return type1;
     }
-    if (type1 === TYPES.INT || type1 === TYPES.SHORT || type1 === TYPES.CHAR) {
-        if (type2 === TYPES.INT || type2 === TYPES.SHORT || type2 === TYPES.CHAR) {
+    if (type1 === TYPES.INT || type1 === TYPES.SHORT || type1 === TYPES.DOUBLE || type1 === TYPES.FLOAT) {
+        if (type2 === TYPES.INT || type2 === TYPES.SHORT || type2 === TYPES.DOUBLE || type2 === TYPES.FLOAT) {
             return TYPES.INT; // Modulus of integers is an integer
         }
     }

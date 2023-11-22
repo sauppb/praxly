@@ -57,7 +57,7 @@ class Lexer {
 
   has_letter() {
     const a = this.source[this.i];
-    return /^[A-Za-z]$/.test(a);
+    return /^[A-Za-z_]$/.test(a);
   }
 
   has(c) {
@@ -194,7 +194,7 @@ class Lexer {
         this.capture();
         this.emit_token("Not_Equal");
 
-      } else if (this.has("=") || this.has('←')) {
+      } else if (this.has("=") || this.has('←') || this.has('⟵')) {
         this.capture();
         if (this.has('=')) {
           this.capture();
