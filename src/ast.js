@@ -1,4 +1,4 @@
-import { NODETYPES, PraxlyErrorException, TYPES, addToPrintBuffer, defaultError, errorOutput, printBuffer } from "./common";
+import { NODETYPES, PraxlyErrorException, TYPES, addToPrintBuffer, defaultError, errorOutput } from "./common";
 
 var scopes = {};
 
@@ -31,7 +31,7 @@ export const createExecutable = (blockjson) => {
         case TYPES.STRING:
             return new Praxly_String(blockjson.value, blockjson);
 
-        case NODETYPES.CHAR:
+        case TYPES.CHAR:
             return new Praxly_char(blockjson.value, blockjson);
 
         case TYPES.BOOLEAN:
@@ -435,18 +435,18 @@ class Praxly_println {
         this.json = blockjson;
         this.expression = value;
     }
-    
+
     evaluate(environment) {
         // console.log(this.expression.evaluate(environment));
         var child = this.expression.evaluate(environment);
         console.warn(child);
         var result = child.value.toString();
-        
+
         if ((child.realType === TYPES.DOUBLE || child.realType === TYPES.FLOAT) && result.indexOf('.') === -1) {
             result += '.0';
         }
         addToPrintBuffer(result + '<br>');
-        
+
         return null;
     }
 }
@@ -847,6 +847,9 @@ class Praxly_vardecl {
 
     evaluate(environment) {
         let valueEvaluated = this.value.evaluate(environment);
+        if (!valueEvaluated) {
+            throw new PraxlyErrorException(`incomplete assignment to variable ${this.name}`, this.json.line);
+        }
         if (environment.variableList.hasOwnProperty(this.name)) {
             throw new PraxlyErrorException(`variable ${this.name} has already been declared in this scope. `, this.json.line);
         }
@@ -912,7 +915,7 @@ class Praxly_Location {
         if (!storage) {
             throw new PraxlyErrorException(`Error: variable name ${this.name} does not currently exist in this scope or its parents scope: \n ${environment.variableList}`, this.json.line);
         }
-        
+
         if (this.isArray) {
             var index = this.index.evaluate(environment).value;
             if (index >= storage[this.name].elements.length) {
@@ -1046,7 +1049,7 @@ class Praxly_invalid {
     }
 
     evaluate(environment) {
-        console.error(`invalid tree. Problem detected here:`);
+        console.info(`invalid tree. Problem detected here:`);
         // throw new Error('problem');
     }
 }
@@ -1096,9 +1099,7 @@ class Praxly_function_call {
         var returnType = func.returnType;
         if (functionParams.length !== this.args.length) {
             throw new PraxlyErrorException(`incorrect amount of arguments passed, expected ${functionParams.length}, was ${this.args.length}`, this.json.line);
-
         }
-     
 
         //NEW: parameter list is now a linkedList. expect some errors till I fix it.
         var newScope = {

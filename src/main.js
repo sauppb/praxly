@@ -160,7 +160,7 @@ window.onclick = function (event) {
  * this function gets called every time the run button is pressed.
  */
 function runTasks() {
-  if (!mainTree || !textEditor.getValue().trim()) {
+  if (!textEditor.getValue().trim()) {
     alert('there is nothing to run :( \n try typing some code or dragging some blocks first.');
     return;
   }
@@ -170,7 +170,7 @@ function runTasks() {
   try {
     executable.evaluate();
   } catch (error) {
-    console.error(error);
+    console.log(error);
     stdErr.innerHTML = error.message;
   }
   // I have this twice for compile time vs runtime errors. Might change.

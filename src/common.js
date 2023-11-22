@@ -102,8 +102,7 @@ export class PraxlyErrorException extends Error {
     super(`<pre>error occurred on line ${line}:\n\t${message}</pre>`);
     this.errorMessage = this.message;
     appendAnnotation(message, line);
-    errorOutput += this.message;
-
+    errorOutput = this.message;       // not appending run-time error
   }
 }
 

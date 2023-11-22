@@ -815,7 +815,7 @@ class Parser {
       if (this.has(';')) {
         this.advance();
       }
-    } if (this.has('(')) {
+    } else if (this.has('(')) {
       result.type = NODETYPES.FUNCDECL;
       result.returnType = vartype;
       this.match_and_discard_next_token('(');

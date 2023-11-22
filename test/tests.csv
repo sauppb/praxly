@@ -2,11 +2,11 @@ Test Name,Program Code,Expected Output,Expected Error
 Print once,"print ""Hello, World!""","Hello, World!",
 Println twice,"println ""1st""
 println ""2nd""","1st
-2nd
-",
+2nd",
 Assign integer,"int x ← 5
 print x",5,
-Declare variable,int x,,TODO
+Declare variable,int x,,"error occurred on line 1:
+	incomplete assignment to variable x"
 Basic types,"boolean b ← true
 char c ← 'a'
 double d ← 1.23
@@ -26,12 +26,11 @@ a
 4.56
 7
 8
-nine
-",
+nine",
 Assign float to int,int x ← 1.2,,"error occurred on line 1:
 	incompatible types: possible lossy conversion from double to int"
 Assign int to float,"float y = 1
-print y",1.0,
+print y",1,
 Assign str to int,String s = 1,,"error occurred on line 1:
 	incompatible types: int cannot be converted to String"
 Assign int to str,"int i = ""0""",,"error occurred on line 1:
@@ -48,8 +47,7 @@ println x % y","5
 0
 6
 8
-2
-",
+2",
 Relational ops,"println 1 == 1
 println 1 ≠ 1
 println 6 < 6
@@ -60,8 +58,7 @@ false
 false
 true
 false
-true
-",
+true",
 Logical ops,"println false and false
 println false and true
 println true and false
@@ -80,14 +77,12 @@ true
 true
 true
 false
-true
-",
+true",
 String concat,"String s1 = ""Hi""
 String s2 = ""Bye""
 println s1 + s2
 println s1 + "" "" + s2","HiBye
-Hi Bye
-",
+Hi Bye",
 Null value,"String s = null
 println s",null,
 Comments,"// this is a comment

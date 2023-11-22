@@ -44,12 +44,15 @@ def main():
     stderr = driver.find_element(By.CLASS_NAME, "stderr")
 
     # for each test in the CSV file
-    file = open("tests.csv", newline="")
+    file = open("tests.csv", encoding="utf-8", newline="")
     file.readline()  # skip header
     test_id = 0
     for row in csv.reader(file):
         test_id += 1
-        name, code, expect_out, expect_err = row
+        name = row[0]
+        code = row[1]
+        expect_out = row[2].rstrip()
+        expect_err = row[3].rstrip()
 
         print(f"Test {test_id}: {name}...", end="", flush=True)
         time.sleep(PAUSE)
@@ -59,8 +62,8 @@ def main():
         play.click()
 
         # compare expected with actual output
-        actual_out = stdout.get_attribute("innerText")
-        actual_err = stderr.get_attribute("innerText")
+        actual_out = stdout.get_attribute("innerText").rstrip()
+        actual_err = stderr.get_attribute("innerText").rstrip()
         if actual_out == expect_out and actual_err == expect_err:
             print(pass_msg)
         else:
