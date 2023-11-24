@@ -169,21 +169,24 @@ function runTasks() {
   // console.log(executable);
   try {
     executable.evaluate();
+  } catch (error) {
+    // if not previously handled (by PraxlyError)
+    if (!errorOutput) {
+      console.error(error);
+    }
+  }
+  stdOut.innerHTML = printBuffer;
+  stdErr.innerHTML = errorOutput;
+  if (errorOutput) {
+    textEditor.session.setAnnotations(annotationsBuffer);
+    addBlockErrors(workspace);
+  } else {
     // replace special chars if ran without error
     var pos = textEditor.getCursorPosition();
     turnBlocksToCode();
     textEditor.moveCursorToPosition(pos);
-  } catch (error) {
-    console.log(error);
-    stdErr.innerHTML = error.message;
+    textEditor.addEventListener("input", turnCodeToBLocks);
   }
-  // I have this twice for compile time vs runtime errors. Might change.
-  stdErr.innerHTML = errorOutput;
-  stdOut.innerHTML = printBuffer;
-  stdOut.style.color = darkMode ? '#FFFFFF' : '#000000';
-  textEditor.session.setAnnotations(annotationsBuffer);
-  addBlockErrors(workspace);
-  clearOutput();
   textEditor.focus();
 }
 
