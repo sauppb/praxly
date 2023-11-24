@@ -240,13 +240,13 @@ class Lexer {
           this.skip();
           this.emit_token('char');
         } else {
-          textError('lexing', 'looks like you didn\'t close your quotes on your char. \n \tRemember chars start and end with a single or double quote mark (\').', this.currentLine);
+          textError('lexing', 'looks like you didn\'t close your quotes on your char. \n \tRemember chars start and end with a single quote mark (\').', this.currentLine);
         }
 
       } else if (this.has("\"")) {
         var stringStart = this.currentLine;
         this.skip();
-        while (this.i < this.length && !this.has("\"") && !this.has("\'")) {
+        while (this.i < this.length && !this.has("\"")) {
           this.capture();
         }
         if (this.has("\"")) {
@@ -254,8 +254,7 @@ class Lexer {
           this.emit_token("String");
         }
         else {
-          // throw new PraxlyError('looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\").', this.currentLine);
-          textError('lexing', 'looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a single or double quote mark (\").', stringStart);
+          textError('lexing', 'looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a double quote mark (\").', stringStart);
           this.i -= 1;
           this.token_so_far = "";
           this.emit_token("String");
