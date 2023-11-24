@@ -1,4 +1,4 @@
-import { NODETYPES, PraxlyError, TYPES, addToPrintBuffer, defaultError, errorOutput } from "./common";
+import { TYPES, OP, NODETYPES, PraxlyError, addToPrintBuffer, defaultError, errorOutput } from "./common";
 
 var scopes = {};
 
@@ -1249,39 +1249,6 @@ class Praxly_emptyLine {
         //do nothing
     }
 }
-
-export const OP = {
-    ASSIGNMENT: "ASSIGNMENT",
-    ADDITION: "ADDITION",
-    SUBTRACTION: "SUBTRACTION",
-    MULTIPLICATION: "MULTIPLICATION",
-    DIVISION: "DIVISION",
-    MODULUS: "MODULUS",
-    EXPONENTIATION: "EXPONENTIATION",
-    ASSIGNMENT: "ASSIGNMENT",
-    EQUALITY: "EQUALITY",
-    INEQUALITY: "INEQUALITY",
-    GREATER_THAN: "GREATER THAN",
-    LESS_THAN: "LESS THAN",
-    GREATER_THAN_OR_EQUAL: "GREATER THAN OR EQUAL",
-    LESS_THAN_OR_EQUAL: "LESS THAN OR EQUAL",
-    AND: "AND",
-    OR: "OR",
-    NOT: "NOT",
-    NEGATE: "NEGATE",
-};
-
-// export const TYPES = {
-//     INT: "INT",
-//     DOUBLE: "DOUBLE",
-//     STRING: "STRING",
-//     BOOLEAN: "BOOLEAN",
-//     FLOAT: "FLOAT",
-//     SHORT: "SHORT",
-//     CHAR: "CHAR",
-//     VOID: "VOID",
-//     INVALID: "INVALID"
-//   };
 
 function can_assign(varType, expressionType, line) {
     if (varType === TYPES.INT || varType === TYPES.SHORT) {
