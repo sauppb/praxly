@@ -2,7 +2,7 @@ import Blockly from 'blockly';
 import { NODETYPES, TYPES } from './common';
 
 function containsOnlyNumbers(str) {
-    return /^\d+$/.test(str);
+    return /^-?\d+$/.test(str);
 }
 
 export const blocks2tree = (workspace, generator) => {

@@ -423,7 +423,7 @@ class Parser {
     if (this.has(',')) {
       return;
     }
-    else if (this.has('null')){
+    else if (this.has('null')) {
       this.advance();
       return {
         value: tok.value,
@@ -662,7 +662,6 @@ class Parser {
     if (!this.has('not') && !this.has('SUBTRACT')) {
       return this.parse_atom();
     }
-
     var line = this.tokens[this.i].line;
     var result = {
       blockID: 'code',
@@ -678,10 +677,17 @@ class Parser {
     else if (this.has("SUBTRACT")) {
       this.advance();
       var expression = this.parse_atom();
-      result.type = NODETYPES.NEGATE;
-      result.value = expression;
+      if (expression.type === TYPES.INT || expression.type === TYPES.SHORT
+        || expression.type === TYPES.DOUBLE || expression.type === TYPES.FLOAT) {
+        // negative literal value
+        result.type = expression.type;
+        result.value = "-" + expression.value;
+      } else {
+        // negative expression
+        result.type = NODETYPES.NEGATE;
+        result.value = expression;
+      }
     }
-
     return result;
   }
 
