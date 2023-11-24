@@ -277,8 +277,6 @@ document.addEventListener("keydown", function (event) {
 //share button
 shareButton.addEventListener('click', generateUrl);
 
-loadFromUrl(turnCodeToBLocks);
-
 const bothButton = document.getElementById("tab1_button");
 const textButton = document.getElementById('tab2_button');
 const blocksButton = document.getElementById('tab3_button');
@@ -337,5 +335,6 @@ function applyExample(exampleName) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  loadFromUrl();
   textEditor.focus();
 });

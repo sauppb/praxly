@@ -23,7 +23,7 @@ export function generateUrl() {
     }, 3000); // Hide the toast after 3 seconds (adjust as needed)
 }
 
-export function loadFromUrl(turnCodeToBLocks) {
+export function loadFromUrl() {
     const fragmentPattern = '#code='
     // look at the url
     // look for '#code
@@ -34,7 +34,7 @@ export function loadFromUrl(turnCodeToBLocks) {
     urlSrc = urlSrc.substring(fragmentPattern.length);
     let decoded = decodeURIComponent(urlSrc);
     textEditor.setValue(decoded, 1);
-    turnCodeToBLocks();
+
     //take everything after that
     // decode the encoding
     // set the editor text to the encoded text

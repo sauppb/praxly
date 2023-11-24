@@ -557,6 +557,9 @@ class Praxly_division {
     evaluate(environment) {
         let b = this.b_operand.evaluate(environment);
         let a = this.a_operand.evaluate(environment);
+        if (b.value === 0) {
+            throw new PraxlyError("division by zero", this.json.line);
+        }
         return litNode_new(binop_typecheck(OP.DIVISION, a.realType, b.realType, this.json), a.value / b.value);
     }
 }
@@ -574,6 +577,9 @@ class Praxly_modulo {
     evaluate(environment) {
         let b = this.b_operand.evaluate(environment);
         let a = this.a_operand.evaluate(environment);
+        if (b.value === 0) {
+            throw new PraxlyError("division by zero", this.json.line);
+        }
         return litNode_new(binop_typecheck(OP.MODULUS, a.realType, b.realType, this.json), a.value % b.value);
     }
 }
