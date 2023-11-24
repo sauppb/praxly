@@ -1,6 +1,9 @@
 import { TYPES, OP, NODETYPES, PraxlyError, addToPrintBuffer, defaultError, errorOutput } from "./common";
 
-var scopes = {};
+var SCOPES = {};
+
+const FOR_LOOP_LIMIT = 1000001;
+const WHILE_LOOP_LIMIT = 1001;
 
 /**
  * this is meant to halt the execution wherever it is at for return statements.
@@ -101,7 +104,7 @@ export const createExecutable = (blockjson) => {
 
         case NODETYPES.PROGRAM:
             // variableList = {};
-            scopes = {
+            SCOPES = {
                 global: {
                     parent: "root",
                     variableList: {},
@@ -777,7 +780,7 @@ class Praxly_program {
     }
 
     evaluate() {
-        return this.codeBlock.evaluate(scopes.global);
+        return this.codeBlock.evaluate(SCOPES.global);
     }
 }
 
@@ -1031,14 +1034,14 @@ class Praxly_for {
 
     evaluate(environment) {
         this.initialization.evaluate(environment);
-        var loopLimit = 0;
-        while (loopLimit < 500 && this.condition.evaluate(environment).value) {
+        var loopCount = 0;
+        while (loopCount < FOR_LOOP_LIMIT && this.condition.evaluate(environment).value) {
+            loopCount += 1;
             this.statement.evaluate(environment);
-            loopLimit += 1;
             this.incrementation.evaluate(environment);
-            if (loopLimit === 499) {
-                throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
-            }
+        }
+        if (loopCount === FOR_LOOP_LIMIT) {
+            throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
         }
     }
 }
@@ -1050,13 +1053,13 @@ class Praxly_while {
         this.statement = statement;
     }
     evaluate(environment) {
-        var loopLimit = 0;
-        while (loopLimit < 500 && this.condition.evaluate(environment).value) {
+        var loopCount = 0;
+        while (loopCount < WHILE_LOOP_LIMIT && this.condition.evaluate(environment).value) {
+            loopCount += 1;
             this.statement.evaluate(environment);
-            loopLimit += 1;
-            if (loopLimit === 499) {
-                throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
-            }
+        }
+        if (loopCount === WHILE_LOOP_LIMIT) {
+            throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
         }
     }
 }
@@ -1070,14 +1073,14 @@ class Praxly_do_while {
     }
 
     evaluate(environment) {
+        var loopCount = 1;
         this.statement.evaluate(environment);
-        var loopLimit = 0;
-        while (loopLimit < 500 && this.condition.evaluate(environment).value) {
+        while (loopCount < WHILE_LOOP_LIMIT && this.condition.evaluate(environment).value) {
+            loopCount += 1;
             this.statement.evaluate(environment);
-            loopLimit += 1;
-            if (loopLimit === 499) {
-                throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
-            }
+        }
+        if (loopCount == WHILE_LOOP_LIMIT) {
+            throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
         }
     }
 }
@@ -1091,14 +1094,14 @@ class Praxly_repeat_until {
     }
 
     evaluate(environment) {
-        var loopLimit = 0;
+        var loopCount = 1;
         this.statement.evaluate(environment);
-        while (loopLimit < 500 && !this.condition.evaluate(environment).value) {
+        while (loopCount < WHILE_LOOP_LIMIT && !this.condition.evaluate(environment).value) {
+            loopCount += 1;
             this.statement.evaluate(environment);
-            loopLimit += 1;
-            if (loopLimit === 499) {
-                throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
-            }
+        }
+        if (loopCount == WHILE_LOOP_LIMIT) {
+            throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
         }
     }
 }
@@ -1206,21 +1209,25 @@ class Praxly_function_call {
 
             newScope.variableList[parameterName] = argument;
         }
-        console.log(`here is the new scope in the function named ${this.name}`);
-        console.log(newScope);
-        //new: add  try/catch
+        // console.log(`here is the new scope in the function named ${this.name}`);
+        // console.log(newScope);
+
+        // call the user's function
         let result = null;
-        console.log(functionContents);
         try {
+            // console.log(functionContents);
             result = functionContents.evaluate(newScope);
         }
         catch (error) {
             if (error instanceof ReturnException) {
                 result = error.errorData;
-                // console.log(res)
+            }
+            else if (error instanceof RangeError) {
+                // most likely infinite recursion
+                throw new PraxlyError(error.message, this.json.line);
             }
             else {
-                console.error(error);
+                throw error;
             }
         }
 
