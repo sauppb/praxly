@@ -169,6 +169,10 @@ function runTasks() {
   // console.log(executable);
   try {
     executable.evaluate();
+    // replace special chars if ran without error
+    var pos = textEditor.getCursorPosition();
+    turnBlocksToCode();
+    textEditor.moveCursorToPosition(pos);
   } catch (error) {
     console.log(error);
     stdErr.innerHTML = error.message;
