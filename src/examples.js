@@ -89,6 +89,7 @@ end while
 end mystery
 mystery(6)
 
+
 ##Bubble Sort
 ##// Global array declaration
 int[] myArray = {5, 2, 9, 1, 5, 6};
@@ -156,14 +157,11 @@ end printArray
 selectionSort()
 printArray()
 
-
-
-
 `;
 
 
+const testLater = `
 
-var testLater = `
 ##Insertion Sort
 ##// Global array declaration
 int[] myArray = {5, 2, 9, 1, 5, 6};
@@ -196,6 +194,7 @@ end printArray
 // Example usage
 insertionSort()
 printArray()
+
 
 ##Merge Sort
 ##// Global array declaration
@@ -259,4 +258,5 @@ end printArray
 // Example usage
 mergeSort(0, 5)
 printArray()
+
 `

@@ -321,7 +321,7 @@ function GenerateExamples() {
     exampleDiv.appendChild(newButton);
 
     const value = dataArray[i + 1].trim();
-    result[label] = value;
+    result[label] = value + "\n";
   }
 
   return result;

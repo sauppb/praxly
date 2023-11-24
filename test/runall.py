@@ -2,9 +2,6 @@
 
 This script uses Selenium to drive the web browser.
 https://www.selenium.dev/documentation/webdriver/
-
-Install dependencies before running for first time:
-pip install colorama selenium
 """
 
 import colorama
