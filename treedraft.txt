@@ -1,7 +1,7 @@
 steps to adding a block
 
 0. add to TYPES/OP/NODETYPES in common.js
-1. define the object for the executable
+1. define the object for the executable in ast.js
 2. finish the walk through the json in ast module
 3. edit the lexer in milestone2 to make sure that the text will tokenize properly
 4. edit the parser so that it will package correctly into the tree

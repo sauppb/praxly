@@ -849,6 +849,11 @@ class Parser {
           param.push(this.tokens[this.i].value);
           this.advance();
         }
+        if (this.has('[') && this.has_ahead(']')) {
+          this.advance();
+          this.advance();
+          param[0] += "[]";
+        }
         if (this.has('Location')) {
           param.push(this.tokens[this.i].value);
           this.advance();

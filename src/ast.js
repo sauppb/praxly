@@ -427,6 +427,17 @@ class Praxly_array_literal {
         this.elements = elements;
         this.blockjson = blockjson;
         this.jsonType = 'Praxly_array';
+
+        // set array type to "largest type" of element
+        let types = ["boolean", "char", "short", "int", "float", "double", "String"];
+        let max_type = -1;
+        for (let i = 0; i < elements.length; i++) {
+            let cur_type = types.indexOf(elements[i].realType);
+            if (cur_type > max_type) {
+                max_type = cur_type;
+            }
+        }
+        this.realType = types[max_type] + "[]";
     }
 
     evaluate(environment) {
@@ -1227,12 +1238,11 @@ class Praxly_function_call {
             let parameterType = functionParams[i][0];
             let argument = this.args[i].evaluate(environment);
 
-            //TODO: typecheck
-            if (parameterType != argument.realType) {
+            if (can_assign(parameterType, argument.realType, this.json.line)) {
+                newScope.variableList[parameterName] = argument;
+            } else {
                 throw new PraxlyError(`argument ${parameterName} does not match parameter type.\n\tExpected: ${parameterType}\n\tActual: ${argument.realType}`);
             }
-
-            newScope.variableList[parameterName] = argument;
         }
         // console.log(`here is the new scope in the function named ${this.name}`);
         // console.log(newScope);
@@ -1283,6 +1293,15 @@ class Praxly_emptyLine {
 }
 
 function can_assign(varType, expressionType, line) {
+    if (varType === expressionType) {
+        return true;
+    }
+    // if assigning arrays, remove the []'s from the type names
+    if (varType.endsWith("[]") && expressionType.endsWith("[]")) {
+        varType = varType.slice(0, -2);
+        expressionType = expressionType.slice(0, -2);
+    }
+
     if (varType === TYPES.INT || varType === TYPES.SHORT) {
         if (expressionType === TYPES.DOUBLE || expressionType === TYPES.FLOAT) {
             throw new PraxlyError(`incompatible types: possible lossy conversion from ${expressionType} to ${varType}`, line);
