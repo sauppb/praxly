@@ -7,8 +7,9 @@ export const tree2text = (blockjson, indentation) => {
     // console.log(blockjson.type);
 
     switch (blockjson.type) {
-        case TYPES.INT:
         case TYPES.BOOLEAN:
+        case TYPES.DOUBLE:
+        case TYPES.INT:
             try {
                 var result = blockjson.value.toString();
                 return result;
@@ -22,6 +23,14 @@ export const tree2text = (blockjson, indentation) => {
                 if (blockjson.isArray) {
                     result += `[${tree2text(blockjson.index)}]`;
                 }
+                return result;
+            } catch (error) {
+                return " ";
+            }
+
+        case TYPES.CHAR:
+            try {
+                var result = '\'' + blockjson.value + '\'';
                 return result;
             } catch (error) {
                 return " ";

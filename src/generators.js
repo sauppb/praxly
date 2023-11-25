@@ -116,9 +116,11 @@ export const makeGenerator = () => {
         if (input[0] === '\"' && input[input.length - 1] === '\"') {
             node.type = NODETYPES.STRING;
             node.value = input.slice(1, -1);
+        } else if (input[0] === '\'' && input[input.length - 1] === '\'') {
+            node.type = NODETYPES.CHAR;
+            node.value = input.slice(1, -1);
         } else if (input.includes('.')) {
             node.type = TYPES.DOUBLE;
-
         } else if (containsOnlyNumbers(input)) {
             node.type = TYPES.INT;
         } else {
