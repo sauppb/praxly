@@ -94,6 +94,9 @@ export const createExecutable = (blockjson) => {
         case NODETYPES.PRINTLN:
             return new Praxly_println(createExecutable(blockjson.value), blockjson);
 
+        case NODETYPES.INPUT:
+            return new Praxly_input(blockjson);
+
         case NODETYPES.CODEBLOCK:
             let statements = blockjson.statements;
             let result = statements.map((statement) => {
@@ -475,6 +478,22 @@ class Praxly_println {
         var result = valueToString(child);
         addToPrintBuffer(result + '<br>');
         return null;
+    }
+}
+
+class Praxly_input {
+
+    constructor(blockjson) {
+        this.json = blockjson;
+    }
+
+    evaluate(environment) {
+        var result = prompt("input");
+        if (result === null) {
+            throw new PraxlyError("input canceled", this.json.line);
+        }
+        addToPrintBuffer(`<b>${result}</b><br>`);
+        return new Praxly_String(result, this.json);
     }
 }
 

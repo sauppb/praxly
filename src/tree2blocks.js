@@ -129,6 +129,10 @@ export const tree2blocks = (workspace, blockjson) => {
             result.getInput('EXPRESSION').connection.connect(child?.outputConnection);
             break;
 
+        case NODETYPES.INPUT:
+            result = workspace.newBlock('praxly_input_block');
+            break;
+
         case NODETYPES.CODEBLOCK:
             var statements = blockjson.statements.map(element => {
                 try {

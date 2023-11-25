@@ -49,6 +49,7 @@ export const NODETYPES = {
     ...TYPES,
     PRINT:                          "PRINT",
     PRINTLN:                        "PRINTLN",
+    INPUT:                          "INPUT",
     CODEBLOCK:                      "CODEBLOCK",
     PROGRAM:                         "PROGRAM",
     STATEMENT:                      "STATEMENT",

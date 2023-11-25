@@ -79,6 +79,13 @@ export const makeGenerator = () => {
         }
     }
 
+    praxlyGenerator['praxly_input_block'] = (block) => {
+        return {
+            blockID: block.id,
+            type: NODETYPES.INPUT,
+        };
+    }
+
     praxlyGenerator['praxly_statement_block'] = (block) => {
         const expression = block.getInputTargetBlock('EXPRESSION');
         return {

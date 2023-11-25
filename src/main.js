@@ -20,7 +20,7 @@ import { generateUrl, loadFromUrl } from './share';
 
 // import { readFileSync } from 'fs';
 import { codeText } from './examples';
-import { addBlockErrors, annotationsBuffer, clearErrors, clearOutput, errorOutput, printBuffer, textEditor } from './common';
+import { addBlockErrors, annotationsBuffer, clearErrors, clearOutput, defaultError, errorOutput, printBuffer, textEditor } from './common';
 
 const praxlyGenerator = makeGenerator();
 export const workspace = Blockly.inject('blocklyDiv', {
@@ -69,7 +69,12 @@ let isResizing = false;
 
 runButton.addEventListener('mouseup', runTasks);
 darkModeButton.addEventListener('click', () => { darkMode ? setLight() : setDark(); });
-clearOut.addEventListener('click', () => { stdOut.innerHTML = ""; stdErr.innerHTML = ""; });
+clearOut.addEventListener('click', () => {
+  clearOutput();
+  clearErrors();
+  stdOut.innerHTML = "";
+  stdErr.innerHTML = "";
+});
 definePraxlyBlocks(workspace);
 
 // blockUpdatesButton.innerText = 'block updates: live ';
@@ -115,11 +120,13 @@ BenButton.addEventListener('click', function () {
 });
 
 titleRefresh.addEventListener('click', function () {
+  clearOutput();
+  clearErrors();
+  stdOut.innerHTML = "";
+  stdErr.innerHTML = "";
   window.location.hash = '';
   textEditor.setValue('', -1);
   textPane.click();
-  stdOut.innerHTML = "";
-  stdErr.innerHTML = "";
   textEditor.focus();
 });
 
@@ -172,7 +179,8 @@ function runTasks() {
   } catch (error) {
     // if not previously handled (by PraxlyError)
     if (!errorOutput) {
-      console.error(error);
+      defaultError(error);
+      console.error(error.message);
     }
   }
   stdOut.innerHTML = printBuffer;
@@ -180,6 +188,7 @@ function runTasks() {
   if (errorOutput) {
     textEditor.session.setAnnotations(annotationsBuffer);
     addBlockErrors(workspace);
+    clearErrors();
   } else {
     // replace special chars if ran without error
     var pos = textEditor.getCursorPosition();

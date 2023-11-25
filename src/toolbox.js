@@ -74,6 +74,10 @@ export const toolbox = {
             },
           }
         },
+        {
+          'kind': 'block',
+          'type': 'praxly_input_block'
+        },
       ]
     },
     {

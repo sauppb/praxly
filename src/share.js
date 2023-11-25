@@ -5,7 +5,7 @@ export function generateUrl() {
     // console.log(textEditor.getValue());
     var code = textEditor.getValue();
     let encoded = encodeURIComponent(code);
-    console.log(encoded);
+    // console.log(encoded);
     window.location.hash = ''; //this should clear it before replacing it
     window.location.hash = `code=${encoded}`
     saveToLocal();

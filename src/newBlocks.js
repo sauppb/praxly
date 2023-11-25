@@ -223,6 +223,15 @@ export function definePraxlyBlocks(workspace) {
       "helpUrl": ""
     },
     {
+      "type": "praxly_input_block",
+      "message0": "input",
+      "inputsInline": true,
+      "output": null,
+      "style": 'expression_blocks',
+      "tooltip": "",
+      "helpUrl": ""
+    },
+    {
       "type": "praxly_null_block",
       "message0": "null",
       "inputsInline": true,

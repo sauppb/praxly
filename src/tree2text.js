@@ -145,6 +145,9 @@ export const tree2text = (blockjson, indentation) => {
             var expression = tree2text(blockjson.value, blockjson.endIndex, indentation) + '\n';
             return result + expression;
 
+        case NODETYPES.INPUT:
+            return "input";
+
         case NODETYPES.RETURN:
             var result = '\t'.repeat(indentation) + "return ";
             var expression = tree2text(blockjson.value, blockjson.endIndex, indentation) + '\n';

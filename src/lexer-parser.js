@@ -43,7 +43,7 @@ class Lexer {
     this.i = 0;
     this.length = this.source?.length;
     this.token_so_far = "";
-    this.keywords = ["if", "else", "end", "print", "println", "for", "while", 'and', 'or', 'do', 'repeat', 'until', 'not', 'return', 'null'];
+    this.keywords = ["if", "else", "end", "print", "println", "input", "for", "while", 'and', 'or', 'do', 'repeat', 'until', 'not', 'return', 'null'];
     this.types = ['int', 'double', 'String', 'char', 'float', 'boolean', 'short', 'void'];
     this.startToken = 0;
     this.currentLine = 1;
@@ -421,6 +421,15 @@ class Parser {
 
     if (this.has(',')) {
       return;
+    }
+    else if (this.has('input')) {
+      this.advance();
+      return {
+        value: tok.value,
+        type: NODETYPES.INPUT,
+        blockID: "code",
+        line: line,
+      };
     }
     else if (this.has('null')) {
       this.advance();
