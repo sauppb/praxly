@@ -2036,7 +2036,7 @@ function ${$.javascriptGenerator.FUNCTION_NAME_PLACEHOLDER_}(haystack, needle, r
 `,c="	".repeat(_)+Se(R.statement,_+1),a="	".repeat(_)+"while ("+Se(R.condition,_)+`)
 `;return l+c+a;case X.REPEAT_UNTIL:var l="	".repeat(_)+`repeat
 `,c="	".repeat(_)+Se(R.statement,_+1),a="	".repeat(_)+"until ("+Se(R.condition,_)+`)
-`;return l+c+a;case X.NOT:var l="not ",d=Se(R.value,R.endIndex);return l+d;case X.NEGATE:var l="-",d=Se(R.value,R.endIndex);return l+d;case X.FOR:var l="	".repeat(_)+"for",f=" ("+Se(R.initialization,_);f=f.slice(0,-1)+"; ";var a=Se(R.condition,_)+"; ",o=Se(R.increment,_);o=o+`)
+`;return l+c+a;case X.NOT:var l="not ",d=Se(R.value,R.endIndex);return l+d;case X.NEGATE:var l="-",d=Se(R.value,R.endIndex);return l+d;case X.FOR:var l="	".repeat(_)+"for",f=" ("+Se(R.initialization,0);f=f.slice(0,-1)+"; ";var a=Se(R.condition,0)+"; ",o=Se(R.increment,0);o=o+`)
 `;var c="	".repeat(_)+Se(R.statement,_+1)+"	".repeat(_)+`end for
 `;return l+f+a+o+c;case X.FUNCDECL:var s=R.returnType.toString(),l=s+" "+R.name+"(",h=R.params;h!==null&&h.length!==0&&(h.forEach(m=>{l+=m[0]+" "+m[1]+", "}),l=l.slice(0,l.length-2)),l+=")",l+=`
 `;var c="	".repeat(_)+Se(R.contents,_+1);return l+=c,l+="	".repeat(_)+`end ${R.name}
