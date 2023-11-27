@@ -246,10 +246,10 @@ export const tree2text = (blockjson, indentation) => {
 
         case NODETYPES.FOR:
             var result = '\t'.repeat(indentation) + "for";
-            var initialization = " (" + tree2text(blockjson.initialization, indentation);
+            var initialization = " (" + tree2text(blockjson.initialization, 0);
             initialization = initialization.slice(0, -1) + '; ';
-            var condition = tree2text(blockjson.condition, indentation) + '; ';
-            var increment = tree2text(blockjson.increment, indentation);
+            var condition = tree2text(blockjson.condition, 0) + '; ';
+            var increment = tree2text(blockjson.increment, 0);
             increment = increment + ")\n";
             var contents = '\t'.repeat(indentation) + tree2text(blockjson.statement, indentation + 1) +
                 '\t'.repeat(indentation) + 'end for\n';
