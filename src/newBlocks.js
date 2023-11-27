@@ -469,14 +469,21 @@ export function definePraxlyBlocks(workspace) {
           "type": "field_dropdown",
           "name": "RETURNTYPE",
           "options": [
-            ["int", NODETYPES.INT],
-            ['void', NODETYPES.VOID],
+            ["void", NODETYPES.VOID],
             ["boolean", NODETYPES.BOOLEAN],
-            ["double", NODETYPES.DOUBLE],
             ["char", NODETYPES.CHAR],
-            ["String", NODETYPES.STRING],
+            ["double", NODETYPES.DOUBLE],
             ["float", NODETYPES.FLOAT],
-            ['short', NODETYPES.SHORT]
+            ["int", NODETYPES.INT],
+            ["short", NODETYPES.SHORT],
+            ["String", NODETYPES.STRING],
+            ["boolean[]", NODETYPES.BOOLEAN_ARRAY],
+            ["char[]", NODETYPES.CHAR_ARRAY],
+            ["double[]", NODETYPES.DOUBLE_ARRAY],
+            ["float[]", NODETYPES.FLOAT_ARRAY],
+            ["int[]", NODETYPES.INT_ARRAY],
+            ["short[]", NODETYPES.SHORT_ARRAY],
+            ["String[]", NODETYPES.STRING_ARRAY],
           ]
         },
         {
@@ -543,35 +550,13 @@ export function definePraxlyBlocks(workspace) {
           "type": "field_dropdown",
           "name": "VARTYPE",
           "options": [
-            [
-              "int",
-              NODETYPES.INT
-            ],
-            [
-              "boolean",
-              NODETYPES.BOOLEAN
-            ],
-            [
-              "double",
-              NODETYPES.DOUBLE
-            ],
-            [
-              "char",
-              NODETYPES.CHAR
-            ],
-            [
-              "String",
-              NODETYPES.STRING
-            ],
-            [
-              "float",
-              NODETYPES.FLOAT
-            ],
-            [
-              'short',
-              NODETYPES.SHORT
-            ],
-
+            ["boolean", NODETYPES.BOOLEAN],
+            ["char", NODETYPES.CHAR],
+            ["double", NODETYPES.DOUBLE],
+            ["float", NODETYPES.FLOAT],
+            ["int", NODETYPES.INT],
+            ["short", NODETYPES.SHORT],
+            ["String", NODETYPES.STRING],
           ]
         },
         {
@@ -811,34 +796,13 @@ export function definePraxlyBlocks(workspace) {
           "type": "field_dropdown",
           "name": "VARTYPE",
           "options": [
-            [
-              "int",
-              NODETYPES.INT
-            ],
-            [
-              "boolean",
-              NODETYPES.BOOLEAN
-            ],
-            [
-              "double",
-              NODETYPES.DOUBLE
-            ],
-            [
-              "char",
-              NODETYPES.CHAR
-            ],
-            [
-              "String",
-              NODETYPES.STRING
-            ],
-            [
-              "float",
-              NODETYPES.FLOAT
-            ],
-            [
-              'short',
-              NODETYPES.SHORT
-            ],
+            ["boolean", NODETYPES.BOOLEAN],
+            ["char", NODETYPES.CHAR],
+            ["double", NODETYPES.DOUBLE],
+            ["float", NODETYPES.FLOAT],
+            ["int", NODETYPES.INT],
+            ["short", NODETYPES.SHORT],
+            ["String", NODETYPES.STRING],
           ]
         },
         {
@@ -944,34 +908,20 @@ export function definePraxlyBlocks(workspace) {
           "type": "field_dropdown",
           "name": "VARTYPE",
           "options": [
-            [
-              "int",
-              NODETYPES.INT
-            ],
-            [
-              "boolean",
-              NODETYPES.BOOLEAN
-            ],
-            [
-              "double",
-              NODETYPES.DOUBLE
-            ],
-            [
-              "char",
-              NODETYPES.CHAR
-            ],
-            [
-              "String",
-              NODETYPES.STRING
-            ],
-            [
-              "float",
-              NODETYPES.FLOAT
-            ],
-            [
-              'short',
-              NODETYPES.SHORT
-            ],
+            ["boolean", NODETYPES.BOOLEAN],
+            ["char", NODETYPES.CHAR],
+            ["double", NODETYPES.DOUBLE],
+            ["float", NODETYPES.FLOAT],
+            ["int", NODETYPES.INT],
+            ["short", NODETYPES.SHORT],
+            ["String", NODETYPES.STRING],
+            ["boolean[]", NODETYPES.BOOLEAN_ARRAY],
+            ["char[]", NODETYPES.CHAR_ARRAY],
+            ["double[]", NODETYPES.DOUBLE_ARRAY],
+            ["float[]", NODETYPES.FLOAT_ARRAY],
+            ["int[]", NODETYPES.INT_ARRAY],
+            ["short[]", NODETYPES.SHORT_ARRAY],
+            ["String[]", NODETYPES.STRING_ARRAY],
           ]
         },
         {
@@ -994,34 +944,13 @@ export function definePraxlyBlocks(workspace) {
           "type": "field_dropdown",
           "name": "VARTYPE",
           "options": [
-            [
-              "int",
-              NODETYPES.INT
-            ],
-            [
-              "boolean",
-              NODETYPES.BOOLEAN
-            ],
-            [
-              "double",
-              NODETYPES.DOUBLE
-            ],
-            [
-              "char",
-              NODETYPES.CHAR
-            ],
-            [
-              "String",
-              NODETYPES.STRING
-            ],
-            [
-              "float",
-              NODETYPES.FLOAT
-            ],
-            [
-              'short',
-              NODETYPES.SHORT
-            ],
+            ["boolean", NODETYPES.BOOLEAN],
+            ["char", NODETYPES.CHAR],
+            ["double", NODETYPES.DOUBLE],
+            ["float", NODETYPES.FLOAT],
+            ["int", NODETYPES.INT],
+            ["short", NODETYPES.SHORT],
+            ["String", NODETYPES.STRING],
           ]
         },
         {

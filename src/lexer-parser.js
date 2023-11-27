@@ -840,6 +840,9 @@ class Parser {
     } else if (this.has('(')) {
       result.type = NODETYPES.FUNCDECL;
       result.returnType = vartype;
+      if (type == NODETYPES.ARRAY_ASSIGNMENT) {
+        result.returnType += "[]";
+      }
       this.match_and_discard_next_token('(');
       var params = [];
       var stopLoop = 0;
