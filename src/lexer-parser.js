@@ -957,6 +957,10 @@ class Parser {
       }
       praxly_blocks.push(this.parse_statement());
       this.advance();
+      // redundant code required to make in line comments work (I think)
+      if (this.has('comment') || this.has('single_line_comment')){
+        praxly_blocks.push(this.parse_statement());
+      }
     }
     return {
       type: NODETYPES.CODEBLOCK,
@@ -1044,7 +1048,7 @@ class Parser {
         return result;
       } else {
         textError('compile time', "missing the \'end while\' token", result.line);
-        //gohere
+
       }
     }
 
