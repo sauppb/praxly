@@ -957,10 +957,6 @@ class Parser {
       }
       praxly_blocks.push(this.parse_statement());
       this.advance();
-      // redundant code required to make in line comments work (I think)
-      if (this.has('comment') || this.has('single_line_comment')){
-        praxly_blocks.push(this.parse_statement());
-      }
     }
     return {
       type: NODETYPES.CODEBLOCK,
@@ -1123,14 +1119,14 @@ class Parser {
     }
 
     else if (this.has("println")) {
-      // while (this.has('print')) {
+   
       this.advance();
       const expression = this.parse_boolean_operation();
       if (this.has(';')) {
         this.advance();
       }
       if (this.has('\n')) {
-        // this.advance();
+  
         result.type = NODETYPES.PRINTLN;
         result.value = expression;
         return result;
@@ -1138,14 +1134,14 @@ class Parser {
     }
 
     else if (this.has("return")) {
-      // while (this.has('print')) {
+
       this.advance();
       const expression = this.parse_boolean_operation();
       if (this.has(';')) {
         this.advance();
       }
       if (this.has('\n')) {
-        // this.advance();
+ 
         result.type = NODETYPES.RETURN;
         result.value = expression;
         return result;
