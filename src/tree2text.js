@@ -207,9 +207,13 @@ export const tree2text = (blockjson, indentation) => {
             try {
                 var vartype = blockjson.varType.toString()
                 var varname = vartype + ' ' + blockjson.name.toString();
-                var operator = ' ← ';
-                var expression = tree2text(blockjson.value, blockjson.endIndex, indentation) + '\n';
-                return '\t'.repeat(indentation) + varname + operator + expression;
+                if (blockjson.value !== undefined) {
+                    var operator = ' ← ';
+                    var expression = tree2text(blockjson.value, blockjson.endIndex, indentation);
+                    return '\t'.repeat(indentation) + varname + operator + expression + '\n';
+                } else {
+                    return '\t'.repeat(indentation) + varname + '\n';
+                }
             } catch (error) {
                 console.error(error);
                 return " ";

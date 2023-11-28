@@ -543,6 +543,39 @@ export function definePraxlyBlocks(workspace) {
       "onchange": "updateProcedureName"
     },
     {
+      "type": "praxly_vardecl_block",
+      "message0": "%1%2%3",
+      "args0": [
+        {
+          "type": "field_dropdown",
+          "name": "VARTYPE",
+          "options": [
+            ["boolean", NODETYPES.BOOLEAN],
+            ["char", NODETYPES.CHAR],
+            ["double", NODETYPES.DOUBLE],
+            ["float", NODETYPES.FLOAT],
+            ["int", NODETYPES.INT],
+            ["short", NODETYPES.SHORT],
+            ["String", NODETYPES.STRING],
+          ]
+        },
+        {
+          "type": "field_input",
+          "name": "VARIABLENAME",
+          "text": "VariableName"
+        },
+        {
+          "type": "input_dummy"
+        }
+      ],
+      "inputsInline": true,
+      "previousStatement": null,
+      "nextStatement": null,
+      "style": 'variable_blocks',
+      "tooltip": "",
+      "helpUrl": ""
+    },
+    {
       "type": "praxly_assignment_block",
       "message0": "%1%2 ⬅ %3 %4",
       "args0": [

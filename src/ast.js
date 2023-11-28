@@ -148,7 +148,11 @@ export const createExecutable = (blockjson) => {
 
         case NODETYPES.VARDECL:
             var location = createExecutable(blockjson.location);
-            return new Praxly_vardecl(blockjson, location, createExecutable(blockjson.value));
+            if (blockjson.value !== undefined) {
+                return new Praxly_vardecl(blockjson, location, createExecutable(blockjson.value));
+            } else {
+                return new Praxly_vardecl(blockjson, location, undefined);
+            }
 
         case NODETYPES.ARRAY_ASSIGNMENT:
             try {
@@ -944,10 +948,10 @@ class Praxly_vardecl {
     }
 
     evaluate(environment) {
-        let valueEvaluated = this.value.evaluate(environment);
-        if (!valueEvaluated) {
-            // throw new PraxlyError(`incomplete assignment to variable ${this.name}`, this.json.line);
-
+        let valueEvaluated;
+        if (this.value !== undefined) {
+            valueEvaluated = this.value.evaluate(environment);
+        } else {
             // assign default value (declaration without assignment)
             switch (this.json.varType) {
                 case NODETYPES.BOOLEAN:
