@@ -1171,13 +1171,13 @@ class Parser {
       if (this.has(';')) {
         this.advance();
       }
-      if (this.has('\n')) {
-        result = {
-          type: NODETYPES.STATEMENT,
-          value: contents,
-          blockID: "code"
-        };
-      }
+      // if (this.has('\n')) {
+      // }
+      result = {
+        type: NODETYPES.STATEMENT,
+        value: contents,
+        blockID: "code"
+      };
     }
     return result;
   }
