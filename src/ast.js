@@ -446,11 +446,8 @@ class Praxly_array_literal {
 }
 
 function valueToString(child, json) {
-    if (child.value === undefined) {
-        if (child === "Exit_Success") {
-            throw new PraxlyError("undefined return value from void procedure", json.line);
-        }
-        throw new PraxlyError("undefined value", json.line);
+    if (child === "Exit_Success") {
+        throw new PraxlyError("no value returned from void procedure", json.line);
     }
     var result;
     if (child.jsonType === 'Praxly_array') {
@@ -508,7 +505,7 @@ class Praxly_input {
         if (result === null) {
             throw new PraxlyError("input canceled", this.json.line);
         }
-        addToPrintBuffer(`<b>${result}</b><br>`);
+        // addToPrintBuffer(`<b>${result}</b><br>`);
         return new Praxly_String(result, this.json);
     }
 }
@@ -539,8 +536,8 @@ class Praxly_addition {
     }
 
     evaluate(environment) {
-        let b = this.b_operand.evaluate(environment);
         let a = this.a_operand.evaluate(environment);
+        let b = this.b_operand.evaluate(environment);
         return litNode_new(binop_typecheck(OP.ADDITION, a.realType, b.realType, this.json), a.value + b.value);
     }
 }
@@ -556,8 +553,8 @@ class Praxly_subtraction {
     }
 
     evaluate(environment) {
-        let b = this.b_operand.evaluate(environment);
         let a = this.a_operand.evaluate(environment);
+        let b = this.b_operand.evaluate(environment);
         return litNode_new(binop_typecheck(OP.SUBTRACTION, a.realType, b.realType, this.json), a.value - b.value);
     }
 }
@@ -573,8 +570,8 @@ class Praxly_multiplication {
     }
 
     evaluate(environment) {
-        let b = this.b_operand.evaluate(environment);
         let a = this.a_operand.evaluate(environment);
+        let b = this.b_operand.evaluate(environment);
         return litNode_new(binop_typecheck(OP.MULTIPLICATION, a.realType, b.realType, this.json), a.value * b.value);
     }
 }
@@ -590,8 +587,8 @@ class Praxly_division {
     }
 
     evaluate(environment) {
-        let b = this.b_operand.evaluate(environment);
         let a = this.a_operand.evaluate(environment);
+        let b = this.b_operand.evaluate(environment);
         if (b.value === 0) {
             throw new PraxlyError("division by zero", this.json.line);
         }
@@ -610,8 +607,8 @@ class Praxly_modulo {
     }
 
     evaluate(environment) {
-        let b = this.b_operand.evaluate(environment);
         let a = this.a_operand.evaluate(environment);
+        let b = this.b_operand.evaluate(environment);
         if (b.value === 0) {
             throw new PraxlyError("division by zero", this.json.line);
         }
@@ -630,8 +627,8 @@ class Praxly_exponent {
     }
 
     evaluate(environment) {
-        let b = this.b_operand.evaluate(environment);
         let a = this.a_operand.evaluate(environment);
+        let b = this.b_operand.evaluate(environment);
         return litNode_new(binop_typecheck(OP.EXPONENTIATION, a.realType, b.realType, this.json), a.value ** b.value);
     }
 }
@@ -647,8 +644,8 @@ class Praxly_and {
     }
 
     evaluate(environment) {
-        let b = this.b_operand.evaluate(environment);
         let a = this.a_operand.evaluate(environment);
+        let b = this.b_operand.evaluate(environment);
         return litNode_new(binop_typecheck(OP.AND, a.realType, b.realType, this.json), a.value && b.value);
     }
 }
@@ -664,8 +661,8 @@ class Praxly_or {
     }
 
     evaluate(environment) {
-        let b = this.b_operand.evaluate(environment);
         let a = this.a_operand.evaluate(environment);
+        let b = this.b_operand.evaluate(environment);
         return litNode_new(binop_typecheck(OP.OR, a.realType, b.realType, this.json), a.value || b.value);
     }
 }
