@@ -1326,7 +1326,7 @@ class Praxly_String_funccall {
                 this.typecheckhelper(char, [TYPES.CHAR]);
                 result = str.value.indexOf(index.value);
                 return new Praxly_int(result);
-            case StringFuncs.length:
+            case StringFuncs.LENGTH:
                 return new Praxly_int(str.value.length);
             case StringFuncs.TOLOWERCSE:
                 return new Praxly_String(str.value.toLowerCase());
