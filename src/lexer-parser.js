@@ -541,7 +541,7 @@ class Parser {
       }
       return expression;
 
-    } else if (this.has("Location")) {
+    } else if (this.has("Location") || this.has("Type")) {
       var l = this.parse_location();
       if (this.has('Assignment')) {
         this.advance();
@@ -581,9 +581,6 @@ class Parser {
       }
       return l;
 
-    
-    
-    
     } else if (this.has("\n")) {
       return;
 
@@ -1151,14 +1148,12 @@ class Parser {
     }
 
     else if (this.has("println")) {
-   
       this.advance();
       const expression = this.parse_boolean_operation();
       if (this.has(';')) {
         this.advance();
       }
       if (this.has('\n')) {
-  
         result.type = NODETYPES.PRINTLN;
         result.value = expression;
         return result;
@@ -1166,14 +1161,12 @@ class Parser {
     }
 
     else if (this.has("return")) {
-
       this.advance();
       const expression = this.parse_boolean_operation();
       if (this.has(';')) {
         this.advance();
       }
       if (this.has('\n')) {
- 
         result.type = NODETYPES.RETURN;
         result.value = expression;
         return result;
@@ -1190,7 +1183,7 @@ class Parser {
       return result;
     }
 
-    else if (this.has_type()) {
+    else if (this.has_type() && this.hasNot_ahead('(')) {
       return this.parse_funcdecl_or_vardecl();
     }
 

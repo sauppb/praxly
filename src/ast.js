@@ -6,6 +6,8 @@ var SCOPES = {};
 const FOR_LOOP_LIMIT = 1000001;
 const WHILE_LOOP_LIMIT = 1001;
 
+const TYPE_NAMES = ["boolean", "char", "short", "int", "float", "double", "String"];
+
 /**
  * this is meant to halt the execution wherever it is at for return statements.
  */
@@ -443,7 +445,6 @@ class Praxly_array_literal {
         this.jsonType = 'Praxly_array';
 
         // set array type to "largest type" of element
-        let types = ["boolean", "char", "short", "int", "float", "double", "String"];
         let max_type = -1;
         for (let i = 0; i < elements.length; i++) {
             let cur_type = types.indexOf(elements[i].realType);
@@ -451,7 +452,7 @@ class Praxly_array_literal {
                 max_type = cur_type;
             }
         }
-        this.realType = types[max_type] + "[]";
+        this.realType = TYPE_NAMES[max_type] + "[]";
     }
 
     evaluate(environment) {
@@ -1233,8 +1234,19 @@ class Praxly_function_call {
         this.json = blockjson;
     }
 
-    //this one was tricky
     evaluate(environment) {
+
+        // type conversion function
+        if (TYPE_NAMES.includes(this.name)) {
+            if (this.args.length !== 1) {
+                throw new PraxlyError("type conversion must have one argument", this.json.line);
+            }
+            let argument = this.args[0].evaluate(environment);
+            // return litNode_new(this.name, argument.value, this.json);
+            return typeCoercion(this.name, argument);
+        }
+
+        // user-defined function
         var func = findFunction(this.name, environment, this.json);
         var functionParams = func.params;
         var functionContents = func.contents;
@@ -1339,7 +1351,7 @@ class Praxly_String_funccall {
                 this.typecheckhelper(endIndex, [TYPES.INT, TYPES.SHORT]);
                 result = str.value.substring(startIndex.value, endIndex.value);
                 return new Praxly_String(result);
-            default: 
+            default:
                 throw new PraxlyError(`unrecognized function name ${this.name} for strings.`, this.blockjson.line);
         }
     }
