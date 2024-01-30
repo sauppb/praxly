@@ -42,6 +42,7 @@ export const workspace = Blockly.inject('blocklyDiv', {
 });
 
 const runButton = document.getElementById('runButton');
+const DebugButton = document.getElementById('DebugButton');
 const shareButton = document.getElementById('share');
 const darkModeButton = document.getElementById('darkMode');
 const helpButton = document.getElementById("help");
@@ -62,11 +63,25 @@ const githubButton = document.getElementById('GitHubButton');
 const BenButton = document.getElementById('AboutButton');
 const titleRefresh = document.getElementById('titleRefresh');
 
+/**
+ * This function will present a coming soon toast. 
+ * This works as a great eventListener for buttons that are not yet implemented.
+ */
+function comingSoon() {
+  const ComingSoonToast = document.getElementById('comingSoon');
+
+  ComingSoonToast.style.display = 'block';
+  setTimeout(function () {
+    ComingSoonToast.style.display = 'none';
+  }, 3000); // Hide the toast after 3 seconds (adjust as needed)
+}
+
 var mainTree = null;
 let darkMode = false;
 let live = true;
 let isResizing = false;
 
+DebugButton.addEventListener('mouseup', comingSoon);
 runButton.addEventListener('mouseup', runTasks);
 darkModeButton.addEventListener('click', () => { darkMode ? setLight() : setDark(); });
 clearOut.addEventListener('click', () => {
