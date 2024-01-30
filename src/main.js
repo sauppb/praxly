@@ -43,6 +43,7 @@ export const workspace = Blockly.inject('blocklyDiv', {
 
 const runButton = document.getElementById('runButton');
 const DebugButton = document.getElementById('DebugButton');
+const stepButton = document.getElementById('stepButton');
 const shareButton = document.getElementById('share');
 const darkModeButton = document.getElementById('darkMode');
 const helpButton = document.getElementById("help");
@@ -82,6 +83,7 @@ let live = true;
 let isResizing = false;
 
 DebugButton.addEventListener('mouseup', comingSoon);
+stepButton.addEventListener('mouseup', comingSoon);
 runButton.addEventListener('mouseup', runTasks);
 darkModeButton.addEventListener('click', () => { darkMode ? setLight() : setDark(); });
 clearOut.addEventListener('click', () => {

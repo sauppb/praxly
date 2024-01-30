@@ -96,6 +96,16 @@ h1 {
   background-color: #8f45f6;
 }
 
+#stepButton {
+  background-color: rgb(139, 153, 6);
+  background-image: url('./images/ladder45.png');
+}
+
+#stepButton:hover {
+  background-image: none;
+  background-color: #adc309;
+}
+
 #runButton:hover {
   background-image: none;
   background-color: #00c800;
