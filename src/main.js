@@ -21,6 +21,7 @@ import { generateUrl, loadFromUrl } from './share';
 // import { readFileSync } from 'fs';
 import { codeText } from './examples';
 import { addBlockErrors, annotationsBuffer, clearErrors, clearOutput, defaultError, errorOutput, printBuffer, textEditor } from './common';
+import { hideDebug, showDebug } from './debugger';
 
 const praxlyGenerator = makeGenerator();
 export const workspace = Blockly.inject('blocklyDiv', {
@@ -40,7 +41,7 @@ export const workspace = Blockly.inject('blocklyDiv', {
   },
   renderer: 'zelos'
 });
-
+const stopButton = document.getElementById('stopButton');
 const runButton = document.getElementById('runButton');
 const DebugButton = document.getElementById('DebugButton');
 const stepButton = document.getElementById('stepButton');
@@ -82,8 +83,14 @@ let darkMode = false;
 let live = true;
 let isResizing = false;
 
-DebugButton.addEventListener('mouseup', comingSoon);
-stepButton.addEventListener('mouseup', comingSoon);
+DebugButton.addEventListener('mouseup', function() {
+  comingSoon();
+  showDebug();
+});
+stopButton.addEventListener('mouseup', function() {
+  comingSoon();
+  hideDebug();
+});
 runButton.addEventListener('mouseup', runTasks);
 darkModeButton.addEventListener('click', () => { darkMode ? setLight() : setDark(); });
 clearOut.addEventListener('click', () => {

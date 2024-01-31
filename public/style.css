@@ -106,6 +106,16 @@ h1 {
   background-color: #adc309;
 }
 
+#stopButton {
+  background-color: rgb(136, 6, 43);
+  background-image: url('./images/stop.png');
+}
+
+#stopButton:hover {
+  background-image: none;
+  background-color: #f30e0e;
+}
+
 #runButton:hover {
   background-image: none;
   background-color: #00c800;
@@ -464,4 +474,13 @@ main {
   border-radius: 5px;
   transform: translateX(-50%);
   z-index: 9999;
+}
+
+
+.debugOptions {
+  display: none;
+}
+
+.debugButton {
+  display: block;
 }

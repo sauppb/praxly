@@ -252,3 +252,6 @@ export const StringFuncs = {
   TOLOWERCSE: "toLowerCase",
   TOUPPERCASE: "toUpperCase"
 }
+
+export const stepButton = document.getElementById('stepButton');
+export let debugMode = false;
