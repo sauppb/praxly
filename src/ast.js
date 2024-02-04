@@ -1,5 +1,5 @@
 
-import { TYPES, OP, NODETYPES, PraxlyError, addToPrintBuffer, defaultError, errorOutput, StringFuncs} from "./common";
+import { TYPES, OP, NODETYPES, PraxlyError, addToPrintBuffer, defaultError, errorOutput, StringFuncs, debugMode, highlightLine} from "./common";
 
 var SCOPES = {};
 
@@ -804,7 +804,6 @@ class Praxly_if_else {
     }
 }
 
-// this might be useless but it is meant to package statements
 class Praxly_statement {
 
     constructor(contents) {
@@ -812,13 +811,10 @@ class Praxly_statement {
     }
 
     evaluate(environment) {
-        try {
-            return this.contents.evaluate(environment);
-        } catch (error) {
-            // addError('error from index ');
-            // console.error('An error occurred: empty statement', error);
-            return;
-        }
+        // if (debugMode){
+        //     highlightLine()
+        // }
+        return this.contents.evaluate(environment);
     }
 }
 
@@ -829,8 +825,8 @@ class Praxly_program {
         this.codeBlock = codeblockk;
     }
 
-    evaluate() {
-        return this.codeBlock.evaluate(SCOPES.global);
+    async evaluate() {
+        return await this.codeBlock.evaluate(SCOPES.global);
     }
 }
 
@@ -849,8 +845,9 @@ class Praxly_codeBlock {
 
         for (let i = 0; i < this.praxly_blocks.length; i++) {
             const element = this.praxly_blocks[i];
-
-
+            // if (debugMode) {
+            //     waitForStep();
+            // }
             element.evaluate(newScope);
         }
         return "Exit_Success";
@@ -859,8 +856,7 @@ class Praxly_codeBlock {
 
 // searches through the linked list to find the nearest match to enable shadowing.
 function accessLocation(environment, json) {
-    // console.error(`looking for ${json.name}`);
-    // console.warn(environment.variableList);
+   
 
     if (environment.variableList.hasOwnProperty(json.name)) {
         return environment.variableList;

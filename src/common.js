@@ -173,7 +173,7 @@ export function appendAnnotation(errorMessage, line) {
  * @param {boolean} debug set this flag to true if this is being used for debugging. (it changes the color to green)
  * @returns the marker id associated with the marker. This should not be needed.
  */
-function highlightLine(line, debug = false) {
+export function highlightLine(line, debug = false) {
   var session = textEditor.session;
 
   // var errorRange = indextoAceRange(line - 1);

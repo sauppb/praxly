@@ -6,8 +6,8 @@ import { toolbox } from './toolbox';
 // import {textEditor } from './lexer-parser';
 import { tree2text } from './tree2text';
 import { definePraxlyBlocks } from './newBlocks';
-import { makeGenerator } from './generators';
-import { blocks2tree } from './generators';
+import { makeGenerator } from './blocks2tree';
+import { blocks2tree } from './blocks2tree';
 import { createExecutable } from './ast';
 
 // import ace from 'ace-builds';
@@ -15,7 +15,7 @@ import "ace-builds/src-min-noconflict/theme-twilight";
 import "ace-builds/src-min-noconflict/theme-katzenmilch";
 import { tree2blocks } from './tree2blocks';
 // import { errorOutput } from './lexer-parser';
-import { text2tree } from './lexer-parser';
+import { text2tree } from './text2tree';
 import { generateUrl, loadFromUrl } from './share';
 
 // import { readFileSync } from 'fs';
@@ -86,12 +86,12 @@ let isResizing = false;
 DebugButton.addEventListener('mouseup', function() {
   comingSoon();
   showDebug();
-  // debugMode = true;
+  debugMode = true;
 });
 stopButton.addEventListener('mouseup', function() {
   comingSoon();
   hideDebug();
-  // debugMode = false;
+  debugMode = false;
 });
 
 runButton.addEventListener('mouseup', runTasks);

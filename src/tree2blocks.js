@@ -323,7 +323,7 @@ export const tree2blocks = (workspace, blockjson) => {
             //gohere
             try {
                 var initialization = tree2blocks(workspace, blockjson?.initialization);
-                console.error(initialization?.type);
+                // console.error(initialization?.type);
                 if (!initialization || initialization.type !== 'praxly_statement_block'){
                     initialization.dispose();
                     var initialization = workspace.newBlock('praxly_assignment_expression_block');
