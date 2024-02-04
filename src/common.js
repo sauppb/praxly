@@ -82,32 +82,7 @@ export const NODETYPES = {
     SPECIAL_STRING_FUNCCALL:        "SPECIAL_STRING_FUNCCALL"
 }
 
-// export const NODETYPES = {
-//   ...OP,
-//   ...TYPES,
-//   PRINT:                          "print",
-//   PRINTLN:                        "println",
-//   CODEBLOCK:                      "codeblock",
-//   PROGRAM:                        "program",
-//   STATEMENT:                      "statement",
-//   IF:                             "if",
-//   IF_ELSE:                        "if_else",
-//   VARDECL:                        "vardecl",
-//   ARRAY_ASSIGNMENT:               "array_assignment",
-//   LOCATION:                       "location",
-//   FOR:                            "for",
-//   WHILE:                          "while",
-//   DO_WHILE:                       "do_while",
-//   REPEAT_UNTIL:                   "repeat_until",
-//   COMMENT:                        "comment",
-//   SINGLE_LINE_COMMENT:            "single_line_comment",
-//   FUNCDECL:                       "funcdecl",
-//   FUNCCALL:                       "function_call",
-//   RETURN:                         "return",
-//   ARRAY_LITERAL:                  "array_literal",
-//   ARRAY_REFERENCE:                "array_reference",
-//   ARRAY_REFERENCE_ASSIGNMENT:     "array_reference_assignment", // remove?
-// }
+
 
 export class PraxlyError extends Error {
   constructor(message, line) {
@@ -205,12 +180,13 @@ function highlightLine(line, debug = false) {
   var Range = ace.require('ace/range').Range;
   var errorRange = new Range(line, 0, line - 1, 1);
   var markerId = session.addMarker(errorRange, 'error-marker', 'fullLine');
+  var color = debug? `rgba(255, 255, 0, 0.2)` : `rgba(255, 0, 0, 0.2)`;
 
   var markerCss = `
       .error-marker {
         position: absolute;
         z-index: 1;
-        background-color: rgba(255, 0, 0, 0.2);
+        background-color: ${color};
         border-bottom: 2px solid red;
       }
     `;

@@ -20,7 +20,7 @@ import { generateUrl, loadFromUrl } from './share';
 
 // import { readFileSync } from 'fs';
 import { codeText } from './examples';
-import { addBlockErrors, annotationsBuffer, clearErrors, clearOutput, defaultError, errorOutput, printBuffer, textEditor } from './common';
+import { addBlockErrors, annotationsBuffer, clearErrors, clearOutput, debugMode, defaultError, errorOutput, printBuffer, textEditor } from './common';
 import { hideDebug, showDebug } from './debugger';
 
 const praxlyGenerator = makeGenerator();
@@ -86,11 +86,14 @@ let isResizing = false;
 DebugButton.addEventListener('mouseup', function() {
   comingSoon();
   showDebug();
+  // debugMode = true;
 });
 stopButton.addEventListener('mouseup', function() {
   comingSoon();
   hideDebug();
+  // debugMode = false;
 });
+
 runButton.addEventListener('mouseup', runTasks);
 darkModeButton.addEventListener('click', () => { darkMode ? setLight() : setDark(); });
 clearOut.addEventListener('click', () => {

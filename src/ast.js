@@ -6,8 +6,6 @@ var SCOPES = {};
 const FOR_LOOP_LIMIT = 1000001;
 const WHILE_LOOP_LIMIT = 1001;
 
-const TYPE_NAMES = ["boolean", "char", "short", "int", "float", "double", "String"];
-
 /**
  * this is meant to halt the execution wherever it is at for return statements.
  */
@@ -445,6 +443,7 @@ class Praxly_array_literal {
         this.jsonType = 'Praxly_array';
 
         // set array type to "largest type" of element
+        let types = ["boolean", "char", "short", "int", "float", "double", "String"];
         let max_type = -1;
         for (let i = 0; i < elements.length; i++) {
             let cur_type = types.indexOf(elements[i].realType);
@@ -452,7 +451,7 @@ class Praxly_array_literal {
                 max_type = cur_type;
             }
         }
-        this.realType = TYPE_NAMES[max_type] + "[]";
+        this.realType = types[max_type] + "[]";
     }
 
     evaluate(environment) {
@@ -530,13 +529,11 @@ class Praxly_return {
     constructor(value, blockjson) {
         this.json = blockjson;
         this.expression = value;
-        this.isreturn = true;
+        // this.isreturn = true;
     }
 
     evaluate(environment) {
-        // console.log(this.expression.evaluate(environment));
         throw new ReturnException(this.expression.evaluate(environment));
-        // return this.expression.evaluate(environment);
     }
 }
 
@@ -853,13 +850,8 @@ class Praxly_codeBlock {
         for (let i = 0; i < this.praxly_blocks.length; i++) {
             const element = this.praxly_blocks[i];
 
-            //aborts if it detects a return statement. Hopefully this doesn't cause problems later ahaha
-            if (element?.isreturn) {
-                return element.evaluate(newScope);
-            } else {
-                // console.error(element);
-                element.evaluate(newScope);
-            }
+
+            element.evaluate(newScope);
         }
         return "Exit_Success";
     }
@@ -1234,19 +1226,8 @@ class Praxly_function_call {
         this.json = blockjson;
     }
 
+    //this one was tricky
     evaluate(environment) {
-
-        // type conversion function
-        if (TYPE_NAMES.includes(this.name)) {
-            if (this.args.length !== 1) {
-                throw new PraxlyError("type conversion must have one argument", this.json.line);
-            }
-            let argument = this.args[0].evaluate(environment);
-            // return litNode_new(this.name, argument.value, this.json);
-            return typeCoercion(this.name, argument);
-        }
-
-        // user-defined function
         var func = findFunction(this.name, environment, this.json);
         var functionParams = func.params;
         var functionContents = func.contents;
@@ -1331,12 +1312,12 @@ class Praxly_String_funccall {
             case StringFuncs.CONTAINS:
                 var char = this.args[0].evaluate(environment);
                 this.typecheckhelper(char, [TYPES.STRING, TYPES.CHAR]);
-                result = str.value.includes(char.value);
+                result = str.includes(char.value)
                 return new Praxly_boolean(result);
             case StringFuncs.INDEXOF:
-                var pattern = this.args[0].evaluate(environment);
-                this.typecheckhelper(pattern, [TYPES.CHAR, TYPES.STRING]);
-                result = str.value.indexOf(pattern.value);
+                var index = this.args[0].evaluate(environment);
+                this.typecheckhelper(char, [TYPES.CHAR]);
+                result = str.value.indexOf(index.value);
                 return new Praxly_int(result);
             case StringFuncs.LENGTH:
                 return new Praxly_int(str.value.length);
@@ -1351,7 +1332,7 @@ class Praxly_String_funccall {
                 this.typecheckhelper(endIndex, [TYPES.INT, TYPES.SHORT]);
                 result = str.value.substring(startIndex.value, endIndex.value);
                 return new Praxly_String(result);
-            default:
+            default: 
                 throw new PraxlyError(`unrecognized function name ${this.name} for strings.`, this.blockjson.line);
         }
     }
