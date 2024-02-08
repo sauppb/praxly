@@ -1,6 +1,7 @@
 
 import { TYPES, OP, NODETYPES, PraxlyError, addToPrintBuffer, defaultError, errorOutput, StringFuncs, debugMode, highlightLine} from "./common";
 
+
 var SCOPES = {};
 
 const FOR_LOOP_LIMIT = 1000001;
@@ -17,98 +18,100 @@ class ReturnException extends Error {
     }
 }
 
-export const createExecutable = (blockjson) => {
-    // console.error(blockjson.type);
-    if (typeof blockjson === 'undefined' || typeof blockjson.type === 'undefined') {
+/**
+ * This function will take the AST and creates an executable version of the tree. 
+ * @param {*} tree  the abstract Syntax tree Intermediate Representation.
+ * @returns 
+ */
+export function createExecutable(tree){
+    if (typeof tree === 'undefined' || typeof tree.type === 'undefined') {
         if (errorOutput.length === 0) {
             defaultError("invalid program.");
         }
-        // console.error(blockjson);
-        return new Praxly_invalid(blockjson);
+        return new Praxly_invalid(tree);
     }
 
-    // console.warn(blockjson.type);
-    switch (blockjson.type) {
+    switch (tree.type) {
 
         case TYPES.INT:
-            return new Praxly_int(blockjson.value, blockjson);
+            return new Praxly_int(tree.value, tree);
 
         case TYPES.STRING:
-            return new Praxly_String(blockjson.value, blockjson);
+            return new Praxly_String(tree.value, tree);
 
         case TYPES.CHAR:
-            return new Praxly_char(blockjson.value, blockjson);
+            return new Praxly_char(tree.value, tree);
 
         case TYPES.BOOLEAN:
-            return new Praxly_boolean(blockjson.value, blockjson);
+            return new Praxly_boolean(tree.value, tree);
 
         case TYPES.DOUBLE:
-            return new Praxly_double(blockjson.value, blockjson);
+            return new Praxly_double(tree.value, tree);
 
         case TYPES.NULL:
-            return new Praxly_null(blockjson.value, blockjson);
+            return new Praxly_null(tree.value, tree);
 
         case NODETYPES.ADDITION:
-            return new Praxly_addition(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
+            return new Praxly_addition(createExecutable(tree.left), createExecutable(tree.right), tree);
 
         case NODETYPES.SUBTRACTION:
-            return new Praxly_subtraction(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
+            return new Praxly_subtraction(createExecutable(tree.left), createExecutable(tree.right), tree);
 
         case NODETYPES.MULTIPLICATION:
-            return new Praxly_multiplication(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
+            return new Praxly_multiplication(createExecutable(tree.left), createExecutable(tree.right), tree);
 
         case NODETYPES.DIVISION:
-            return new Praxly_division(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
+            return new Praxly_division(createExecutable(tree.left), createExecutable(tree.right), tree);
 
         case NODETYPES.EXPONENTIATION:
-            return new Praxly_exponent(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
+            return new Praxly_exponent(createExecutable(tree.left), createExecutable(tree.right), tree);
 
         case NODETYPES.MODULUS:
-            return new Praxly_modulo(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
+            return new Praxly_modulo(createExecutable(tree.left), createExecutable(tree.right), tree);
 
         case NODETYPES.AND:
-            return new Praxly_and(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
+            return new Praxly_and(createExecutable(tree.left), createExecutable(tree.right), tree);
 
         case NODETYPES.OR:
-            return new Praxly_or(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
+            return new Praxly_or(createExecutable(tree.left), createExecutable(tree.right), tree);
 
         case NODETYPES.EQUALITY:
-            return new Praxly_equals(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
+            return new Praxly_equals(createExecutable(tree.left), createExecutable(tree.right), tree);
 
         case NODETYPES.LESS_THAN_OR_EQUAL:
-            return new Praxly_less_than_equal(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
+            return new Praxly_less_than_equal(createExecutable(tree.left), createExecutable(tree.right), tree);
 
         case NODETYPES.GREATER_THAN_OR_EQUAL:
-            return new Praxly_greater_than_equal(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
+            return new Praxly_greater_than_equal(createExecutable(tree.left), createExecutable(tree.right), tree);
 
         case NODETYPES.GREATER_THAN:
-            return new Praxly_greater_than(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
+            return new Praxly_greater_than(createExecutable(tree.left), createExecutable(tree.right), tree);
 
         case NODETYPES.LESS_THAN:
-            return new Praxly_less_than(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
+            return new Praxly_less_than(createExecutable(tree.left), createExecutable(tree.right), tree);
 
         case NODETYPES.INEQUALITY:
-            return new Praxly_not_equals(createExecutable(blockjson.left), createExecutable(blockjson.right), blockjson);
+            return new Praxly_not_equals(createExecutable(tree.left), createExecutable(tree.right), tree);
 
         case NODETYPES.PRINT:
-            return new Praxly_print(createExecutable(blockjson.value), blockjson);
+            return new Praxly_print(createExecutable(tree.value), tree);
 
         case NODETYPES.PRINTLN:
-            return new Praxly_println(createExecutable(blockjson.value), blockjson);
+            return new Praxly_println(createExecutable(tree.value), tree);
 
         case NODETYPES.INPUT:
-            return new Praxly_input(blockjson);
+            return new Praxly_input(tree);
 
         case NODETYPES.SPECIAL_STRING_FUNCCALL:
             var args = [];
             // console.error(blockjson.right);
-            blockjson.right.args.forEach((arg) => {
+            tree.right.args.forEach((arg) => {
                 args.push(createExecutable(arg));
             });
-            return new Praxly_String_funccall(blockjson, createExecutable(blockjson.left), blockjson.right.name, args);
+            return new Praxly_String_funccall(tree, createExecutable(tree.left), tree.right.name, args);
 
         case NODETYPES.CODEBLOCK:
-            let statements = blockjson.statements;
+            let statements = tree.statements;
             let result = statements.map((statement) => {
                 // console.error(statement);
                 return createExecutable(statement);
@@ -124,14 +127,14 @@ export const createExecutable = (blockjson) => {
                     functionList: {},
                 }
             };
-            return new Praxly_program(createExecutable(blockjson.value));
+            return new Praxly_program(createExecutable(tree.value));
 
         case NODETYPES.STATEMENT:
-            return new Praxly_statement(createExecutable(blockjson.value), blockjson);
+            return new Praxly_statement(createExecutable(tree.value), tree);
 
         case NODETYPES.IF:
             try {
-                return new Praxly_if(createExecutable(blockjson.condition), createExecutable(blockjson.statement), blockjson);
+                return new Praxly_if(createExecutable(tree.condition), createExecutable(tree.statement), tree);
             }
             catch (error) {
                 // console.error('An error occurred: empty statement', error);
@@ -140,7 +143,7 @@ export const createExecutable = (blockjson) => {
 
         case NODETYPES.IF_ELSE:
             try {
-                return new Praxly_if_else(createExecutable(blockjson.condition), createExecutable(blockjson.statement), createExecutable(blockjson.alternative), blockjson);
+                return new Praxly_if_else(createExecutable(tree.condition), createExecutable(tree.statement), createExecutable(tree.alternative), tree);
             }
             catch (error) {
                 // console.error('An error occurred: empty statement', error);
@@ -149,7 +152,7 @@ export const createExecutable = (blockjson) => {
 
         case NODETYPES.ASSIGNMENT:
             try {
-                return new Praxly_assignment(blockjson, createExecutable(blockjson.location), createExecutable(blockjson.value), blockjson);
+                return new Praxly_assignment(tree, createExecutable(tree.location), createExecutable(tree.value), tree);
             }
             catch (error) {
                 console.error('assignment error: ', error);
@@ -157,16 +160,16 @@ export const createExecutable = (blockjson) => {
             }
 
         case NODETYPES.VARDECL:
-            var location = createExecutable(blockjson.location);
-            if (blockjson.value !== undefined) {
-                return new Praxly_vardecl(blockjson, location, createExecutable(blockjson.value));
+            var location = createExecutable(tree.location);
+            if (tree.value !== undefined) {
+                return new Praxly_vardecl(tree, location, createExecutable(tree.value));
             } else {
-                return new Praxly_vardecl(blockjson, location, undefined);
+                return new Praxly_vardecl(tree, location, undefined);
             }
 
         case NODETYPES.ARRAY_ASSIGNMENT:
             try {
-                return new Praxly_array_assignment(blockjson, createExecutable(blockjson.location), createExecutable(blockjson.value));
+                return new Praxly_array_assignment(tree, createExecutable(tree.location), createExecutable(tree.value));
             }
             catch (error) {
                 console.error('assignment error: ', error);
@@ -176,10 +179,10 @@ export const createExecutable = (blockjson) => {
         case NODETYPES.LOCATION:
             try {
                 var index = null;
-                if (blockjson.isArray) {
-                    index = createExecutable(blockjson.index);
+                if (tree.isArray) {
+                    index = createExecutable(tree.index);
                 }
-                return new Praxly_Location(blockjson, index);
+                return new Praxly_Location(tree, index);
             }
             catch (error) {
                 // console.error('assignment error: ', error);
@@ -188,11 +191,11 @@ export const createExecutable = (blockjson) => {
 
         case NODETYPES.FOR:
             try {
-                var initialization = createExecutable(blockjson.initialization);
-                var condition = createExecutable(blockjson.condition);
-                var incrementation = createExecutable(blockjson.increment);
-                var statement = createExecutable(blockjson.statement);
-                return new Praxly_for(initialization, condition, incrementation, statement, blockjson);
+                var initialization = createExecutable(tree.initialization);
+                var condition = createExecutable(tree.condition);
+                var incrementation = createExecutable(tree.increment);
+                var statement = createExecutable(tree.statement);
+                return new Praxly_for(initialization, condition, incrementation, statement, tree);
             }
             catch (error) {
                 console.error(error);
@@ -201,9 +204,9 @@ export const createExecutable = (blockjson) => {
 
         case NODETYPES.WHILE:
             try {
-                var condition = createExecutable(blockjson.condition);
-                var statement = createExecutable(blockjson.statement);
-                return new Praxly_while(condition, statement, blockjson);
+                var condition = createExecutable(tree.condition);
+                var statement = createExecutable(tree.statement);
+                return new Praxly_while(condition, statement, tree);
             }
             catch (error) {
                 console.error(error);
@@ -212,9 +215,9 @@ export const createExecutable = (blockjson) => {
 
         case NODETYPES.DO_WHILE:
             try {
-                var condition = createExecutable(blockjson.condition);
-                var statement = createExecutable(blockjson.statement);
-                return new Praxly_do_while(condition, statement, blockjson);
+                var condition = createExecutable(tree.condition);
+                var statement = createExecutable(tree.statement);
+                return new Praxly_do_while(condition, statement, tree);
             }
             catch (error) {
                 console.error('An error occurred: empty statement', error);
@@ -223,9 +226,9 @@ export const createExecutable = (blockjson) => {
 
         case NODETYPES.REPEAT_UNTIL:
             try {
-                var condition = createExecutable(blockjson.condition);
-                var statement = createExecutable(blockjson.statement);
-                return new Praxly_repeat_until(condition, statement, blockjson);
+                var condition = createExecutable(tree.condition);
+                var statement = createExecutable(tree.statement);
+                return new Praxly_repeat_until(condition, statement, tree);
             }
             catch (error) {
                 console.error('An error occurred: empty statement', error);
@@ -233,55 +236,55 @@ export const createExecutable = (blockjson) => {
             }
 
         case NODETYPES.NOT:
-            return new Praxly_not(createExecutable(blockjson.value), blockjson);
+            return new Praxly_not(createExecutable(tree.value), tree);
 
         case NODETYPES.NEGATE:
-            return new Praxly_negate(createExecutable(blockjson.value), blockjson);
+            return new Praxly_negate(createExecutable(tree.value), tree);
 
         case NODETYPES.COMMENT:
-            return new Praxly_comment(blockjson.value, blockjson);
+            return new Praxly_comment(tree.value, tree);
 
         case NODETYPES.SINGLE_LINE_COMMENT:
-            return new Praxly_single_line_comment(blockjson.value, blockjson);
+            return new Praxly_single_line_comment(tree.value, tree);
 
         case NODETYPES.FUNCDECL:
-            var contents = createExecutable(blockjson.contents);
-            return new Praxly_function_declaration(blockjson.returnType, blockjson.name, blockjson.params, contents, blockjson);
+            var contents = createExecutable(tree.contents);
+            return new Praxly_function_declaration(tree.returnType, tree.name, tree.params, contents, tree);
 
         case NODETYPES.FUNCCALL:
             var args = [];
-            blockjson.args.forEach((arg) => {
+            tree.args.forEach((arg) => {
                 args.push(createExecutable(arg));
             });
-            return new Praxly_function_call(blockjson.name, args, blockjson);
+            return new Praxly_function_call(tree.name, args, tree);
 
         case NODETYPES.RETURN:
-            return new Praxly_return(createExecutable(blockjson.value), blockjson);
+            return new Praxly_return(createExecutable(tree.value), tree);
 
         case NODETYPES.ARRAY_LITERAL:
             var args = [];
-            blockjson.params.forEach((arg) => {
+            tree.params.forEach((arg) => {
                 args.push(createExecutable(arg));
             });
-            return new Praxly_array_literal(args, blockjson);
+            return new Praxly_array_literal(args, tree);
 
         case NODETYPES.ARRAY_REFERENCE:
             // console.error(createExecutable(blockjson.index));
-            return new Praxly_array_reference(blockjson.name, createExecutable(blockjson.index), blockjson);
+            return new Praxly_array_reference(tree.name, createExecutable(tree.index), tree);
 
         //gohere
 
         case NODETYPES.ARRAY_REFERENCE_ASSIGNMENT:
-            return new Praxly_array_reference_assignment(blockjson.name, createExecutable(blockjson.index), createExecutable(blockjson.value), blockjson);
+            return new Praxly_array_reference_assignment(tree.name, createExecutable(tree.index), createExecutable(tree.value), tree);
 
         case 'INVALID':
-            return new Praxly_invalid(blockjson);
+            return new Praxly_invalid(tree);
 
         case 'EMPTYLINE':
-            return new Praxly_emptyLine(blockjson);
+            return new Praxly_emptyLine(tree);
 
         default:
-            console.error(`I don't recognize this type: ${blockjson.type}}`);
+            console.error(`I don't recognize this type: ${tree.type}}`);
     }
 }
 
@@ -806,13 +809,14 @@ class Praxly_if_else {
 
 class Praxly_statement {
 
-    constructor(contents) {
+    constructor(contents, blockjson) {
         this.contents = contents;
+        this.json = blockjson;
     }
 
     evaluate(environment) {
         // if (debugMode){
-        //     highlightLine()
+        //     highlightLine(this.json.line, true);
         // }
         return this.contents.evaluate(environment);
     }

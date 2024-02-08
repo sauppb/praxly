@@ -97,13 +97,23 @@ h1 {
 }
 
 #stepButton {
-  background-color: rgb(139, 153, 6);
+  background-color: rgb(10, 239, 147);
   background-image: url('./images/ladder45.png');
 }
 
 #stepButton:hover {
   background-image: none;
-  background-color: #adc309;
+  background-color: #74a25f;
+}
+
+#stepIntoButton {
+  background-color: rgb(196, 217, 8);
+  background-image: url('./images/magnify_36.png');
+}
+
+#stepIntoButton:hover {
+  background-image: none;
+  background-color: #a8ba25;
 }
 
 #stopButton {

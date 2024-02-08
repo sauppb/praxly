@@ -3,6 +3,7 @@ import 'ace-builds/src-min-noconflict/mode-java.js';
 
 // this is going to be the place where all shared enums and constants.
 
+
 /**
  * this is the 'enum' that I use when I refer to types.
  */
@@ -214,9 +215,7 @@ export const indextoAceRange = (line) => {
   return new Range(line, 0, line, 1);
 };
 
-// ace.config.set('basePath', './node_modules/ace-builds/src-min-noconflict');
-// ace.config.set('basePath', 'https://cdnjs.cloudflare.com/ajax/libs/ace/1.5.1');
-export const textEditor = ace.edit("aceCode", { fontSize: 19, mode: 'ace/mode/java' });
+
 
 
 export const StringFuncs = {
@@ -231,3 +230,4 @@ export const StringFuncs = {
 
 export const stepButton = document.getElementById('stepButton');
 export let debugMode = false;
+export const textEditor = ace.edit("aceCode", { fontSize: 19, mode: 'ace/mode/java' });

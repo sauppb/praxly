@@ -6,30 +6,26 @@ import { MAX_LOOP, NODETYPES, TYPES, textEditor, textError } from './common';
  */
 export function text2tree() {
   let code = textEditor?.getValue();
-
-  // console.log(code);
   let lexer = new Lexer(code);
   let ir;
-  try {
-    let tokens = lexer.lex();
+  let tokens = lexer.lex();
     // console.info('here are the tokens:');
     // console.debug(tokens);
-    let parser = new Parser(tokens);
-    ir = parser?.parse();
+  let parser = new Parser(tokens);
+  ir = parser?.parse();
     // console.info('here is the tree:');
     // console.log(ir);
-  }
-  catch (error) {
-    console.log(error);
-  }
   return ir;
 }
 
+/**
+ * This is the object that I use to tokenize the input to prepare it for parsing. 
+ */
 class Token {
   constructor(type, text, line) {
     this.token_type = type;
     this.value = text;
-    this.line = line
+    this.line = line;
   }
 }
 
@@ -49,6 +45,9 @@ class Lexer {
     this.currentLine = 1;
   }
 
+  /**
+   * This is a utility function for debugging the lexer to make sure that it works correctly. 
+   */
   printTokens() {
     for (let tok of this.tokens) {
       console.log(`Token: ${tok.token_type}, Value: ${tok.value}`);
@@ -74,10 +73,6 @@ class Lexer {
 
   has_ahead(c) {
     return this.i < this.length && this.source[this.i + 1] === c;
-  }
-
-  has_ahead_ahead(c) {
-    return this.i < this.length && this.source[this.i + 2] === c;
   }
 
   hasNot_ahead(c) {
@@ -113,6 +108,10 @@ class Lexer {
     this.startToken = this.i;
   }
 
+  /**
+   * This function will take all of the text and it will convert it into tokens
+   * @returns an array of Token objects
+   */
   lex() {
     while (this.i < this.length) {
 
@@ -290,9 +289,6 @@ class Lexer {
         else if (this.types.includes(this.token_so_far)) {
           this.emit_token('Type');
         }
-        // else if (this.has('(') || this.has_ahead(')')){
-        //   this.emit_token('function');
-        // }
         else {
           if (this.token_so_far !== '') {
             this.emit_token("Location");
@@ -365,7 +361,6 @@ class Parser {
     this.statements = [];
     this.tokens = tokens;
     this.i = 0;
-    this.j = 0;
     this.length = tokens?.length;
     this.eof = false;
     this.keywords = ["if", "else", "then", "done"];
