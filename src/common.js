@@ -80,7 +80,8 @@ export const NODETYPES = {
     ARRAY_LITERAL:                  "ARRAY_LITERAL",
     ARRAY_REFERENCE:                "ARRAY_REFERENCE",
     ARRAY_REFERENCE_ASSIGNMENT:     "ARRAY_REFERENCE_ASSIGNMENT", // remove?
-    SPECIAL_STRING_FUNCCALL:        "SPECIAL_STRING_FUNCCALL"
+    SPECIAL_STRING_FUNCCALL:        "SPECIAL_STRING_FUNCCALL",
+    NEWLINE:                        "NEWLINE",
 }
 
 
@@ -210,12 +211,15 @@ export function highlightLine(line, debug = false) {
   return markerId;
 }
 
-export const indextoAceRange = (line) => {
+export const lineToAceRange = (line) => {
   var Range = ace.require('ace/range').Range;
   return new Range(line, 0, line, 1);
 };
 
-
+export function indexToAceRange (startIndex, endIndex){
+  var Range = ace.require('ace/range').Range;
+  return new Range(startIndex[0], startIndex[1], endIndex[0], endIndex[1]);
+};
 
 
 export const StringFuncs = {
@@ -228,6 +232,14 @@ export const StringFuncs = {
   TOUPPERCASE: "toUpperCase"
 }
 
-export const stepButton = document.getElementById('stepButton');
+
 export let debugMode = false;
+export let steppingIn = false;
 export const textEditor = ace.edit("aceCode", { fontSize: 19, mode: 'ace/mode/java' });
+
+export let stepInto = false;
+
+export const DebugButton = document.getElementById('DebugButton');
+export const stepButton = document.getElementById('stepButton');
+export const stopButton = document.getElementById('stopButton');
+export const stepIntoButton = document.getElementById('stepIntoButton');

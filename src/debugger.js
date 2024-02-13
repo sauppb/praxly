@@ -1,4 +1,4 @@
-import { stepButton } from "./common";
+import { DebugButton, debugMode, stepButton, stepInto, stepIntoButton, stopButton } from "./common";
 
 
 export function showDebug() {
@@ -13,16 +13,35 @@ export function showDebug() {
 
 export function hideDebug() {
   let debugOptions = document.querySelectorAll('.debugOptions');
-  let debugButton = document.getElementById('debug');
+  let debug = document.getElementById('debug');
   for(let button of debugOptions){
           button.style.display = 'none';
   }
-  debugButton.style.display = 'block';
+  debug.style.display = 'block';
 
 }
 
 
-const mode = 'slow';
+DebugButton.addEventListener('mouseup', function() {
+  comingSoon();
+  showDebug();
+  debugMode = true;
+});
+stopButton.addEventListener('mouseup', function() {
+  comingSoon();
+  hideDebug();
+  debugMode = false;
+});
+
+stepIntoButton.addEventListener('mouseup', function() {
+  comingSoon();
+  debugMode = true;
+  stepInto = true;
+});
+stepButton.addEventListener('mouseup', function() {
+  comingSoon();
+  debugMode = true;
+});
 
 /**
  * this is a function that Dr. Johnson made to show me how promises worked. 
@@ -37,9 +56,27 @@ export function waitForStep() {
     });
   }
   
+
+
   export function waitForTimer() {
     return new Promise(resolve => {
       setTimeout(resolve, 3000);
     });
   }
+
+
+
+/**
+ * This function will present a coming soon toast. 
+ * This works as a great eventListener for buttons that are not yet implemented.
+ */
+function comingSoon() {
+  const ComingSoonToast = document.getElementById('comingSoon');
+
+  ComingSoonToast.style.display = 'block';
+  setTimeout(function () {
+    ComingSoonToast.style.display = 'none';
+  }, 3000); // Hide the toast after 3 seconds (adjust as needed)
+}
+
 

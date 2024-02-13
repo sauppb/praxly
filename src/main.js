@@ -41,10 +41,8 @@ export const workspace = Blockly.inject('blocklyDiv', {
   },
   renderer: 'zelos'
 });
-const stopButton = document.getElementById('stopButton');
 const runButton = document.getElementById('runButton');
-const DebugButton = document.getElementById('DebugButton');
-const stepButton = document.getElementById('stepButton');
+
 const shareButton = document.getElementById('share');
 const darkModeButton = document.getElementById('darkMode');
 const helpButton = document.getElementById("help");
@@ -65,34 +63,13 @@ const githubButton = document.getElementById('GitHubButton');
 const BenButton = document.getElementById('AboutButton');
 const titleRefresh = document.getElementById('titleRefresh');
 
-/**
- * This function will present a coming soon toast. 
- * This works as a great eventListener for buttons that are not yet implemented.
- */
-function comingSoon() {
-  const ComingSoonToast = document.getElementById('comingSoon');
-
-  ComingSoonToast.style.display = 'block';
-  setTimeout(function () {
-    ComingSoonToast.style.display = 'none';
-  }, 3000); // Hide the toast after 3 seconds (adjust as needed)
-}
 
 var mainTree = null;
 let darkMode = false;
 let live = true;
 let isResizing = false;
 
-DebugButton.addEventListener('mouseup', function() {
-  comingSoon();
-  showDebug();
-  debugMode = true;
-});
-stopButton.addEventListener('mouseup', function() {
-  comingSoon();
-  hideDebug();
-  debugMode = false;
-});
+
 
 runButton.addEventListener('mouseup', runTasks);
 darkModeButton.addEventListener('click', () => { darkMode ? setLight() : setDark(); });
@@ -193,7 +170,7 @@ window.onclick = function (event) {
 /**
  * this function gets called every time the run button is pressed.
  */
-function runTasks() {
+async function runTasks() {
   console.log(mainTree);
   if (!textEditor.getValue().trim()) {
     alert('there is nothing to run :( \n try typing some code or dragging some blocks first.');
@@ -201,7 +178,7 @@ function runTasks() {
   }
   const executable = createExecutable(mainTree);
   try {
-    executable.evaluate();
+    await executable.evaluate();
   } catch (error) {
     // if not previously handled (by PraxlyError)
     if (!errorOutput) {
@@ -209,6 +186,7 @@ function runTasks() {
       console.error(error.message);
     }
   }
+  console.error(printBuffer);
   stdOut.innerHTML = printBuffer;
   stdErr.innerHTML = errorOutput;
   if (errorOutput) {

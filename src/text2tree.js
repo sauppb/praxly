@@ -1,4 +1,4 @@
-import { MAX_LOOP, NODETYPES, TYPES, textEditor, textError } from './common';
+import { MAX_LOOP, NODETYPES, OP, TYPES, indexToAceRange, textEditor, textError } from './common';
 
 /**
  * this will take all of the text currently in the editor and generate the corresponding Intermediate Representation .
@@ -6,15 +6,14 @@ import { MAX_LOOP, NODETYPES, TYPES, textEditor, textError } from './common';
  */
 export function text2tree() {
   let code = textEditor?.getValue();
+  code = code.replace(/\t/g, "    ");
   let lexer = new Lexer(code);
   let ir;
   let tokens = lexer.lex();
-    // console.info('here are the tokens:');
-    // console.debug(tokens);
+    console.info('here are the tokens:');
+    console.debug(tokens);
   let parser = new Parser(tokens);
   ir = parser?.parse();
-    // console.info('here is the tree:');
-    // console.log(ir);
   return ir;
 }
 
@@ -22,12 +21,15 @@ export function text2tree() {
  * This is the object that I use to tokenize the input to prepare it for parsing. 
  */
 class Token {
-  constructor(type, text, line) {
+  constructor(type, text, line, startIndex, endIndex) {
     this.token_type = type;
     this.value = text;
     this.line = line;
+    this.startIndex = startIndex;
+    this.endIndex = endIndex;
   }
 }
+
 
 class Lexer {
   constructor(source) {
@@ -37,26 +39,51 @@ class Lexer {
     this.source = source;
     this.tokens = [];
     this.i = 0;
+    this.index_before_this_line = 0;
     this.length = this.source?.length;
     this.token_so_far = "";
-    this.keywords = ["if", "else", "end", "print", "println", "input", "for", "while", 'and', 'or', 'do', 'repeat', 'until', 'not', 'return', 'null'];
+    this.multi_Char_symbols = ['>', '<', '=', '!', '-'];
+    this.symbols = [",", ";", "(", ")", "{", "}", "[", "]", ".", "+", "/", "*",  "%", "^", "≠", , "←", "⟵",  "≥", "≤"];
+    this.keywords = ["if", "else", "end", "print", "println", "input", "for", "while", 'and', 'or', 'do', 'repeat',
+     'until', 'not', 'return', 'null'];
     this.types = ['int', 'double', 'String', 'char', 'float', 'boolean', 'short', 'void'];
-    this.startToken = 0;
+    this.startToken = [this.currentLine, 0];
     this.currentLine = 1;
-  }
-
-  /**
-   * This is a utility function for debugging the lexer to make sure that it works correctly. 
-   */
-  printTokens() {
-    for (let tok of this.tokens) {
-      console.log(`Token: ${tok.token_type}, Value: ${tok.value}`);
-    }
   }
 
   has_letter() {
     const a = this.source[this.i];
     return /^[A-Za-z_]$/.test(a);
+  }
+
+  has_valid_symbol(){
+    return this.i < this.length && this.symbols.includes(this.source[this.i]); 
+  }
+
+  has_multi_char_symbol(){
+    return this.i < this.length && this.multi_Char_symbols.includes(this.source[this.i]); 
+  }
+
+  has_keyword(){
+    return this.i < this.length && this.keywords.includes(this.token_so_far); 
+  }
+
+  has_boolean() {
+    return this.i < this.length && (this.token_so_far === 'true' || this.token_so_far === 'false');
+  }
+
+  
+  has_type() {
+    return this.i < this.length && this.types.includes(this.token_so_far);
+  }
+
+  has_short_comment(){
+    return this.has('/') && this.has_ahead('/');
+
+  }
+
+  has_long_comment() {
+    return this.has('/') && this.has_ahead('*');
   }
 
   has(c) {
@@ -67,9 +94,6 @@ class Lexer {
     return this.i < this.length && this.source[this.i] !== c;
   }
 
-  has_type() {
-    return this.i < this.length && this.types.includes(this.source[this.i]);
-  }
 
   has_ahead(c) {
     return this.i < this.length && this.source[this.i + 1] === c;
@@ -89,9 +113,9 @@ class Lexer {
     this.i++;
   }
 
-  skip() {
-    this.i++;
-    this.startToken++;
+  skip(times=1) {
+    this.i+= times;
+    this.startToken[1];
   }
 
   insert_newline() {
@@ -102,10 +126,11 @@ class Lexer {
     }
   }
 
-  emit_token(type) {
-    this.tokens.push(new Token(type, this.token_so_far, this.currentLine));
+  emit_token(type=null) {
+    var endIndex = this.i - this.index_before_this_line;
+    this.tokens.push(new Token(type ?? this.token_so_far, this.token_so_far, this.currentLine, this.startToken, endIndex));
     this.token_so_far = '';
-    this.startToken = this.i;
+    this.startToken = [this.currentLine, 0];
   }
 
   /**
@@ -115,119 +140,80 @@ class Lexer {
   lex() {
     while (this.i < this.length) {
 
-      if (this.has("+")) {
-        this.capture();
-        this.emit_token("ADD");
-
-      } else if (this.has('/') && this.has_ahead('*')) {
-        this.skip();
-        var commentStart = this.i;
-        this.skip();
-        while (this.hasNot('*') && this.hasNot_ahead('/')) {
-          this.capture();
-        }
-        if (this.has('*') && this.has_ahead('/')) {
-          this.skip();
-          this.skip();
-          this.insert_newline();
-          this.emit_token('comment');
-          if (this.has('\n')) {
-            this.skip();
-            this.currentLine += 1;
-          }
-        }
-        else {
-          textError('lexing', 'looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.', commentStart, this.currentLine);
-          // throw new PraxlyError('looks like you didn\'t close your comment. Remember comments start with a \'/*\' and end with a \'*/\'.', this.currentLine);
-          this.i -= 1;
-          this.emit_token();
-        }
-
-      } else if (this.has("-")) {
-        this.capture();
-        this.emit_token("SUBTRACT");
-
-      } else if (this.has("%")) {
-        this.capture();
-        this.emit_token("MOD");
-
-      } else if (this.has("*")) {
-        this.capture();
-        this.emit_token("MULTIPLY");
-
-      } else if (this.has("^")) {
-        this.capture();
-        this.emit_token("EXPONENT");
-
-      } else if (this.has("≠")) {
-        this.capture();
-        this.emit_token("Not_Equal");
-
-      } else if (this.has('/') && this.has_ahead('/')) {
-        this.skip();
-        this.skip();
-        while (this.hasNot('\n')) {
+      
+      if (this.has_short_comment()){
+        this.skip(2);
+        while (this.hasNot('\n')){
           this.capture();
         }
         this.insert_newline();
-        this.emit_token('single_line_comment');
+        this.emit_token(NODETYPES.SINGLE_LINE_COMMENT);
         this.skip(); // newline after comment
         this.currentLine += 1;
+        this.index_before_this_line = this.i;
+        continue;
+      }
 
-      } else if (this.has("/")) {
-        this.capture();
-        this.emit_token("DIVIDE");
-
-      } else if (this.has("<")) {
-        this.capture();
-        if (this.has("=")) {
+      if (this.has_long_comment()){
+        this.skip(2);
+        while (this.hasNot('*') && this.hasNot_ahead('/')){
           this.capture();
-          this.emit_token("Less_Than_Equal_To");
-        } else if (this.has("-")) {
-          this.capture();
-          this.emit_token("Assignment");
-        } else {
-          this.emit_token("Less_Than");
         }
-
-      } else if (this.has("≤")) {
-        this.capture();
-        this.emit_token("Less_Than_Equal_To");
-
-      } else if (this.has("!")) {
-        this.capture();
-        if (this.has("=")) {
-          this.capture();
-          this.emit_token("Not_Equal");
+        if (this.i === this.length){
+          textError('lexing', `looks like you didn\'t close your comment. Remember comments
+            start with a \'/*\' and end with a \'*/\'.`, commentStart, this.currentLine);
         }
+        this.skip(2);
+        this.emit_token(NODETYPES.COMMENT);
+        continue;
+      }
 
-      } else if (this.has("≠")) {
-        this.capture();
-        this.emit_token("Not_Equal");
-
-      } else if (this.has("=") || this.has('←') || this.has('⟵')) {
-        this.capture();
-        if (this.has('=')) {
+      if (this.has('\'')) {
+        this.skip();
+        if (this.has_letter && this.has_ahead('\'')) {
           this.capture();
-          this.emit_token("Equals");
-        } else {
-          this.emit_token("Assignment");
-        }
-
-      } else if (this.has(">")) {
-        this.capture();
-        if (this.has("=")) {
+          this.skip();
+          this.emit_token(NODETYPES.CHAR);
+          continue;
+        } 
+        textError('lexing', 'looks like you didn\'t close your quotes on your char. \n \tRemember chars start and end with a single quote mark (\').', this.currentLine);
+      }
+      
+      if (this.has("\"")) {
+        var stringStart = this.currentLine;
+        this.skip();
+        while (this.i < this.length && !this.has("\"")) {
           this.capture();
-          this.emit_token("Greater_Than_Equal_To");
-        } else {
-          this.emit_token("Greater_Than");
         }
+        if (this.has("\"")) {
+          this.skip();
+          this.emit_token(NODETYPES.STRING);
+          continue;
+        }
+        textError('lexing', 'looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a double quote mark (\").', stringStart);
+        this.i -= 1;
+        this.token_so_far = "";
+        this.emit_token(NODETYPES.STRING);
+        continue;
 
-      } else if (this.has("≥")) {
+      }
+
+      if (this.has_valid_symbol()){
         this.capture();
-        this.emit_token("Greater_Than_Equal_To");
+        this.emit_token();
+        continue;
+      }
 
-      } else if (this.has_digit()) {
+
+      if (this.has_multi_char_symbol()){
+        while (this.has_multi_char_symbol()){
+          this.capture();
+        }
+        this.emit_token();
+        continue;
+      }
+
+      if (this.has_digit()) {
         while (this.i < this.length && this.has_digit()) {
           this.capture();
         }
@@ -236,119 +222,55 @@ class Lexer {
           while (this.i < this.length && this.has_digit()) {
             this.capture();
           }
-          this.emit_token("Double");
-        } else {
-          this.emit_token("INT");
+          this.emit_token(NODETYPES.DOUBLE);
+          continue;
         }
-
-      } else if (this.has(" ")) {
+        this.emit_token(NODETYPES.INT);
+        continue; 
+      }
+      if (this.has(' ')){
         this.skip();
-
-      } else if (this.has('\'')) {
-        this.skip();
-        if (this.has_letter && this.has_ahead('\'')) {
-          this.capture();
-          this.skip();
-          this.emit_token('char');
-        } else {
-          textError('lexing', 'looks like you didn\'t close your quotes on your char. \n \tRemember chars start and end with a single quote mark (\').', this.currentLine);
-        }
-
-      } else if (this.has("\"")) {
-        var stringStart = this.currentLine;
-        this.skip();
-        while (this.i < this.length && !this.has("\"")) {
-          this.capture();
-        }
-        if (this.has("\"")) {
-          this.skip();
-          this.emit_token("String");
-        }
-        else {
-          textError('lexing', 'looks like you didn\'t close your quotes on your String. \n \tRemember Strings start and end with a double quote mark (\").', stringStart);
-          this.i -= 1;
-          this.token_so_far = "";
-          this.emit_token("String");
-        }
-
-      } else if (this.has_letter()) {
-        while (this.i < this.length && (this.has_letter() || this.has_digit())) {
-          this.capture();
-        }
-        if (this.token_so_far === "true" || this.token_so_far === "false") {
-          this.emit_token("boolean");
-        } else if (this.token_so_far === 'end') {
-          while (this.hasNot('\n')) {
-            this.capture();
-          }
-          this.emit_token(this.token_so_far);
-        }
-        else if (this.keywords.includes(this.token_so_far)) {
-          this.emit_token(this.token_so_far);
-        }
-        else if (this.types.includes(this.token_so_far)) {
-          this.emit_token('Type');
-        }
-        else {
-          if (this.token_so_far !== '') {
-            this.emit_token("Location");
-          }
-        }
-
-      } else if (this.has(",")) {
-        this.capture();
-        this.emit_token(",");
-
-      } else if (this.has(";")) {
-        this.capture();
-        this.emit_token(";");
-
-      } else if (this.has("(")) {
-        this.capture();
-        this.emit_token("(");
-
-      } else if (this.has(")")) {
-        this.capture();
-        this.emit_token(")");
-
-      } else if (this.has("{")) {
-        this.capture();
-        this.emit_token("{");
-
-      } else if (this.has("}")) {
-        this.capture();
-        this.emit_token("}");
-
-      } else if (this.has("[")) {
-        this.capture();
-        this.emit_token("[");
-
-      } else if (this.has("]")) {
-        this.capture();
-        this.emit_token("]");
-
-      } else if (this.has(".")) {
-        this.capture();
-        this.emit_token(".");
-
-      } else if (this.has("\n")) {
+        continue;
+      }
+      if (this.has("\n")) {
         this.capture();
         this.emit_token("\n");
         this.currentLine += 1;
+        this.index_before_this_line = this.i;
         while (this.has('\n')) {
           this.skip();
           this.currentLine += 1;
+          this.index_before_this_line = this.i;
         }
-
-      } else if (this.has('\t')) {
-        // skip tabs since they only appear to be for style
-        this.skip();
-
-      } else {
-        textError('lexing', `invalid character \"${this.source[this.i]}\"`, this.i, this.i + 1);
-        console.log("invalid character at index ", this.i);
-        return 0;
+        continue;
+      } 
+      if (!this.has_letter()){
+        textError('lexing', `unrecognized character \"${this.source[this.i]}\"`, this.i, this.i + 1);
+        break;
       }
+      while (this.i < this.length && (this.has_letter() || this.has_digit())) {
+          this.capture();
+      }
+      if (this.has_type()) {
+        this.emit_token('Type');
+        continue;
+      }
+      if (this.token_so_far === 'end') {
+        while (this.hasNot('\n')) {
+          this.capture();
+        }
+        this.emit_token();
+        continue;
+      }
+      if (this.has_boolean()) {
+        this.emit_token(NODETYPES.BOOLEAN);
+        continue;
+      }
+      if (this.has_keyword()) {
+        this.emit_token();
+        continue;
+      }
+      this.emit_token("Location");      
     }
     this.emit_token("EOF");
     return this.tokens;
@@ -372,15 +294,22 @@ class Parser {
     return this.i < this.length && this.tokens[this.i].token_type !== type;
   }
 
+  getCurrentToken(){
+    return this.tokens[this.i];
+  }
+
   has(type) {
     return this.i < this.length && this.tokens[this.i].token_type === type;
   }
 
-  hasAny(types) {
+  hasAny() {
+    var types = Array.prototype.slice.call(arguments);
     return this.i < this.length && types.includes(this.tokens[this.i].token_type);
   }
 
-  hasNotAny(types) {
+
+  hasNotAny() {
+    var types = Array.prototype.slice.call(arguments);
     return this.i < this.length && !types.includes(this.tokens[this.i].token_type);
   }
 
@@ -419,409 +348,342 @@ class Parser {
     if (!this.tokens) {
       return;
     }
-    return this.program();
+    return this.parse_program();
   }
 
-  parse_atom() {
-    const tok = this.tokens[this.i];
-    var line = this.tokens[this.i].line;
 
-    if (this.has('EOF')) {
-      this.eof = true;
-      return;
+
+  /**
+   * This function creates new nodes for the AST for any binary operation
+   * @param {*} operation the operation symbol
+   * @param {*} l left operand
+   * @param {*} r right operand
+   * @param {*} line line that the token is on
+   * @returns 
+   */
+  binaryOpNode_new(operation, l, r, line){
+    var type;
+    switch (operation){
+      case '+':
+          type = OP.ADDITION;
+          break;
+      case '-':
+          type = OP.SUBTRACTION;
+          break;
+      case '*':
+          type = OP.MULTIPLICATION;
+          break;
+      case '/':
+          type = OP.DIVISION;
+          break;
+      case '%':
+          type = OP.MODULUS;
+          break;
+      case '^':
+          type = OP.EXPONENTIATION;
+          break;
+      case '=':
+      case '<-':
+      case "←": 
+      case "⟵":
+          type = OP.ASSIGNMENT;
+          break;
+      case '==':
+          type = OP.EQUALITY;
+          break;
+      case '!=':
+      case '≠':
+          type = OP.INEQUALITY;
+          break;
+      case '>':
+          type = OP.GREATER_THAN;
+          break;
+      case '<':
+          type = OP.LESS_THAN;
+          break;
+      case '>=':
+      case '≥':
+        type = OP.GREATER_THAN_OR_EQUAL;
+        break;
+      case '<=':
+      case '≤':
+          type = OP.LESS_THAN_OR_EQUAL;
+          break;
+      case 'and':
+      case '&&':
+          type = OP.AND;
+          break;
+      case '||':
+      case 'or':
+          type = OP.OR;
+          break;
+      default:
+          // handle unknown type
+          break;
+  }
+    return {
+      blockID: "code",
+      line: line, 
+      left: l, 
+      right: r, 
+      type: type,
+      startIndex: l.startIndex,
+      endIndex: r.endIndex,
     }
+  }
 
-    if (this.has(',')) {
-      return;
+
+
+  /**
+   * Creates a new node for literal values in the AST. 
+   * @param {*} token 
+   * @returns ASTNODE
+   */
+  literalNode_new(token){
+    return {
+      blockID: "code",
+      line: token.line, 
+      value: token.token_type === NODETYPES.BOOLEAN ? token.value === 'true': token.value,
+      type: token.token_type, 
+      startIndex: token.startIndex, 
+      endIndex: token.endIndex,
     }
-    else if (this.has('input')) {
-      this.advance();
-      return {
-        value: tok.value,
-        type: NODETYPES.INPUT,
-        blockID: "code",
-        line: line,
-      };
+  }
+
+  /**
+   * Creates a new node for the AST for unary operations
+   * @param {*} operation the operation (from NODETYPES)
+   * @param {*} expression the expression node
+   * @param {*} line 
+   * @param {*} startIndex
+   * @returns 
+   */
+  unaryOPNode_new(operation, expression, line, startIndex){
+    var type;
+    switch (operation){
+      case '!':
+      case 'not':
+          type = OP.NOT;
+          break;
+      case '-':
+          type = OP.NEGATE;
+          break;
     }
-    else if (this.has('null')) {
-      this.advance();
-      return {
-        value: tok.value,
-        type: TYPES.NULL,
-        blockID: "code",
-        line: line,
-      };
+    return {
+      blockID: "code",
+      line: line, 
+      value: expression,
+      type: type, 
+      startIndex: startIndex,
+      endIndex: expression.endIndex,
     }
-    else if (this.has("INT")) {
-      this.advance();
-      return {
-        value: tok.value,
-        type: TYPES.INT,
-        blockID: "code",
-        line: line,
-      };
+  }
 
-    } else if (this.has("String")) {
-      this.advance();
-      return {
-        value: tok.value,
-        type: TYPES.STRING,
-        blockID: "code",
-        line: line,
-      };
-
-    } else if (this.has("char")) {
-      this.advance();
-      return {
-        value: tok.value,
-        type: TYPES.CHAR,
-        blockID: "code",
-        line: line,
-      };
-
-    } else if (this.has("Double")) {
-      this.advance();
-      return {
-        value: tok.value,
-        type: TYPES.DOUBLE,
-        blockID: "code",
-        line: line,
-      };
-
-    } else if (this.has("boolean")) {
-      this.advance();
-      return {
-        value: tok.value === 'true',
-        type: TYPES.BOOLEAN,
-        blockID: "code",
-        line: line,
-      };
-
-    } else if (this.has('{')) {
-      let result = {
-        blockID: 'code',
-        line: line,
-        type: NODETYPES.ARRAY_LITERAL,
-      };
-      var args = [];
-      this.advance();
-      var loopBreak = 0;
-      while (this.hasNot('}') && loopBreak < MAX_LOOP) {
-        // this.advance();
-        var param = this.parse_boolean_operation();
-        args.push(param);
-        if (this.has(',')) {
+  /**
+   * This will recursively handle any combination of Binary operations
+   * @param {*} precedence recursive parameter to keep track of the precedence level
+   * @returns an AST node 
+   */
+  parse_expression(precedence=9){
+    let operation = this.getCurrentToken().token_type;
+    let line = this.tokens[this.i].line;
+    let startIndex = this.getCurrentToken().startIndex;
+    let endIndex = this.getCurrentToken().endIndex;
+    switch (precedence){
+      case 9:
+        var l = this.parse_expression(precedence - 1);
+        while (this.has("or")) {
+          operation = this.getCurrentToken().token_type;
+          line = this.getCurrentToken().line;
           this.advance();
+          const r = this.parse_expression(precedence - 1);
+          l = this.binaryOpNode_new(operation, l, r, line);
         }
-        loopBreak++;
-      }
-      // console.log('here are the array contents');
-      // console.log(args);
-      result.params = args;
-      if (this.hasNot('}')) {
-        textError("parsing", "didn't detect closing curly brace in the array declaration", this.tokens[this.i].line);
-        // console.error('didn't detect closing parentheses in the arguments of  a function call');
-      }
-      this.advance();
-      return result;
-    }
+        return l;
+      case 8:
+        var l = this.parse_expression(precedence - 1);
+        while (this.has("and")) {
+          operation = this.getCurrentToken().token_type;
+          line = this.getCurrentToken().line;
+          this.advance();
+          const r = this.parse_expression(precedence - 1);
+          l = this.binaryOpNode_new(operation, l, r, line);
+        }
+        return l;
 
-    else if (this.has("(")) {
-      this.advance();
-      const expression = this.parse_boolean_operation();
-      if (this.has(")")) {
-        this.advance();
-      } else {
-        textError('parsing', 'did not detect closing parentheses', line,);
-      }
-      return expression;
+      case 7:
+        var l = this.parse_expression(precedence - 1);
+        while ( this.hasAny('<', '>', '==', '!=', '>=', '<=', '≠', '≥', '≤')) {
+          operation = this.getCurrentToken().token_type;
+          line = this.getCurrentToken().line;
+          this.advance();
+          const r = this.parse_expression(precedence - 1);
+          l = this.binaryOpNode_new(operation, l, r, line);
+        }
+        return l;
+      case 6:
+        var l = this.parse_expression(precedence - 1);
+        while ( this.hasAny('+', '-')) {
+          operation = this.getCurrentToken().token_type;
+          line = this.getCurrentToken().line;
+          this.advance();
+          const r = this.parse_expression(precedence - 1);
+          l = this.binaryOpNode_new(operation, l, r, line);
+        }
+        return l;
+      case 5:
+        var l = this.parse_expression(precedence - 1);
+        while ( this.hasAny('*', '/', '%')) {
+          operation = this.getCurrentToken().token_type;
+          line = this.getCurrentToken().line;
+          this.advance();
+          const r = this.parse_expression(precedence - 1);
+          l = this.binaryOpNode_new(operation, l, r, line);
+        }
+        return l;
+      case 4:
+        var l = this.parse_expression(precedence - 1);
+        while ( this.hasAny('^')) {
+          operation = this.getCurrentToken().token_type;
+          line = this.getCurrentToken().line;
+          this.advance();
+          const r = this.parse_expression(precedence);
+          l = this.binaryOpNode_new(operation, l, r, line);
+        }
+        return l;
 
-    } else if (this.has("Location") || this.has("Type")) {
-      var l = this.parse_location();
-      if (this.has('Assignment')) {
+      case 3:
+        if (this.hasNotAny('not', '!', '-')) {
+          return this.parse_expression(precedence - 1);
+        }
+        operation = this.getCurrentToken().token_type;
+        line = this.getCurrentToken().line;
         this.advance();
-        var value = this.parse_boolean_operation()
-        l = {
-          type: NODETYPES.ASSIGNMENT,
-          blockID: "code",
-          line: line,
-          location: l,
-          value: value,
-        }
-      } else if (this.has('(')) {
+        var exp = this.parse_expression(precedence - 1);
+        return this.unaryOPNode_new(operation, exp, line, startIndex);
+
+      case 2:
+      var l = this.parse_expression(precedence - 1);
+      while ( this.hasAny('.')) {
+        operation = this.getCurrentToken().token_type;
+        line = this.getCurrentToken().line;
         this.advance();
-        var args = [];
-        var loopBreak = 0;
-        while (this.hasNot(')') && loopBreak < MAX_LOOP) {
-          var param = this.parse_boolean_operation();
-          args.push(param);
-          if (this.has(',')) {
-            this.advance();
-          }
-          loopBreak++;
+        const r = this.parse_expression(precedence);
+        if (r.type != NODETYPES.FUNCCALL){
+          textError("compile-time", "classes are not fully supported yet. the right side of the . operator must be a supported string function", line);
         }
-        this.match_and_discard_next_token(')');
-        l = {
-          type: NODETYPES.FUNCCALL,
-          blockID: "code",
-          line: line,
-          name: l.name,
-          value: value,
-          args: args
-        }
-        // this is used to give different behavior to these functions in particular
-        // if (this.specialStringFunctionKEywords.includes(l.name)){
-        //   l.type = NODETYPES.SPECIAL_STRING_FUNCCALL;
-        // }
+        l = this.binaryOpNode_new(operation, l, r, line);
       }
       return l;
 
-    } else if (this.has("\n")) {
-      return;
+      //This one gets really complicated 
+      case 1:
+        switch(operation){
+          case 'EOF':
+            this.eof = true;
+            return 'EOF';
+          case NODETYPES.INT:
+          case 'input':
+          case NODETYPES.STRING:
+          case NODETYPES.CHAR:
+          case NODETYPES.FLOAT:
+          case NODETYPES.DOUBLE:
+            this.advance();
+            return this.literalNode_new(this.tokens[this.i - 1]);
+          case NODETYPES.BOOLEAN: 
+            this.advance(); 
+            return this.literalNode_new(this.tokens[this.i - 1]);
 
-    } else {
-      textError("parsing", "missing or invalid base expression. most likely due to a missing operand", line);
+          case '(':
+            this.advance();
+            const expression = this.parse_expression(9);
+            if (this.has(")")) {
+              this.advance();
+            } else {
+              textError('parsing', 'did not detect closing parentheses', line,);
+            }
+            return expression;
+
+          //ah yes, array literals....very fun
+          case '{':
+            let result = {
+              blockID: 'code',
+              line: line,
+              type: NODETYPES.ARRAY_LITERAL,
+              startIndex: startIndex,
+            };
+            var args = [];
+            this.advance();
+            var loopBreak = 0;
+            while (this.hasNot('}') && loopBreak < MAX_LOOP) {
+              var param = this.parse_expression(9);
+              args.push(param);
+              if (this.has(',')) {
+                this.advance();
+              }
+              loopBreak++;
+            }
+            result.params = args;
+            if (this.hasNot('}')) {
+              textError("parsing", "didn't detect closing curly brace in the array declaration", this.tokens[this.i].line);
+            }
+            result.endIndex = this.getCurrentToken().endIndex;
+            this.advance();
+            return result; 
+          case 'Location':
+          case 'Type':
+            var l = this.parse_location();
+            if (this.hasAny('=', '<-', "←", "⟵")) {
+              this.advance();
+              var value = this.parse_expression(9)
+              l = {
+                type: NODETYPES.ASSIGNMENT,
+                blockID: "code",
+                line: line,
+                location: l,
+                value: value,
+                startIndex: startIndex,
+              }
+            } else if (this.has('(')) {
+              this.advance();
+              var args = [];
+              var loopBreak = 0;
+              while (this.hasNot(')') && loopBreak < MAX_LOOP) {
+                var param = this.parse_expression(9);
+                args.push(param);
+                if (this.has(',')) {
+                  this.advance();
+                }
+                loopBreak++;
+              }
+              this.match_and_discard_next_token(')');
+              l = {
+                type: NODETYPES.FUNCCALL,
+                blockID: "code",
+                line: line,
+                name: l.name,
+                value: value,
+                args: args, 
+                startIndex: startIndex,
+              }
+              // this is used to give different behavior to these functions in particular
+              // if (this.specialStringFunctionKEywords.includes(l.name)){
+              //   l.type = NODETYPES.SPECIAL_STRING_FUNCCALL;
+              // }
+            }
+            l.endIndex = this.getCurrentToken().endIndex;
+            return l;
+          case '\n': //note: add custom behavior in the future, treat newlines kind of like comments
+          this.advance();  
+          return;
+          default: 
+            textError("parsing", "missing or invalid base expression. most likely due to a missing operand", line);
+        }
     }
   }
 
-  parse_dotOperator(){
-    var l = this.parse_atom();
-    if (this.has('.')){
-      var line = this.tokens[this.i].line;
-      this.advance();
-      var r = this.parse_atom();
-      if (r.type != NODETYPES.FUNCCALL){
-        textError("compile-time", "classes are not fully supported yet. the right side of the . operator must be a supported string function", line);
-      }
-      l = {
-        left: l,
-        right: r,
-        type: NODETYPES.SPECIAL_STRING_FUNCCALL,
-        blockID: "code",
-        line: line
-      }
-    }
-    return l;
-  }
 
-  exponent() {
-    let l = this.unary();
-    // let l =this.atom();
-    while (this.has("EXPONENT")) {
-      var line = this.tokens[this.i].line;
 
-      this.advance();
-      const r = this.exponent();
-      // l =new Operators.Exponent(left, right);
-      l = {
-        left: l,
-        right: r,
-        type: NODETYPES.EXPONENTIATION,
-        blockID: "code",
-        line: line
-      }
-    }
-    return l;
-  }
-
-  multiplicative() {
-    let l = this.exponent();
-    while (this.has("MULTIPLY") || this.has("DIVIDE") || this.has("MOD")) {
-
-      var line = this.tokens[this.i].line;
-      if (this.has("MULTIPLY")) {
-        this.advance();
-        const r = this.exponent();
-        // l =new Operators.Multiplication(left, right);
-        l = {
-          left: l,
-          right: r,
-          type: NODETYPES.MULTIPLICATION,
-          blockID: "code",
-          line: line,
-        }
-
-      } else if (this.has("DIVIDE")) {
-        this.advance();
-        const r = this.exponent();
-        // l =new Operators.Division(left, right);
-        l = {
-          left: l,
-          right: r,
-          type: NODETYPES.DIVISION,
-          blockID: "code",
-          line: line,
-        }
-
-      } else if (this.has("MOD")) {
-        this.advance();
-        const r = this.exponent();
-        // l =new Operators.Modulo(left, right);
-        l = {
-          left: l,
-          right: r,
-          type: NODETYPES.MODULUS,
-          blockID: "code",
-          line: line,
-        }
-      }
-    }
-    return l;
-  }
-
-  additive() {
-    let l = this.multiplicative();
-    while (this.has("ADD") || this.has("SUBTRACT")) {
-
-      var line = this.tokens[this.i].line;
-      if (this.has("SUBTRACT")) {
-        this.advance();
-        const r = this.multiplicative();
-        // l =new Operators.Subtraction(left, right);
-        l = {
-          left: l,
-          right: r,
-          type: NODETYPES.SUBTRACTION,
-          blockID: "code",
-          line: line,
-        }
-
-      } else if (this.has("ADD")) {
-        this.advance();
-        const r = this.multiplicative();
-        // l =new Operators.Addition(left, right);
-        l = {
-          left: l,
-          right: r,
-          type: NODETYPES.ADDITION,
-          blockID: "code",
-          line: line,
-        }
-      }
-    }
-    return l;
-  }
-
-  unary() {
-    if (!this.has('not') && !this.has('SUBTRACT')) {
-      return this.parse_dotOperator();
-    }
-    var line = this.tokens[this.i].line;
-    var result = {
-      blockID: 'code',
-      line: line,
-    };
-    if (this.has('not')) {
-      this.advance();
-      var expression = this.parse_dotOperator();
-      result.type = NODETYPES.NOT;
-      result.value = expression;
-      return result;
-    }
-    else if (this.has("SUBTRACT")) {
-      this.advance();
-      var expression = this.parse_dotOperator();
-      if (expression.type === TYPES.INT || expression.type === TYPES.SHORT
-        || expression.type === TYPES.DOUBLE || expression.type === TYPES.FLOAT) {
-        // negative literal value
-        result.type = expression.type;
-        result.value = "-" + expression.value;
-      } else {
-        // negative expression
-        result.type = NODETYPES.NEGATE;
-        result.value = expression;
-      }
-    }
-    return result;
-  }
-
-  parse_comparable() {
-    let l = this.additive();
-    while (
-      this.has("Less_Than_Equal_To") ||
-      this.has("Greater_Than_Equal_To") ||
-      this.has("Less_Than") ||
-      this.has("Greater_Than") ||
-      this.has("Equals") ||
-      this.has("Not_Equal")
-    ) {
-      var line = this.tokens[this.i].line;
-
-      if (this.has("Less_Than_Equal_To")) {
-        this.advance();
-        const r = this.additive();
-        // l =new Operators.Less_Than_Equal_To(left, right);
-        l = {
-          left: l,
-          right: r,
-          type: NODETYPES.LESS_THAN_OR_EQUAL,
-          blockID: "code",
-          line: line,
-        }
-
-      } else if (this.has("Greater_Than_Equal_To")) {
-        this.advance();
-        const r = this.additive();
-        // l =new Operators.Greater_Than_EqualTo(left, right);
-        l = {
-          left: l,
-          right: r,
-          type: NODETYPES.GREATER_THAN_OR_EQUAL,
-          blockID: "code",
-          line: line,
-        }
-
-      } else if (this.has("Less_Than")) {
-        this.advance();
-        const r = this.additive();
-        // l =new Operators.Less_Than(left, right);
-        l = {
-          left: l,
-          right: r,
-          type: NODETYPES.LESS_THAN,
-          blockID: "code",
-          line: line,
-        }
-
-      } else if (this.has("Greater_Than")) {
-        this.advance();
-        const r = this.additive();
-        // l =new Operators.Greater_Than(left, right);
-        l = {
-          left: l,
-          right: r,
-          type: NODETYPES.GREATER_THAN,
-          blockID: "code",
-          line: line,
-        }
-
-      } else if (this.has("Equals")) {
-        this.advance();
-        const r = this.additive();
-        // l =new Operators.Greater_Than_EqualTo(left, right);
-        l = {
-          left: l,
-          right: r,
-          type: NODETYPES.EQUALITY,
-          blockID: "code",
-          line: line,
-        }
-
-      } else if (this.has("Not_Equal")) {
-        this.advance();
-        const r = this.additive();
-        // l =new Operators.Greater_Than_EqualTo(left, right);
-        l = {
-          left: l,
-          right: r,
-          type: NODETYPES.INEQUALITY,
-          blockID: "code",
-          line: line,
-        }
-      }
-    }
-    return l;
-  }
 
   parse_location() {
     var result = {
@@ -831,12 +693,14 @@ class Parser {
       blockID: 'code',
       line: this.tokens[this.i].line,
       index: null,
+      startIndex: this.tokens[this.i].startIndex,
     }
     this.advance();
     if (this.has('[')) {
       this.advance();
-      result.index = this.parse_boolean_operation();
+      result.index = this.parse_expression();
       result.isArray = true;
+      result.endIndex = this.getCurrentToken().endIndex;
       this.match_and_discard_next_token(']');
     }
     return result;
@@ -847,15 +711,15 @@ class Parser {
     var isArray = false;
     var type = NODETYPES.VARDECL;
     var vartype = this.tokens[this.i].value;
+    var startIndex = this.getCurrentToken().startIndex;
     this.advance();
-    if (this.has('[')) {
+    if (this.has('[') && this.has_ahead(']')) {
       this.advance();
-      if (this.has(']')) {
-        this.advance();
-        type = NODETYPES.ARRAY_ASSIGNMENT;
-        isArray = true;
-      }
+      this.advance();
+      type = NODETYPES.ARRAY_ASSIGNMENT;
+      isArray = true;
     }
+    
     var location = this.parse_location();
     var result = {
       type: type,
@@ -866,10 +730,11 @@ class Parser {
       location: location,
       line: this.tokens[this.i].line,
       index: null,
+      startIndex: startIndex,
     }
-    if (this.has('Assignment')) {
+    if (this.hasAny('=', '<-', "←", "⟵")) {
       this.advance();
-      result.value = this.parse_boolean_operation();
+      result.value = this.parse_expression(9);
       if (this.has(';')) {
         this.advance();
       }
@@ -904,8 +769,8 @@ class Parser {
         stopLoop += 1;
       }
 
-      // console.log ('here are the params');
-      // console.log(args);
+      
+      result.endIndex = this.getCurrentToken().endIndex;
       this.match_and_discard_next_token(')');
       result.params = params;
 
@@ -916,7 +781,7 @@ class Parser {
         this.advance();
       }
 
-      var contents = this.codeBlock('end ' + result.name);
+      var contents = this.parse_block('end ' + result.name);
       result.contents = contents;
       if (this.hasNot('end ' + result.name)) {
         textError('compile time', `missing the \'end ${result.name}\' token`, result.line);
@@ -927,57 +792,25 @@ class Parser {
     return result;
   }
 
-  parse_boolean_operation() {
-    let l = this.parse_comparable();
-    while (
-      this.has("and") ||
-      this.has("or")
-    ) {
-      var line = this.tokens[this.i].line;
+  
 
-      if (this.has("and")) {
-        this.advance();
-        const r = this.parse_comparable();
-        // l =new Operators.Less_Than_Equal_To(left, right);
-        l = {
-          left: l,
-          right: r,
-          type: NODETYPES.AND,
-          blockID: "code",
-          line: line,
-        }
-
-      } else if (this.has("or")) {
-        this.advance();
-        const r = this.parse_comparable();
-        // l =new Operators.Greater_Than_EqualTo(left, right);
-        l = {
-          left: l,
-          right: r,
-          type: NODETYPES.OR,
-          blockID: "code",
-          line: line,
-        }
-      }
-    }
-    return l;
-  }
-
-  program() {
+  parse_program() {
     return {
       type: "PROGRAM",
-      value: this.codeBlock('EOF'),
+      value: this.parse_block('EOF'),
       blockID: 'code'
     }
   }
 
-  codeBlock(endToken) {
+  parse_block(...endToken) {
     let praxly_blocks = [];
-    const argsArray = Array.from(arguments);
-    //  while (!this.eof) {
-    while (this.hasNotAny(argsArray)) {
+    while (this.hasNotAny(...endToken)) {
+      
       while (this.has('\n')) {
         this.advance();
+      }
+      if (this.has('EOF')){
+        break;
       }
       praxly_blocks.push(this.parse_statement());
       this.advance();
@@ -992,6 +825,8 @@ class Parser {
   parse_statement() {
     var line = this.tokens[this.i].line;
     let result = {
+      startIndex: this.getCurrentToken().startIndex,
+      endIndex: this.getCurrentToken().endIndex,
       blockID: 'code',
       line: line,
     };
@@ -999,17 +834,17 @@ class Parser {
     if (this.has("if")) {
       result.type = NODETYPES.IF;
       this.advance();
-      result.condition = this.parse_boolean_operation();
+      result.condition = this.parse_expression(9);
       if (this.has('\n')) {
         this.advance();
-        result.statement = this.codeBlock('else', 'end if');
+        result.statement = this.parse_block('else', 'end if');
         if (this.has('else')) {
           this.advance();
           if (this.has('\n')) {
             this.advance();
           }
           result.type = NODETYPES.IF_ELSE;
-          result.alternative = this.codeBlock('end if');
+          result.alternative = this.parse_block('end if');
         }
         if (this.has('end if')) {
           this.advance();
@@ -1028,20 +863,18 @@ class Parser {
       }
       this.advance();
       result.initialization = this.parse_statement();
-      // if (this.has(';')) {
-      //   this.advance();
-      result.condition = this.parse_boolean_operation();
-      // this.advance();
+      result.condition = this.parse_expression(9);
+
       if (this.has(';')) {
         this.advance();
-        result.increment = this.parse_atom();
+        result.increment = this.parse_expression(1);
         if (this.hasNot(')')) {
           return result;
         }
         this.advance();
         if (this.has('\n')) {
           this.advance();
-          result.statement = this.codeBlock('end for');
+          result.statement = this.parse_block('end for');
           if (this.has('end for')) {
             this.advance();
             return result;
@@ -1058,10 +891,10 @@ class Parser {
     else if (this.has('while')) {
       result.type = NODETYPES.WHILE;
       this.advance();
-      result.condition = this.parse_boolean_operation();
+      result.condition = this.parse_expression(9);
       if (this.has('\n')) {
         this.advance();
-        result.statement = this.codeBlock('end while');
+        result.statement = this.parse_block('end while');
       }
       if (this.has('end while')) {
         this.advance();
@@ -1077,7 +910,7 @@ class Parser {
       this.advance();
       if (this.has('\n')) {
         this.advance();
-        result.statement = this.codeBlock('while');
+        result.statement = this.parse_block('while');
       }
       if (this.has('while')) {
         this.advance();
@@ -1086,7 +919,7 @@ class Parser {
           return result;
         }
         this.advance();
-        result.condition = this.parse_boolean_operation();
+        result.condition = this.parse_expression(9);
         if (this.hasNot(')')) {
           return result;
         }
@@ -1105,7 +938,7 @@ class Parser {
       this.advance();
       if (this.has('\n')) {
         this.advance();
-        result.statement = this.codeBlock('until');
+        result.statement = this.parse_block('until');
       }
       if (this.has('until')) {
         this.advance();
@@ -1114,7 +947,7 @@ class Parser {
           return result;
         }
         this.advance();
-        result.condition = this.parse_boolean_operation();
+        result.condition = this.parse_expression(9);
         if (this.hasNot(')')) {
           return result;
         }
@@ -1130,7 +963,7 @@ class Parser {
 
     else if (this.has("print")) {
       this.advance();
-      const expression = this.parse_boolean_operation();
+      const expression = this.parse_expression(9);
       if (this.has(';')) {
         this.advance();
       }
@@ -1144,7 +977,7 @@ class Parser {
 
     else if (this.has("println")) {
       this.advance();
-      const expression = this.parse_boolean_operation();
+      const expression = this.parse_expression(9);
       if (this.has(';')) {
         this.advance();
       }
@@ -1157,7 +990,7 @@ class Parser {
 
     else if (this.has("return")) {
       this.advance();
-      const expression = this.parse_boolean_operation();
+      const expression = this.parse_expression(9);
       if (this.has(';')) {
         this.advance();
       }
@@ -1167,12 +1000,12 @@ class Parser {
         return result;
       }
 
-    } else if (this.has('comment')) {
+    } else if (this.has(NODETYPES.COMMENT)) {
       result.type = NODETYPES.COMMENT,
         result.value = this.tokens[this.i].value;
       return result;
 
-    } else if (this.has('single_line_comment')) {
+    } else if (this.has(NODETYPES.SINGLE_LINE_COMMENT)) {
       result.type = NODETYPES.SINGLE_LINE_COMMENT,
         result.value = this.tokens[this.i].value;
       return result;
@@ -1182,21 +1015,26 @@ class Parser {
       return this.parse_funcdecl_or_vardecl();
     }
 
+    else if (this.has('\n')){
+      return {
+        type: NODETYPES.NEWLINE, 
+        blockID: 'code',
+      }
+    }
+
     else {
       // this is a stand alone expression as a statement.
-      let contents = this.parse_boolean_operation();
-      if (contents === undefined || contents === null) {
-        return;
-      }
+      let contents = this.parse_expression(9);
+
       if (this.has(';')) {
         this.advance();
       }
-      // if (this.has('\n')) {
-      // }
       result = {
         type: NODETYPES.STATEMENT,
         value: contents,
-        blockID: "code"
+        blockID: "code",
+        startIndex: contents.startIndex, 
+        endIndex: contents.endIndex,
       };
     }
     return result;
