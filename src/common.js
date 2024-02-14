@@ -112,12 +112,6 @@ export function addToPrintBuffer(message) {
  */
 export function clearOutput() {
   printBuffer = "";
-  // annotationsBuffer = [];
-  // errorOutput = "";
-  // blockErrorsBuffer = {};
-  // markersBuffer.forEach((markerId)=> {
-  //   textEditor.session.removeMarker(markerId);
-  // });
 }
 
 export function clearErrors() {
@@ -175,14 +169,14 @@ export function appendAnnotation(errorMessage, line) {
  * @param {boolean} debug set this flag to true if this is being used for debugging. (it changes the color to green)
  * @returns the marker id associated with the marker. This should not be needed.
  */
-export function highlightLine(line, debug = false) {
+export function highlightLine(line) {
   var session = textEditor.session;
 
   // var errorRange = indextoAceRange(line - 1);
   var Range = ace.require('ace/range').Range;
   var errorRange = new Range(line, 0, line - 1, 1);
   var markerId = session.addMarker(errorRange, 'error-marker', 'fullLine');
-  var color = debug? `rgba(255, 255, 0, 0.2)` : `rgba(255, 0, 0, 0.2)`;
+  var color =`rgba(255, 0, 0, 0.2)`;
 
   var markerCss = `
       .error-marker {
@@ -198,6 +192,50 @@ export function highlightLine(line, debug = false) {
   if (!existingStyleTag) {
     // If it doesn't exist, create a new style tag and set its ID
     // console.log(`couldn\'t find custom-style`);
+    existingStyleTag = document.createElement('style');
+    existingStyleTag.setAttribute('id', 'custom-style');
+    document.head.appendChild(existingStyleTag);
+  }
+
+  // Append the error-marker rules to the existing style tag
+  existingStyleTag.appendChild(document.createTextNode(markerCss));
+
+  // console.log(`attempted to highlight ${line}`);
+  markersBuffer.push(markerId);
+  return markerId;
+}
+
+
+
+
+/**
+ * This will highlight a line of code
+ * @param {number} line the desired line that you want to highlight
+ * @param {boolean} debug set this flag to true if this is being used for debugging. (it changes the color to green)
+ * @returns the marker id associated with the marker. This should not be needed.
+ */
+export function highlightAstNode(node) {
+  console.log(`attempting to highlight index [${node.startIndex[0]},${ node.startIndex[1]}] to [${ node.endIndex[0]}, ${ node.endIndex[1] - 1}]`)
+  var session = textEditor.session;
+
+  // var errorRange = indextoAceRange(line - 1);
+  var Range = ace.require('ace/range').Range;
+  var errorRange = new Range(node.startIndex[0], node.startIndex[1], node.endIndex[0], node.endIndex[1]);
+  var markerId = session.addMarker(errorRange, 'error-marker', 'text');
+  var color = getStepInto()? `rgba(255, 255, 0, 0.4)` : `rgba(0, 255, 0, 0.2)`;
+
+  var markerCss = `
+      .error-marker {
+        position: absolute;
+        z-index: 1;
+        background-color: ${color};
+      }
+    `;
+
+  // Check if the style tag already exists
+  var existingStyleTag = document.getElementById('custom-style');
+  if (!existingStyleTag) {
+    // If it doesn't exist, create a new style tag and set its ID
     existingStyleTag = document.createElement('style');
     existingStyleTag.setAttribute('id', 'custom-style');
     document.head.appendChild(existingStyleTag);
@@ -233,11 +271,26 @@ export const StringFuncs = {
 }
 
 
-export let debugMode = false;
-export let steppingIn = false;
+let debugMode = false;
+export function setDebugMode(value) {
+  debugMode = value;
+}
+
+export function getDebugMode() {
+  return debugMode;
+}
+let stepInto = false;
+export function setStepInto(value) {
+  stepInto = value;
+}
+
+export function getStepInto() {
+  return stepInto;
+}
+
+
 export const textEditor = ace.edit("aceCode", { fontSize: 19, mode: 'ace/mode/java' });
 
-export let stepInto = false;
 
 export const DebugButton = document.getElementById('DebugButton');
 export const stepButton = document.getElementById('stepButton');

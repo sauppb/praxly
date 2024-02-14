@@ -1,5 +1,6 @@
 
-import { TYPES, OP, NODETYPES, PraxlyError, addToPrintBuffer, defaultError, errorOutput, StringFuncs, debugMode, highlightLine} from "./common";
+import { TYPES, OP, NODETYPES, PraxlyError, addToPrintBuffer, defaultError, errorOutput, StringFuncs, highlightLine,  getDebugMode, highlightAstNode, textEditor, setStepInto, getStepInto} from "./common";
+import { waitForStep } from "./debugger";
 
 
 var SCOPES = {};
@@ -444,6 +445,7 @@ class Praxly_array_literal {
     constructor(elements, blockjson) {
         this.elements = elements;
         this.blockjson = blockjson;
+        this.json = blockjson;
         this.jsonType = 'Praxly_array';
 
         // set array type to "largest type" of element
@@ -554,6 +556,11 @@ class Praxly_addition {
     async evaluate(environment) {
         let a = await this.a_operand.evaluate(environment);
         let b = await this.b_operand.evaluate(environment);
+        if (getStepInto()) {
+            let markerId = highlightAstNode(this.json);
+            await waitForStep();
+            textEditor.session.removeMarker(markerId);
+        }
         return litNode_new(binop_typecheck(OP.ADDITION, a.realType, b.realType, this.json), a.value + b.value);
     }
 }
@@ -571,6 +578,11 @@ class Praxly_subtraction {
     async evaluate(environment) {
         let a = await this.a_operand.evaluate(environment);
         let b = await this.b_operand.evaluate(environment);
+        if (getStepInto()) {
+            let markerId = highlightAstNode(this.json);
+            await waitForStep();
+            textEditor.session.removeMarker(markerId);
+        }
         return litNode_new(binop_typecheck(OP.SUBTRACTION, a.realType, b.realType, this.json), a.value - b.value);
     }
 }
@@ -588,6 +600,11 @@ class Praxly_multiplication {
     async evaluate(environment) {
         let a = await this.a_operand.evaluate(environment);
         let b = await this.b_operand.evaluate(environment);
+        if (getStepInto()) {
+            let markerId = highlightAstNode(this.json);
+            await waitForStep();
+            textEditor.session.removeMarker(markerId);
+        }
         return litNode_new(binop_typecheck(OP.MULTIPLICATION, a.realType, b.realType, this.json), a.value * b.value);
     }
 }
@@ -607,6 +624,11 @@ class Praxly_division {
         let b = await this.b_operand.evaluate(environment);
         if (b.value === 0) {
             throw new PraxlyError("division by zero", this.json.line);
+        }
+        if (getStepInto()) {
+            let markerId = highlightAstNode(this.json);
+            await waitForStep();
+            textEditor.session.removeMarker(markerId);
         }
         return litNode_new(binop_typecheck(OP.DIVISION, a.realType, b.realType, this.json), a.value / b.value);
     }
@@ -628,6 +650,11 @@ class Praxly_modulo {
         if (b.value === 0) {
             throw new PraxlyError("division by zero", this.json.line);
         }
+        if (getStepInto()) {
+            let markerId = highlightAstNode(this.json);
+            await waitForStep();
+            textEditor.session.removeMarker(markerId);
+        }
         return litNode_new(binop_typecheck(OP.MODULUS, a.realType, b.realType, this.json), a.value % b.value);
     }
 }
@@ -645,6 +672,11 @@ class Praxly_exponent {
     async evaluate(environment) {
         let a = await this.a_operand.evaluate(environment);
         let b = await this.b_operand.evaluate(environment);
+        if (getStepInto()) {
+            let markerId = highlightAstNode(this.json);
+            await waitForStep();
+            textEditor.session.removeMarker(markerId);
+        }
         return litNode_new(binop_typecheck(OP.EXPONENTIATION, a.realType, b.realType, this.json), a.value ** b.value);
     }
 }
@@ -662,6 +694,11 @@ class Praxly_and {
     async evaluate(environment) {
         let a = await this.a_operand.evaluate(environment);
         let b = await this.b_operand.evaluate(environment);
+        if (getStepInto()) {
+            let markerId = highlightAstNode(this.json);
+            await waitForStep();
+            textEditor.session.removeMarker(markerId);
+        }
         return litNode_new(binop_typecheck(OP.AND, a.realType, b.realType, this.json), a.value && b.value);
     }
 }
@@ -679,6 +716,11 @@ class Praxly_or {
     async evaluate(environment) {
         let a = await this.a_operand.evaluate(environment);
         let b = await this.b_operand.evaluate(environment);
+        if (getStepInto()) {
+            let markerId = highlightAstNode(this.json);
+            await waitForStep();
+            textEditor.session.removeMarker(markerId);
+        }
         return litNode_new(binop_typecheck(OP.OR, a.realType, b.realType, this.json), a.value || b.value);
     }
 }
@@ -696,6 +738,11 @@ class Praxly_equals {
     async evaluate(environment) {
         var left = await this.a_operand.evaluate(environment);
         var right = await this.b_operand.evaluate(environment);
+        if (getStepInto()) {
+            let markerId = highlightAstNode(this.json);
+            await waitForStep();
+            textEditor.session.removeMarker(markerId);
+        }
         return new Praxly_boolean(left.value === right.value);
     }
 }
@@ -713,6 +760,11 @@ class Praxly_not_equals {
     async evaluate(environment) {
         var left = await this.a_operand.evaluate(environment);
         var right = await this.b_operand.evaluate(environment);
+        if (getStepInto()) {
+            let markerId = highlightAstNode(this.json);
+            await waitForStep();
+            textEditor.session.removeMarker(markerId);
+        }
         return new Praxly_boolean(left.value != await right.value);
     }
 }
@@ -730,6 +782,11 @@ class Praxly_greater_than {
     async evaluate(environment) {
         var left = await this.a_operand.evaluate(environment);
         var right = await this.b_operand.evaluate(environment);
+        if (getStepInto()) {
+            let markerId = highlightAstNode(this.json);
+            await waitForStep();
+            textEditor.session.removeMarker(markerId);
+        }
         return new Praxly_boolean(left.value > right.value);
     }
 }
@@ -747,6 +804,11 @@ class Praxly_less_than {
     async evaluate(environment) {
         var left = await this.a_operand.evaluate(environment);
         var right = await this.b_operand.evaluate(environment);
+        if (getStepInto()) {
+            let markerId = highlightAstNode(this.json);
+            await waitForStep();
+            textEditor.session.removeMarker(markerId);
+        }
         return new Praxly_boolean(left.value < right.value);
     }
 }
@@ -764,6 +826,11 @@ class Praxly_greater_than_equal {
     async evaluate(environment) {
         var left = await this.a_operand.evaluate(environment);
         var right = await this.b_operand.evaluate(environment);
+        if (getStepInto()) {
+            let markerId = highlightAstNode(this.json);
+            await waitForStep();
+            textEditor.session.removeMarker(markerId);
+        }
         return new Praxly_boolean(left.value >= right.value);
     }
 }
@@ -781,6 +848,11 @@ class Praxly_less_than_equal {
     async evaluate(environment) {
         var left = await this.a_operand.evaluate(environment);
         var right = await this.b_operand.evaluate(environment);
+        if (getStepInto()) {
+            let markerId = highlightAstNode(this.json);
+            await waitForStep();
+            textEditor.session.removeMarker(markerId);
+        }
         return new Praxly_boolean(left.value <= right.value);
     }
 }
@@ -864,10 +936,16 @@ class Praxly_codeBlock {
 
         for (let i = 0; i < this.praxly_blocks.length; i++) {
             const element = this.praxly_blocks[i];
-            // if (debugMode) {
-            //     waitForStep();
-            // }
+
+
+            if (getDebugMode()) {
+                let markerId = highlightAstNode(element.json);
+                console.warn(element);
+                await waitForStep();
+                textEditor.session.removeMarker(markerId);
+            }
             await element.evaluate(newScope);
+            setStepInto(false);
         }
         return "Exit_Success";
     }
@@ -937,13 +1015,13 @@ class Praxly_assignment {
         if (!storage) {
             throw new PraxlyError(`Variable ${this.location.name} does not exist.`, this.json.line);
         }
-
+        
         let currentStoredVariableEvaluated = await this.location.evaluate(environment);
         if (!can_assign(currentStoredVariableEvaluated.realType, valueEvaluated.realType, this.json.line)) {
             throw new PraxlyError(`Error: variable reassignment does not match declared type: \n\t Expected: `
-                + `${currentStoredVariableEvaluated.realType}, \n\t Actual: ${valueEvaluated.realType}`, this.json.line);
+            + `${currentStoredVariableEvaluated.realType}, \n\t Actual: ${valueEvaluated.realType}`, this.json.line);
         }
-
+        
         // console.warn(storage);
         valueEvaluated = typeCoercion(currentStoredVariableEvaluated.realType, valueEvaluated);
         if (this.location.isArray) {
@@ -951,6 +1029,11 @@ class Praxly_assignment {
             storage[this.location.name].elements[index.value] = valueEvaluated;
         } else {
             storage[this.location.name] = valueEvaluated;
+        }
+        if (getStepInto()) {
+            let markerId = highlightAstNode(this.json);
+            await waitForStep();
+            textEditor.session.removeMarker(markerId);
         }
         return valueEvaluated;
     }

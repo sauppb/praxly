@@ -20,7 +20,7 @@ import { generateUrl, loadFromUrl } from './share';
 
 // import { readFileSync } from 'fs';
 import { codeText } from './examples';
-import { addBlockErrors, annotationsBuffer, clearErrors, clearOutput, debugMode, defaultError, errorOutput, printBuffer, textEditor } from './common';
+import { DebugButton, addBlockErrors, annotationsBuffer, clearErrors, clearOutput, defaultError, errorOutput, getDebugMode, printBuffer, setDebugMode, setStepInto, stepButton, stepIntoButton, stopButton, textEditor } from './common';
 import { hideDebug, showDebug } from './debugger';
 
 const praxlyGenerator = makeGenerator();
@@ -177,8 +177,11 @@ async function runTasks() {
     return;
   }
   const executable = createExecutable(mainTree);
+  console.warn('here it is');
+  console.log(executable);
   try {
     await executable.evaluate();
+    setDebugMode(false);
   } catch (error) {
     // if not previously handled (by PraxlyError)
     if (!errorOutput) {
@@ -186,7 +189,6 @@ async function runTasks() {
       console.error(error.message);
     }
   }
-  console.error(printBuffer);
   stdOut.innerHTML = printBuffer;
   stdErr.innerHTML = errorOutput;
   if (errorOutput) {
@@ -350,4 +352,37 @@ function applyExample(exampleName) {
 document.addEventListener('DOMContentLoaded', function() {
   loadFromUrl();
   textEditor.focus();
+});
+
+
+
+/**
+ * Event listeners for the main circular buttons along the top. 
+ */
+
+DebugButton.addEventListener('mouseup', function() {
+  // comingSoon();
+  showDebug();
+  setDebugMode(true);
+  runTasks();
+});
+stopButton.addEventListener('mouseup', function() {
+  hideDebug();
+  setDebugMode(false);
+});
+
+stepIntoButton.addEventListener('mouseup', function() {
+  // comingSoon();
+  if (!getDebugMode()){
+    alert('the program has completed.');
+  }
+  setDebugMode(true);
+  setStepInto(true);
+});
+stepButton.addEventListener('mouseup', function() {
+  // comingSoon();
+  if (!getDebugMode()){
+    alert('the program has completed.');
+  }
+  setDebugMode(true);
 });

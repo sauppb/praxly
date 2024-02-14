@@ -183,7 +183,7 @@ export const tree2text = (blockjson, indentation) => {
 
         case NODETYPES.IF:
             var result = '\t'.repeat(indentation) + "if (";
-            var condition = tree2text(blockjson.condition, indentation) + ")\n";
+            var condition = tree2text(blockjson.condition, 0) + ")\n";
             var contents = tree2text(blockjson.statement, indentation + 1) +
                 '\t'.repeat(indentation) + 'end if\n';
             return result + condition + contents;

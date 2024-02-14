@@ -47,8 +47,8 @@ class Lexer {
     this.keywords = ["if", "else", "end", "print", "println", "input", "for", "while", 'and', 'or', 'do', 'repeat',
      'until', 'not', 'return', 'null'];
     this.types = ['int', 'double', 'String', 'char', 'float', 'boolean', 'short', 'void'];
-    this.startToken = [this.currentLine, 0];
-    this.currentLine = 1;
+    this.startToken = [0, 0];
+    this.currentLine = 0;
   }
 
   has_letter() {
@@ -115,7 +115,7 @@ class Lexer {
 
   skip(times=1) {
     this.i+= times;
-    this.startToken[1];
+    this.startToken = [this.currentLine, this.i - this.index_before_this_line];    
   }
 
   insert_newline() {
@@ -128,9 +128,13 @@ class Lexer {
 
   emit_token(type=null) {
     var endIndex = this.i - this.index_before_this_line;
-    this.tokens.push(new Token(type ?? this.token_so_far, this.token_so_far, this.currentLine, this.startToken, endIndex));
+    // console.error(endIndex);
+    this.tokens.push(new Token(type ?? this.token_so_far, this.token_so_far, this.currentLine, this.startToken, [this.currentLine, endIndex]));
     this.token_so_far = '';
-    this.startToken = [this.currentLine, 0];
+    
+    // console.error([this.currentLine, endIndex]);
+    this.startToken = [this.currentLine, endIndex];
+    // console.error(this.startToken);
   }
 
   /**
@@ -139,7 +143,6 @@ class Lexer {
    */
   lex() {
     while (this.i < this.length) {
-
       
       if (this.has_short_comment()){
         this.skip(2);
@@ -151,6 +154,7 @@ class Lexer {
         this.skip(); // newline after comment
         this.currentLine += 1;
         this.index_before_this_line = this.i;
+        this.startToken = [this.currentLine, this.i - this.index_before_this_line]; 
         continue;
       }
 
@@ -237,10 +241,12 @@ class Lexer {
         this.emit_token("\n");
         this.currentLine += 1;
         this.index_before_this_line = this.i;
+        this.startToken = [this.currentLine, this.i - this.index_before_this_line]; 
         while (this.has('\n')) {
           this.skip();
           this.currentLine += 1;
           this.index_before_this_line = this.i;
+          this.startToken = [this.currentLine, this.i - this.index_before_this_line]; 
         }
         continue;
       } 
@@ -611,6 +617,7 @@ class Parser {
               line: line,
               type: NODETYPES.ARRAY_LITERAL,
               startIndex: startIndex,
+              endIndex: this.getCurrentToken().endIndex,
             };
             var args = [];
             this.advance();
@@ -785,10 +792,12 @@ class Parser {
       result.contents = contents;
       if (this.hasNot('end ' + result.name)) {
         textError('compile time', `missing the \'end ${result.name}\' token`, result.line);
+        result.endIndex = this.getCurrentToken().endIndex;
         return result;
       }
       this.advance();
     }
+    result.endIndex = this.getCurrentToken().endIndex;
     return result;
   }
 

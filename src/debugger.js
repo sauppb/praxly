@@ -1,4 +1,4 @@
-import { DebugButton, debugMode, stepButton, stepInto, stepIntoButton, stopButton } from "./common";
+import { DebugButton, stepButton, stepIntoButton, stopButton } from "./common";
 
 
 export function showDebug() {
@@ -22,26 +22,7 @@ export function hideDebug() {
 }
 
 
-DebugButton.addEventListener('mouseup', function() {
-  comingSoon();
-  showDebug();
-  debugMode = true;
-});
-stopButton.addEventListener('mouseup', function() {
-  comingSoon();
-  hideDebug();
-  debugMode = false;
-});
 
-stepIntoButton.addEventListener('mouseup', function() {
-  comingSoon();
-  debugMode = true;
-  stepInto = true;
-});
-stepButton.addEventListener('mouseup', function() {
-  comingSoon();
-  debugMode = true;
-});
 
 /**
  * this is a function that Dr. Johnson made to show me how promises worked. 
@@ -57,7 +38,10 @@ export function waitForStep() {
   }
   
 
-
+/**
+ * this is a future idea for a slowed down version of running the code. 
+ * @returns 
+ */
   export function waitForTimer() {
     return new Promise(resolve => {
       setTimeout(resolve, 3000);
