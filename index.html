@@ -8,7 +8,7 @@
   <link rel="icon" href="/praxly/jmu.ico" type="image/x-icon">
   <div id="toast" class="toast">URL copied to clipboard</div>
   <div id="comingSoon" class="toast">Coming Soon!</div>
-  <script type="module" crossorigin src="/praxly/assets/index-5e11dad1.js"></script>
+  <script type="module" crossorigin src="/praxly/assets/index-0688a06b.js"></script>
 </head>
 <body>
   <header class="nav-bar">
@@ -109,11 +109,29 @@
     <div id="blocklyDiv"></div>
   </main>
 
-  <div class="output">
-    <div class="clearOut">🗑</div>
-    <p class="stdout">output is here</p>
-    <p class="stderr"></p>
+  <div class="bottom-part">
+    <div id="Variable-table-container">
+      <p>Variables</p>
+      <table id="Variable-table-outer">
+        <thead>
+          <tr>
+            <td>Name</td>
+            <td>Type</td>
+            <td>Value</td>
+            <td>Scope</td>
+          </tr>
+        </thead>
+        <tbody id="Variable-table"></tbody>
+      </table>
+    </div>  
+    
+    <div class="output">
+      <div class="clearOut">🗑</div>
+      <p class="stdout">output is here</p>
+      <p class="stderr"></p>
+    </div>
   </div>
+
 
   
 </body>
