@@ -1,6 +1,6 @@
 
 import { TYPES, OP, NODETYPES, PraxlyError, addToPrintBuffer, defaultError, errorOutput, StringFuncs, highlightLine,  getDebugMode, highlightAstNode, textEditor, setStepInto, getStepInto} from "./common";
-import { waitForStep } from "./debugger";
+import {generateVariableTable, waitForStep } from "./debugger";
 
 
 var SCOPES = {};
@@ -123,6 +123,7 @@ export function createExecutable(tree){
             // variableList = {};
             SCOPES = {
                 global: {
+                    name: 'global',
                     parent: "root",
                     variableList: {},
                     functionList: {},
@@ -886,7 +887,7 @@ class Praxly_if_else {
     async evaluate(environment) {
         var cond = await this.condition.evaluate(environment);
         if (cond.value) {
-            await his.code.evaluate(environment);
+            await this.code.evaluate(environment);
         } else {
             await this.alternative.evaluate(environment);
         }
@@ -905,7 +906,8 @@ class Praxly_statement {
         // if (debugMode){
         //     highlightLine(this.json.line, true);
         // }
-        return await this.contents.evaluate(environment);
+        var result = this.contents.evaluate(environment);
+        return result;
     }
 }
 
@@ -928,23 +930,25 @@ class Praxly_codeBlock {
     }
 
     async evaluate(environment) {
-        var newScope = {
-            parent: environment,
-            functionList: {},
-            variableList: {},
-        };
-
+        // var newScope = {
+        //     parent: environment,
+        //     name: 'for loop',
+        //     functionList: {},
+        //     variableList: {},
+        // };
+        // console.warn(this.praxly_blocks);
         for (let i = 0; i < this.praxly_blocks.length; i++) {
             const element = this.praxly_blocks[i];
 
-
             if (getDebugMode()) {
                 let markerId = highlightAstNode(element.json);
-                console.warn(element);
+                let table = document.getElementById('Variable-table');
+                table.innerHTML = "";
+                generateVariableTable(environment, 1);
                 await waitForStep();
                 textEditor.session.removeMarker(markerId);
             }
-            await element.evaluate(newScope);
+            await element.evaluate(environment);
             setStepInto(false);
         }
         return "Exit_Success";
@@ -1178,14 +1182,21 @@ class Praxly_for {
     }
 
     async evaluate(environment) {
+        
         await this.initialization.evaluate(environment);
         var loopCount = 0;
         var cond = await this.condition.evaluate(environment);
         while (loopCount < FOR_LOOP_LIMIT && cond.value) {
+            var newScope = {
+                parent: environment,
+                name: 'for loop',
+                functionList: {},
+                variableList: {},
+            };
             loopCount += 1;
-            await this.statement.evaluate(environment);
-            await this.incrementation.evaluate(environment);
-            cond = await this.condition.evaluate(environment);
+            await this.statement.evaluate(newScope);
+            await this.incrementation.evaluate(newScope);
+            cond = await this.condition.evaluate(newScope);
         }
         if (loopCount === FOR_LOOP_LIMIT) {
             throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
@@ -1203,8 +1214,14 @@ class Praxly_while {
         var loopCount = 0;
         var cond = await this.condition.evaluate(environment);
         while (loopCount < WHILE_LOOP_LIMIT && await this.condition.evaluate(environment).value) {
+            var newScope = {
+                parent: environment,
+                name: 'while loop',
+                functionList: {},
+                variableList: {},
+            };
             loopCount += 1;
-            await this.statement.evaluate(environment);
+            await this.statement.evaluate(newScope);
         }
         if (loopCount === WHILE_LOOP_LIMIT) {
             throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
@@ -1226,8 +1243,14 @@ class Praxly_do_while {
         await this.statement.evaluate(environment);
         var cond = await this.condition.evaluate(environment);
         while (loopCount < WHILE_LOOP_LIMIT && cond.value) {
+            var newScope = {
+                parent: environment,
+                name: 'do while loop',
+                functionList: {},
+                variableList: {},
+            };
             loopCount += 1;
-            await this.statement.evaluate(environment);
+            await this.statement.evaluate(newScope);
         }
         if (loopCount == WHILE_LOOP_LIMIT) {
             throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
@@ -1249,8 +1272,14 @@ class Praxly_repeat_until {
         await this.statement.evaluate(environment);
         var cond = await this.condition.evaluate(environment);
         while (loopCount < WHILE_LOOP_LIMIT && !cond.value) {
+            var newScope = {
+                parent: environment,
+                name: 'repeat until loop',
+                functionList: {},
+                variableList: {},
+            };
             loopCount += 1;
-            await this.statement.evaluate(environment);
+            await this.statement.evaluate(newScope);
         }
         if (loopCount == WHILE_LOOP_LIMIT) {
             throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
@@ -1347,6 +1376,7 @@ class Praxly_function_call {
         //NEW: parameter list is now a linkedList. expect some errors till I fix it.
         var newScope = {
             parent: environment,
+            name: `function: ${this.name}`,
             functionList: {},
             variableList: {},
         };

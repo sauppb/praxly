@@ -108,11 +108,29 @@
     <div id="blocklyDiv"></div>
   </main>
 
-  <div class="output">
-    <div class="clearOut">🗑</div>
-    <p class="stdout">output is here</p>
-    <p class="stderr"></p>
+  <div class="bottom-part">
+    <div id="Variable-table-container">
+      <p>Variables</p>
+      <table id="Variable-table-outer">
+        <thead>
+          <tr>
+            <td>Name</td>
+            <td>Type</td>
+            <td>Value</td>
+            <td>Scope</td>
+          </tr>
+        </thead>
+        <tbody id="Variable-table"></tbody>
+      </table>
+    </div>  
+    
+    <div class="output">
+      <div class="clearOut">🗑</div>
+      <p class="stdout">output is here</p>
+      <p class="stderr"></p>
+    </div>
   </div>
+
 
   <script src="./src/main.js" type="module"></script>
 </body>

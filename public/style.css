@@ -6,6 +6,7 @@ html, body {
 body {
   display: flex;
   flex-direction: column;
+  padding: 2px;
 }
 
 /* header and toolbar */
@@ -400,6 +401,13 @@ main {
   width: 100%;
 }
 
+
+.bottom-part {
+  display: flex; /* Add this */
+  flex-direction: row; /* Add this */  
+  height: 25%;
+}
+
 .output {
   flex: 1;
   box-sizing: border-box;
@@ -408,9 +416,11 @@ main {
   padding: 10px;
   font-size: large;
   border-radius: 10px;
-  overflow: auto; /* Add this */
-  min-height: 2.5em;
+  overflow: auto;
+  
+  height: 100%;
 }
+
 
 .clearOut {
   position: absolute;
@@ -493,4 +503,48 @@ main {
 
 .debugButton {
   display: block;
+}
+
+
+/* Style for the table container */
+#Variable-table-container {
+  display: none;
+  flex: 1;
+  box-sizing: border-box;
+  position: relative;
+  margin: 10px;
+  padding: 10px;
+  font-size: large;
+  border-radius: 10px;
+  overflow: auto;
+  background-color: #ffffff;
+  
+  height: 100%;
+}
+
+/* Style for the table */
+#Variable-table-outer {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Style for table headers */
+#Variable-table-outer th {
+  background-color: #f2f2f2;
+  padding: 10px;
+  text-align: left;
+  border: 2px solid #000000; /* Distinct header row */
+}
+
+/* Style for table cells */
+#Variable-table-outer td {
+  padding: 10px;
+  border: 1px solid #000000; /* Pretty borders for entries */
+}
+
+
+
+/* Hover effect */
+#Variable-table-outer tbody tr:hover {
+  background-color: #e2e2e2;
 }

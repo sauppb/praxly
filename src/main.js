@@ -71,7 +71,7 @@ let isResizing = false;
 
 
 
-runButton.addEventListener('mouseup', runTasks);
+runButton.addEventListener('click', runTasks);
 darkModeButton.addEventListener('click', () => { darkMode ? setLight() : setDark(); });
 clearOut.addEventListener('click', () => {
   clearOutput();
@@ -177,8 +177,6 @@ async function runTasks() {
     return;
   }
   const executable = createExecutable(mainTree);
-  console.warn('here it is');
-  console.log(executable);
   try {
     await executable.evaluate();
     setDebugMode(false);
@@ -186,7 +184,7 @@ async function runTasks() {
     // if not previously handled (by PraxlyError)
     if (!errorOutput) {
       defaultError(error);
-      console.error(error.message);
+      console.error(error);
     }
   }
   stdOut.innerHTML = printBuffer;
@@ -369,6 +367,7 @@ DebugButton.addEventListener('mouseup', function() {
 stopButton.addEventListener('mouseup', function() {
   hideDebug();
   setDebugMode(false);
+  runButton.click();
 });
 
 stepIntoButton.addEventListener('mouseup', function() {
@@ -386,3 +385,5 @@ stepButton.addEventListener('mouseup', function() {
   }
   setDebugMode(true);
 });
+
+// window.location.href = 'landingPage.html';

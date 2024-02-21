@@ -29,6 +29,11 @@ export const TYPES = {
     VOID:           "void",
   };
 
+  
+  export function isPrimative(type){
+    const primatives = ["boolean","char","double","float","int","short","String"];
+    return primatives.includes(type);
+  }
 
   /**
    * this is the 'enum' that I refer to when dealing with operations.
@@ -215,7 +220,7 @@ export function highlightLine(line) {
  * @returns the marker id associated with the marker. This should not be needed.
  */
 export function highlightAstNode(node) {
-  console.log(`attempting to highlight index [${node.startIndex[0]},${ node.startIndex[1]}] to [${ node.endIndex[0]}, ${ node.endIndex[1] - 1}]`)
+  // console.log(`attempting to highlight index [${node.startIndex[0]},${ node.startIndex[1]}] to [${ node.endIndex[0]}, ${ node.endIndex[1] - 1}]`)
   var session = textEditor.session;
 
   // var errorRange = indextoAceRange(line - 1);

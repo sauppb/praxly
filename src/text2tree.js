@@ -10,8 +10,8 @@ export function text2tree() {
   let lexer = new Lexer(code);
   let ir;
   let tokens = lexer.lex();
-    console.info('here are the tokens:');
-    console.debug(tokens);
+    // console.info('here are the tokens:');
+    // console.debug(tokens);
   let parser = new Parser(tokens);
   ir = parser?.parse();
   return ir;
@@ -638,11 +638,10 @@ class Parser {
             this.advance();
             return result; 
           case 'Location':
-          case 'Type':
             var l = this.parse_location();
             if (this.hasAny('=', '<-', "←", "⟵")) {
               this.advance();
-              var value = this.parse_expression(9)
+              var value = this.parse_expression(9);
               l = {
                 type: NODETYPES.ASSIGNMENT,
                 blockID: "code",
