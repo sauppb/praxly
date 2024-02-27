@@ -10,8 +10,8 @@ export function text2tree() {
   let lexer = new Lexer(code);
   let ir;
   let tokens = lexer.lex();
-    // console.info('here are the tokens:');
-    // console.debug(tokens);
+    console.info('here are the tokens:');
+    console.debug(tokens);
   let parser = new Parser(tokens);
   ir = parser?.parse();
   return ir;
@@ -24,7 +24,7 @@ class Token {
   constructor(type, text, line, startIndex, endIndex) {
     this.token_type = type;
     this.value = text;
-    this.line = line;
+    this.line = line + 1;
     this.startIndex = startIndex;
     this.endIndex = endIndex;
   }
@@ -242,12 +242,12 @@ class Lexer {
         this.currentLine += 1;
         this.index_before_this_line = this.i;
         this.startToken = [this.currentLine, this.i - this.index_before_this_line]; 
-        while (this.has('\n')) {
-          this.skip();
-          this.currentLine += 1;
-          this.index_before_this_line = this.i;
-          this.startToken = [this.currentLine, this.i - this.index_before_this_line]; 
-        }
+        // while (this.has('\n')) {
+        //   this.skip();
+        //   this.currentLine += 1;
+        //   this.index_before_this_line = this.i;
+        //   this.startToken = [this.currentLine, this.i - this.index_before_this_line]; 
+        // }
         continue;
       } 
       if (!this.has_letter()){
@@ -679,11 +679,8 @@ class Parser {
             }
             l.endIndex = this.getCurrentToken().endIndex;
             return l;
-          case '\n': //note: add custom behavior in the future, treat newlines kind of like comments
-          this.advance();  
-          return;
           default: 
-            textError("parsing", "missing or invalid base expression. most likely due to a missing operand", line);
+            textError("parsing", `invalid Token ${this.getCurrentToken().value}`, line);
         }
     }
   }
@@ -810,17 +807,21 @@ class Parser {
     }
   }
 
+  /**
+   * parses a block of statements (think curlybraces)
+   * @param  {...any} endToken any tokens that will determine the end of the block. 
+   * @returns 
+   */
   parse_block(...endToken) {
     let praxly_blocks = [];
     while (this.hasNotAny(...endToken)) {
       
-      while (this.has('\n')) {
-        this.advance();
-      }
       if (this.has('EOF')){
         break;
       }
       praxly_blocks.push(this.parse_statement());
+      // note: I for some reason always assumed that statements will not parse the final token, so I always did it here. 
+      // I think its because I assumed that all statements end with a newline. 
       this.advance();
     }
     return {
@@ -838,6 +839,10 @@ class Parser {
       blockID: 'code',
       line: line,
     };
+    if(this.has('\n')){
+      result.type = NODETYPES.NEWLINE;
+      return result;
+    }
 
     if (this.has("if")) {
       result.type = NODETYPES.IF;
@@ -1033,6 +1038,11 @@ class Parser {
     else {
       // this is a stand alone expression as a statement.
       let contents = this.parse_expression(9);
+
+      // if (!contents?.startIndex ?? false){
+      //   console.error(this.getCurrentToken());
+      //   console.error(this.tokens[this.i + 1]);
+      // }
 
       if (this.has(';')) {
         this.advance();

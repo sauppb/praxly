@@ -18,13 +18,7 @@ export function definePraxlyBlocks(workspace) {
     }
   };
 
-  //this doesn't work
-  // function appendparameter(str){
-  //   // const oldblock = workspace.getBlockById(id);
-  //   var newblock = workspace.newBlock('praxly_literal_block');
-  //   this.getInput(str).connection.connect(newblock.outputConnection);
-  //   newblock.initSvg();
-  // }
+
 
   Blockly.Extensions.registerMutator('praxly_arity', callbacks);
 
@@ -434,6 +428,21 @@ export function definePraxlyBlocks(workspace) {
           "name": "COMMENT",
           "text": "comment"
         }
+      ],
+      "inputsInline": true,
+      "previousStatement": null,
+      "nextStatement": null,
+      "style": 'comment_blocks',
+      "tooltip": "",
+      "helpUrl": ""
+    },
+    {
+      "type": "praxly_emptyline_block",
+      "message0": "%1",
+      "args0": [
+        {
+          "type": "input_dummy"
+        },
       ],
       "inputsInline": true,
       "previousStatement": null,

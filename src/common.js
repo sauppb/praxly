@@ -90,7 +90,7 @@ export const NODETYPES = {
 }
 
 
-
+// this is the special Error type that is thrown when there is in error in the ide. 
 export class PraxlyError extends Error {
   constructor(message, line) {
     super(`<pre>error occurred on line ${line}:\n\t${message}</pre>`);
@@ -99,6 +99,7 @@ export class PraxlyError extends Error {
     errorOutput = this.message;       // not appending run-time error
   }
 }
+
 
 export const MAX_LOOP = 100;  // prevents accidental infinite loops
 export var printBuffer = "";
@@ -109,6 +110,10 @@ export var markersBuffer = [];
 
 export function addToPrintBuffer(message) {
   printBuffer += message;
+
+  //new: displays the live output
+  const stdOut = document.querySelector('.stdout');
+  stdOut.innerHTML = printBuffer;
 }
 
 /**
@@ -301,3 +306,17 @@ export const DebugButton = document.getElementById('DebugButton');
 export const stepButton = document.getElementById('stepButton');
 export const stopButton = document.getElementById('stopButton');
 export const stepIntoButton = document.getElementById('stepIntoButton');
+
+
+/**
+ * This function will present a coming soon toast. 
+ * This works as a great eventListener for buttons that are not yet implemented.
+ */
+export function comingSoon() {
+  const ComingSoonToast = document.getElementById('comingSoon');
+
+  ComingSoonToast.style.display = 'block';
+  setTimeout(function () {
+    ComingSoonToast.style.display = 'none';
+  }, 3000); // Hide the toast after 3 seconds (adjust as needed)
+}

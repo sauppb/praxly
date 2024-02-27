@@ -20,7 +20,8 @@ class ReturnException extends Error {
 }
 
 /**
- * This function will take the AST and creates an executable version of the tree. 
+ * This function will take the Intermediate Representation of the AST and creates an executable version of the tree. 
+ * This also gives it a chance to run static analysis. 
  * @param {*} tree  the abstract Syntax tree Intermediate Representation.
  * @returns 
  */
@@ -105,7 +106,6 @@ export function createExecutable(tree){
 
         case NODETYPES.SPECIAL_STRING_FUNCCALL:
             var args = [];
-            // console.error(blockjson.right);
             tree.right.args.forEach((arg) => {
                 args.push(createExecutable(arg));
             });
@@ -114,13 +114,11 @@ export function createExecutable(tree){
         case NODETYPES.CODEBLOCK:
             let statements = tree.statements;
             let result = statements.map((statement) => {
-                // console.error(statement);
                 return createExecutable(statement);
             });
             return new Praxly_codeBlock(result);
 
         case NODETYPES.PROGRAM:
-            // variableList = {};
             SCOPES = {
                 global: {
                     name: 'global',
@@ -139,7 +137,7 @@ export function createExecutable(tree){
                 return new Praxly_if(createExecutable(tree.condition), createExecutable(tree.statement), tree);
             }
             catch (error) {
-                // console.error('An error occurred: empty statement', error);
+                
                 return new Praxly_statement(null);
             }
 
@@ -148,7 +146,7 @@ export function createExecutable(tree){
                 return new Praxly_if_else(createExecutable(tree.condition), createExecutable(tree.statement), createExecutable(tree.alternative), tree);
             }
             catch (error) {
-                // console.error('An error occurred: empty statement', error);
+                
                 return new Praxly_statement(null);
             }
 
@@ -187,7 +185,6 @@ export function createExecutable(tree){
                 return new Praxly_Location(tree, index);
             }
             catch (error) {
-                // console.error('assignment error: ', error);
                 return;
             }
 
@@ -271,10 +268,7 @@ export function createExecutable(tree){
             return new Praxly_array_literal(args, tree);
 
         case NODETYPES.ARRAY_REFERENCE:
-            // console.error(createExecutable(blockjson.index));
             return new Praxly_array_reference(tree.name, createExecutable(tree.index), tree);
-
-        //gohere
 
         case NODETYPES.ARRAY_REFERENCE_ASSIGNMENT:
             return new Praxly_array_reference_assignment(tree.name, createExecutable(tree.index), createExecutable(tree.value), tree);
@@ -282,7 +276,7 @@ export function createExecutable(tree){
         case 'INVALID':
             return new Praxly_invalid(tree);
 
-        case 'EMPTYLINE':
+        case NODETYPES.NEWLINE:
             return new Praxly_emptyLine(tree);
 
         default:
@@ -292,8 +286,8 @@ export function createExecutable(tree){
 
 class Praxly_array_reference_assignment {
 
-    constructor(name, index, value, blockjson) {
-        this.json = blockjson;
+    constructor(name, index, value, node) {
+        this.json = node;
         this.name = name;
         this.value = value;
         this.index = index;
@@ -307,9 +301,9 @@ class Praxly_array_reference_assignment {
 
 class Praxly_single_line_comment {
 
-    constructor(value, blockjson) {
+    constructor(value, node) {
         this.jsonType = 'Praxly_single_line_comment';
-        this.json = blockjson;
+        this.json = node;
         this.value = value;
     }
 
@@ -319,9 +313,9 @@ class Praxly_single_line_comment {
 
 class Praxly_comment {
 
-    constructor(value, blockjson) {
+    constructor(value, node) {
         this.jsonType = 'Praxly_comment';
-        this.json = blockjson;
+        this.json = node;
         this.value = value;
     }
 
@@ -331,9 +325,9 @@ class Praxly_comment {
 
 class Praxly_int {
 
-    constructor(value, blockjson) {
+    constructor(value, node) {
         this.jsonType = 'Praxly_int';
-        this.json = blockjson;
+        this.json = node;
         this.value = Math.floor(value);
         this.realType = TYPES.INT;
     }
@@ -345,9 +339,9 @@ class Praxly_int {
 
 class Praxly_short {
 
-    constructor(value, blockjson) {
+    constructor(value, node) {
         this.jsonType = 'Praxly_int';
-        this.json = blockjson;
+        this.json = node;
         this.value = Math.floor(value);
         this.realType = TYPES.SHORT;
     }
@@ -359,9 +353,9 @@ class Praxly_short {
 
 class Praxly_double {
 
-    constructor(value, blockjson) {
+    constructor(value, node) {
         this.jsonType = 'Praxly_double';
-        this.json = blockjson;
+        this.json = node;
         this.value = parseFloat(value);
         this.realType = TYPES.DOUBLE;
     }
@@ -373,9 +367,9 @@ class Praxly_double {
 
 class Praxly_float {
 
-    constructor(value, blockjson) {
+    constructor(value, node) {
         this.jsonType = 'Praxly_double';
-        this.json = blockjson;
+        this.json = node;
         this.value = parseFloat(value);
         this.realType = TYPES.FLOAT;
     }
@@ -387,8 +381,8 @@ class Praxly_float {
 
 class Praxly_boolean {
 
-    constructor(value, blockjson) {
-        this.json = blockjson;
+    constructor(value, node) {
+        this.json = node;
         this.jsonType = 'Praxly_boolean';
         this.value = value;
         this.realType = TYPES.BOOLEAN;
@@ -401,9 +395,9 @@ class Praxly_boolean {
 
 class Praxly_char {
 
-    constructor(value, blockjson) {
+    constructor(value, node) {
         this.value = value;
-        this.json = blockjson;
+        this.json = node;
         this.jsonType = 'Praxly_String';
         this.realType = TYPES.CHAR;
     }
@@ -415,9 +409,9 @@ class Praxly_char {
 
 class Praxly_String {
 
-    constructor(value, blockjson) {
+    constructor(value, node) {
         this.jsonType = 'Praxly_String';
-        this.json = blockjson;
+        this.json = node;
         this.value = value;
         this.realType = TYPES.STRING;
     }
@@ -429,9 +423,9 @@ class Praxly_String {
 
 class Praxly_null {
 
-    constructor(value, blockjson) {
+    constructor(value, node) {
         this.jsonType = 'Praxly_null';
-        this.json = blockjson;
+        this.json = node;
         this.value = value;
         this.realType = TYPES.NULL;
     }
@@ -443,10 +437,10 @@ class Praxly_null {
 
 class Praxly_array_literal {
 
-    constructor(elements, blockjson) {
+    constructor(elements, node) {
         this.elements = elements;
-        this.blockjson = blockjson;
-        this.json = blockjson;
+        this.node = node;
+        this.json = node;
         this.jsonType = 'Praxly_array';
 
         // set array type to "largest type" of element
@@ -487,8 +481,8 @@ function valueToString(child, json) {
 
 class Praxly_print {
 
-    constructor(value, blockjson) {
-        this.json = blockjson;
+    constructor(value, node) {
+        this.json = node;
         this.expression = value;
     }
 
@@ -502,8 +496,8 @@ class Praxly_print {
 
 class Praxly_println {
 
-    constructor(value, blockjson) {
-        this.json = blockjson;
+    constructor(value, node) {
+        this.json = node;
         this.expression = value;
     }
 
@@ -517,8 +511,8 @@ class Praxly_println {
 
 class Praxly_input {
 
-    constructor(blockjson) {
-        this.json = blockjson;
+    constructor(node) {
+        this.json = node;
     }
 
     async evaluate(environment) {
@@ -533,8 +527,8 @@ class Praxly_input {
 
 class Praxly_return {
 
-    constructor(value, blockjson) {
-        this.json = blockjson;
+    constructor(value, node) {
+        this.json = node;
         this.expression = value;
         // this.isreturn = true;
     }
@@ -548,8 +542,8 @@ class Praxly_addition {
     a_operand;
     b_operand;
 
-    constructor(a, b, blockjson) {
-        this.json = blockjson;
+    constructor(a, b, node) {
+        this.json = node;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -570,8 +564,8 @@ class Praxly_subtraction {
     a_operand;
     b_operand;
 
-    constructor(a, b, blockjson) {
-        this.json = blockjson;
+    constructor(a, b, node) {
+        this.json = node;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -592,8 +586,8 @@ class Praxly_multiplication {
     a_operand;
     b_operand;
 
-    constructor(a, b, blockjson) {
-        this.json = blockjson;
+    constructor(a, b, node) {
+        this.json = node;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -614,8 +608,8 @@ class Praxly_division {
     a_operand;
     b_operand;
 
-    constructor(a, b, blockjson) {
-        this.json = blockjson;
+    constructor(a, b, node) {
+        this.json = node;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -639,8 +633,8 @@ class Praxly_modulo {
     a_operand;
     b_operand;
 
-    constructor(a, b, blockjson) {
-        this.json = blockjson;
+    constructor(a, b, node) {
+        this.json = node;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -664,8 +658,8 @@ class Praxly_exponent {
     a_operand;
     b_operand;
 
-    constructor(a, b, blockjson) {
-        this.json = blockjson;
+    constructor(a, b, node) {
+        this.json = node;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -686,8 +680,8 @@ class Praxly_and {
     a_operand;
     b_operand;
 
-    constructor(a, b, blockjson) {
-        this.json = blockjson;
+    constructor(a, b, node) {
+        this.json = node;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -708,8 +702,8 @@ class Praxly_or {
     a_operand;
     b_operand;
 
-    constructor(a, b, blockjson) {
-        this.json = blockjson;
+    constructor(a, b, node) {
+        this.json = node;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -730,8 +724,8 @@ class Praxly_equals {
     a_operand;
     b_operand;
 
-    constructor(a, b, blockjson) {
-        this.json = blockjson;
+    constructor(a, b, node) {
+        this.json = node;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -752,8 +746,8 @@ class Praxly_not_equals {
     a_operand;
     b_operand;
 
-    constructor(a, b, blockjson) {
-        this.json = blockjson;
+    constructor(a, b, node) {
+        this.json = node;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -774,8 +768,8 @@ class Praxly_greater_than {
     a_operand;
     b_operand;
 
-    constructor(a, b, blockjson) {
-        this.json = blockjson;
+    constructor(a, b, node) {
+        this.json = node;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -796,8 +790,8 @@ class Praxly_less_than {
     a_operand;
     b_operand;
 
-    constructor(a, b, blockjson) {
-        this.json = blockjson;
+    constructor(a, b, node) {
+        this.json = node;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -818,8 +812,8 @@ class Praxly_greater_than_equal {
     a_operand;
     b_operand;
 
-    constructor(a, b, blockjson) {
-        this.json = blockjson;
+    constructor(a, b, node) {
+        this.json = node;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -840,8 +834,8 @@ class Praxly_less_than_equal {
     a_operand;
     b_operand;
 
-    constructor(a, b, blockjson) {
-        this.json = blockjson;
+    constructor(a, b, node) {
+        this.json = node;
         this.a_operand = a;
         this.b_operand = b;
     }
@@ -860,8 +854,8 @@ class Praxly_less_than_equal {
 
 class Praxly_if {
 
-    constructor(condition, code, blockjson) {
-        this.json = blockjson;
+    constructor(condition, code, node) {
+        this.json = node;
         this.condition = condition;
         this.code = code;
     }
@@ -877,8 +871,8 @@ class Praxly_if {
 
 class Praxly_if_else {
 
-    constructor(condition, code, alternative, blockjson) {
-        this.json = blockjson;
+    constructor(condition, code, alternative, node) {
+        this.json = node;
         this.condition = condition;
         this.code = code;
         this.alternative = alternative;
@@ -897,9 +891,9 @@ class Praxly_if_else {
 
 class Praxly_statement {
 
-    constructor(contents, blockjson) {
+    constructor(contents, node) {
         this.contents = contents;
-        this.json = blockjson;
+        this.json = node;
     }
 
     async evaluate(environment) {
@@ -930,16 +924,19 @@ class Praxly_codeBlock {
     }
 
     async evaluate(environment) {
+
+        // I originally had what I would call 'extreme shadowing'. We changed this for the debugger. 
         // var newScope = {
         //     parent: environment,
         //     name: 'for loop',
         //     functionList: {},
         //     variableList: {},
         // };
-        // console.warn(this.praxly_blocks);
         for (let i = 0; i < this.praxly_blocks.length; i++) {
             const element = this.praxly_blocks[i];
-
+            if (element.json.type == NODETYPES.NEWLINE){
+                continue;
+            }
             if (getDebugMode()) {
                 let markerId = highlightAstNode(element.json);
                 let table = document.getElementById('Variable-table');
@@ -957,13 +954,10 @@ class Praxly_codeBlock {
 
 // searches through the linked list to find the nearest match to enable shadowing.
 function accessLocation(environment, json) {
-   
-
     if (environment.variableList.hasOwnProperty(json.name)) {
         return environment.variableList;
     } else if (environment.parent === "root") {
         return null;
-        // throw new PraxlyError(`Variable ${json.name} does not exist.`, json.line);
     } else {
         return accessLocation(environment.parent, json);
     }
@@ -1005,11 +999,11 @@ function typeCoercion(varType, praxlyObj) {
 
 class Praxly_assignment {
 
-    constructor(json, location, expression, blockjson) {
-        this.json = blockjson;
+    constructor(json, location, expression, node) {
+        this.json = node;
         this.location = location;
         this.value = expression;
-        // console.error(this.value);
+         
     }
 
     async evaluate(environment) {
@@ -1050,7 +1044,7 @@ class Praxly_vardecl {
         this.location = location;
         this.value = expression;
         this.name = location.name;
-        // console.error(this.value);
+         
     }
 
     async evaluate(environment) {
@@ -1089,13 +1083,13 @@ class Praxly_vardecl {
         if (environment.variableList.hasOwnProperty(this.name)) {
             throw new PraxlyError(`variable ${this.name} has already been declared in this scope. `, this.json.line);
         }
-        // console.error(this.json);
+        
         if (!can_assign(this.json.varType, valueEvaluated.realType, this.json.line)) {
             throw new PraxlyError(`incompatible types: ${valueEvaluated.realType} cannot be converted to ${this.json.varType}`, this.json.line);
         }
         valueEvaluated = typeCoercion(this.json.varType, valueEvaluated);
         environment.variableList[this.name] = valueEvaluated;
-        // console.log(environment);
+        
         return;
     }
 }
@@ -1107,7 +1101,7 @@ class Praxly_array_assignment {
         this.location = location;
         this.value = expression;
         this.name = location.name;
-        // console.error(this.value);
+         
     }
 
     async evaluate(environment) {
@@ -1125,8 +1119,8 @@ class Praxly_array_assignment {
 
 class Praxly_variable {
 
-    constructor(json, name, blockjson) {
-        this.json = blockjson;
+    constructor(json, name, node) {
+        this.json = node;
         this.name = name;
     }
 
@@ -1162,10 +1156,6 @@ class Praxly_Location {
             var ind = await this.index.evaluate(environment);
             return await storage[this.name].elements[ind.value].evaluate(environment);
         } else {
-            // console.warn(storage);
-            // console.warn(this.name);
-            // console.warn(storage[this.name]);
-            // console.warn(storage[this.name].evaluate(environment));
             return await storage[this.name].evaluate(environment);
         }
     }
@@ -1173,8 +1163,8 @@ class Praxly_Location {
 
 class Praxly_for {
 
-    constructor(initialization, condition, incrementation, statement, blockjson) {
-        this.json = blockjson;
+    constructor(initialization, condition, incrementation, statement, node) {
+        this.json = node;
         this.initialization = initialization;
         this.condition = condition;
         this.incrementation = incrementation;
@@ -1205,8 +1195,8 @@ class Praxly_for {
 }
 
 class Praxly_while {
-    constructor(condition, statement, blockjson) {
-        this.json = blockjson;
+    constructor(condition, statement, node) {
+        this.json = node;
         this.condition = condition;
         this.statement = statement;
     }
@@ -1232,8 +1222,8 @@ class Praxly_while {
 
 class Praxly_do_while {
 
-    constructor(condition, statement, blockjson) {
-        this.json = blockjson;
+    constructor(condition, statement, node) {
+        this.json = node;
         this.condition = condition;
         this.statement = statement;
     }
@@ -1261,8 +1251,8 @@ class Praxly_do_while {
 
 class Praxly_repeat_until {
 
-    constructor(condition, statement, blockjson) {
-        this.json = blockjson;
+    constructor(condition, statement, node) {
+        this.json = node;
         this.condition = condition;
         this.statement = statement;
     }
@@ -1290,8 +1280,8 @@ class Praxly_repeat_until {
 
 class Praxly_not {
 
-    constructor(value, blockjson) {
-        this.json = blockjson;
+    constructor(value, node) {
+        this.json = node;
         this.expression = value;
     }
 
@@ -1303,8 +1293,8 @@ class Praxly_not {
 
 class Praxly_negate {
 
-    constructor(value, blockjson) {
-        this.json = blockjson;
+    constructor(value, node) {
+        this.json = node;
         this.expression = value;
     }
 
@@ -1322,18 +1312,17 @@ class Praxly_invalid {
 
     async evaluate(environment) {
         console.info(`invalid tree. Problem detected here:`);
-        // throw new Error('problem');
     }
 }
 
 class Praxly_function_declaration {
 
-    constructor(returnType, name, params, contents, blockjson) {
+    constructor(returnType, name, params, contents, node) {
         this.returnType = returnType;
         this.name = name;
         this.params = params;
         this.contents = contents;
-        this.json = blockjson;
+        this.json = node;
     }
 
     async evaluate(environment) {
@@ -1357,10 +1346,10 @@ function findFunction(name, environment, json) {
 
 class Praxly_function_call {
 
-    constructor(name, args, blockjson) {
+    constructor(name, args, node) {
         this.args = args;
         this.name = name;
-        this.json = blockjson;
+        this.json = node;
     }
 
     //this one was tricky
@@ -1391,13 +1380,10 @@ class Praxly_function_call {
                 throw new PraxlyError(`argument ${parameterName} does not match parameter type.\n\tExpected: ${parameterType}\n\tActual: ${argument.realType}`);
             }
         }
-        // console.log(`here is the new scope in the function named ${this.name}`);
-        // console.log(newScope);
 
         // call the user's function
         let result = null;
         try {
-            // console.log(functionContents);
             result = await functionContents.evaluate(newScope);
         }
         catch (error) {
@@ -1426,9 +1412,9 @@ class Praxly_function_call {
 }
 
 class Praxly_String_funccall {
-    constructor(blockjson, reciever, name, args){
+    constructor(node, reciever, name, args){
         this.args = args;
-        this.blockjson = blockjson;
+        this.node = node;
         this.name = name;
         this.reciever = reciever
     }
@@ -1471,15 +1457,15 @@ class Praxly_String_funccall {
                 result = str.value.substring(startIndex.value, endIndex.value);
                 return new Praxly_String(result);
             default: 
-                throw new PraxlyError(`unrecognized function name ${this.name} for strings.`, this.blockjson.line);
+                throw new PraxlyError(`unrecognized function name ${this.name} for strings.`, this.node.line);
         }
     }
 
 }
 class Praxly_emptyLine {
 
-    constructor(blockjson) {
-        this.blockjson = blockjson;
+    constructor(node) {
+        this.json = node;
     }
 
     async evaluate(environment) {
@@ -1487,6 +1473,13 @@ class Praxly_emptyLine {
     }
 }
 
+/**
+ * This function is used to determine if something can be assigned. 
+ * @param {*} varType 
+ * @param {*} expressionType 
+ * @param {*} line 
+ * @returns 
+ */
 function can_assign(varType, expressionType, line) {
     if (varType === expressionType) {
         return true;

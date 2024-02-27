@@ -54,18 +54,7 @@ export function waitForStep() {
 
 
 
-/**
- * This function will present a coming soon toast. 
- * This works as a great eventListener for buttons that are not yet implemented.
- */
-function comingSoon() {
-  const ComingSoonToast = document.getElementById('comingSoon');
 
-  ComingSoonToast.style.display = 'block';
-  setTimeout(function () {
-    ComingSoonToast.style.display = 'none';
-  }, 3000); // Hide the toast after 3 seconds (adjust as needed)
-}
 
 
 

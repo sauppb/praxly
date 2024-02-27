@@ -20,7 +20,7 @@ import { generateUrl, loadFromUrl } from './share';
 
 // import { readFileSync } from 'fs';
 import { codeText } from './examples';
-import { DebugButton, addBlockErrors, annotationsBuffer, clearErrors, clearOutput, defaultError, errorOutput, getDebugMode, printBuffer, setDebugMode, setStepInto, stepButton, stepIntoButton, stopButton, textEditor } from './common';
+import { DebugButton, addBlockErrors, annotationsBuffer, clearErrors, clearOutput, comingSoon, defaultError, errorOutput, getDebugMode, printBuffer, setDebugMode, setStepInto, stepButton, stepIntoButton, stopButton, textEditor } from './common';
 import { hideDebug, showDebug } from './debugger';
 
 const praxlyGenerator = makeGenerator();
@@ -46,6 +46,7 @@ const runButton = document.getElementById('runButton');
 const shareButton = document.getElementById('share');
 const darkModeButton = document.getElementById('darkMode');
 const helpButton = document.getElementById("help");
+const infoButton = document.getElementById('info');
 const manualButton = document.getElementById("reference");
 const resizeBar = document.querySelector('.resizeBar');
 const blockPane = document.querySelector('#blocklyDiv');
@@ -60,7 +61,7 @@ const bugButton = document.getElementById("BugButton");
 const changelogButton = document.getElementById('ChangelogButton');
 const exampleDiv = document.getElementById('exampleTable');
 const githubButton = document.getElementById('GitHubButton');
-const BenButton = document.getElementById('AboutButton');
+const peopleButton = document.getElementById('AboutButton');
 const titleRefresh = document.getElementById('titleRefresh');
 
 
@@ -119,8 +120,8 @@ githubButton.addEventListener('click', function () {
   window.open("https://github.com/sauppb/praxly", '_blank');
 });
 
-BenButton.addEventListener('click', function () {
-  window.open('https://sauppb.github.io/website/');
+peopleButton.addEventListener('click', function () {
+  window.open('people.html');
 });
 
 titleRefresh.addEventListener('click', function () {
@@ -148,9 +149,13 @@ textPane.addEventListener('click', () => {
 var span = document.getElementsByClassName("close")[0];
 
 // When the user clicks the button, open the modal
-helpButton.onclick = function () {
+infoButton.onclick = function () {
   setLight();
   modal.style.display = "block";
+}
+
+helpButton.onclick = function () {
+  comingSoon();
 }
 
 // When the user clicks on <span> (x), close the modal
@@ -171,7 +176,7 @@ window.onclick = function (event) {
  * this function gets called every time the run button is pressed.
  */
 async function runTasks() {
-  console.log(mainTree);
+  
   if (!textEditor.getValue().trim()) {
     alert('there is nothing to run :( \n try typing some code or dragging some blocks first.');
     return;
@@ -212,6 +217,7 @@ export function turnCodeToBLocks() {
   workspace.clear();
   tree2blocks(workspace, mainTree);
   workspace.render();
+  //comment this out to stop the live error feedback. 
   textEditor.session.setAnnotations(annotationsBuffer);
   addBlockErrors(workspace);
 }
@@ -277,12 +283,6 @@ document.addEventListener("keydown", function (event) {
     // Prevent the default save action (e.g., opening the save dialog, reloading the page)
     event.preventDefault();
     runTasks();
-    // clearOutput();
-    // clearErrors();
-    // const trees = createExecutable(mainTree);
-    // trees.evaluate();
-    // stdOut.innerHTML = printBuffer;
-    // stdErr.innerHTML = errorOutput;
     // console.log(trees);
   }
 });
@@ -339,7 +339,6 @@ function GenerateExamples() {
 }
 
 let examples = GenerateExamples();
-// console.log(`the examples are: ${Object.keys(examples)}`);
 
 function applyExample(exampleName) {
   // append the example to the code
@@ -385,5 +384,3 @@ stepButton.addEventListener('mouseup', function() {
   }
   setDebugMode(true);
 });
-
-// window.location.href = 'landingPage.html';
