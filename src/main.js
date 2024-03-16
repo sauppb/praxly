@@ -82,7 +82,6 @@ clearOut.addEventListener('click', () => {
 });
 definePraxlyBlocks(workspace);
 
-// blockUpdatesButton.innerText = 'block updates: live ';
 workspace.addChangeListener(turnBlocksToCode);
 textEditor.addEventListener("input", turnCodeToBLocks);
 
@@ -186,14 +185,15 @@ async function runTasks() {
     await executable.evaluate();
     setDebugMode(false);
   } catch (error) {
+    
     // if not previously handled (by PraxlyError)
     if (!errorOutput) {
       defaultError(error);
       console.error(error);
     }
   }
-  stdOut.innerHTML = printBuffer;
-  stdErr.innerHTML = errorOutput;
+  // stdOut.innerHTML = printBuffer;
+  // stdErr.innerHTML = errorOutput;
   if (errorOutput) {
     textEditor.session.setAnnotations(annotationsBuffer);
     addBlockErrors(workspace);
@@ -211,6 +211,12 @@ async function runTasks() {
 export function turnCodeToBLocks() {
   // I need to make the listeners only be one at a time to prevent an infinite loop.
   workspace.removeChangeListener(turnBlocksToCode);
+  if (getDebugMode()){
+    setDebugMode(false);
+    setStepInto(false);
+    stepButton.click();
+    
+  }
   clearOutput();
   clearErrors();
   mainTree = text2tree();
@@ -363,10 +369,11 @@ DebugButton.addEventListener('mouseup', function() {
   setDebugMode(true);
   runTasks();
 });
-stopButton.addEventListener('mouseup', function() {
+stopButton.addEventListener('click', function() {
   hideDebug();
   setDebugMode(false);
-  runButton.click();
+  setStepInto(false);
+  stepButton.click();
 });
 
 stepIntoButton.addEventListener('mouseup', function() {
