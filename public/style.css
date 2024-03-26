@@ -206,12 +206,12 @@ h1 {
 
 
 
-#help {
-  background-image: url('./images/help.png');
-  
+#settings {
+  background-image: url('./images/settings.png');
+  background-color: #616161;
 }
 
-#help:hover {
+#settings:hover {
   background-image: none;
   background-color: #9e9e9e; /* Lighter blue color */
 }

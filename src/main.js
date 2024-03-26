@@ -45,7 +45,7 @@ const runButton = document.getElementById('runButton');
 
 const shareButton = document.getElementById('share');
 const darkModeButton = document.getElementById('darkMode');
-const helpButton = document.getElementById("help");
+const settingsButton = document.getElementById("settings");
 const infoButton = document.getElementById('info');
 const manualButton = document.getElementById("reference");
 const resizeBar = document.querySelector('.resizeBar');
@@ -153,8 +153,17 @@ infoButton.onclick = function () {
   modal.style.display = "block";
 }
 
-helpButton.onclick = function () {
-  comingSoon();
+//quick and dirty way of making this gone by default. 
+let darkmodediv = document.querySelector('.settingsOptions');
+darkmodediv.style.display = 'none';
+
+settingsButton.onclick = function () {
+  let darkmodediv = document.querySelector('.settingsOptions');
+  if (darkmodediv.style.display === 'none') {
+    darkmodediv.style.display = ''; // Show the button
+  } else {
+    darkmodediv.style.display = 'none'; // Hide the button
+  }
 }
 
 // When the user clicks on <span> (x), close the modal
@@ -220,6 +229,8 @@ export function turnCodeToBLocks() {
   clearOutput();
   clearErrors();
   mainTree = text2tree();
+  //uncomment to print the ir
+  console.log(mainTree);
   workspace.clear();
   tree2blocks(workspace, mainTree);
   workspace.render();
@@ -379,7 +390,7 @@ stopButton.addEventListener('click', function() {
 stepIntoButton.addEventListener('mouseup', function() {
   // comingSoon();
   if (!getDebugMode()){
-    alert('the program has completed.');
+    endDebugPrompt();
   }
   setDebugMode(true);
   setStepInto(true);
@@ -387,7 +398,14 @@ stepIntoButton.addEventListener('mouseup', function() {
 stepButton.addEventListener('mouseup', function() {
   // comingSoon();
   if (!getDebugMode()){
-    alert('the program has completed.');
+    endDebugPrompt();
   }
   setDebugMode(true);
 });
+
+function endDebugPrompt() {
+  let exitDebug = confirm('the program has completed. Would you like to exit the debugger?');
+  if (exitDebug){
+    stopButton.click();
+  }
+}

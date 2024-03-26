@@ -934,7 +934,7 @@ class Praxly_codeBlock {
         // };
         for (let i = 0; i < this.praxly_blocks.length; i++) {
             const element = this.praxly_blocks[i];
-            if (element.json.type == NODETYPES.NEWLINE){
+            if (element.json.type == NODETYPES.NEWLINE || element.json.type === NODETYPES.COMMENT || element.json.type === NODETYPES.SINGLE_LINE_COMMENT){
                 continue;
             }
             if (getDebugMode()) {

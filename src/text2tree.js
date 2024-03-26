@@ -568,6 +568,7 @@ class Parser {
         var exp = this.parse_expression(precedence - 1);
         return this.unaryOPNode_new(operation, exp, line, startIndex);
 
+      // This is the dot operator
       case 2:
       var l = this.parse_expression(precedence - 1);
       while ( this.hasAny('.')) {
@@ -578,7 +579,13 @@ class Parser {
         if (r.type != NODETYPES.FUNCCALL){
           textError("compile-time", "classes are not fully supported yet. the right side of the . operator must be a supported string function", line);
         }
-        l = this.binaryOpNode_new(operation, l, r, line);
+        l = {
+          left: l,
+          right: r,
+          type: NODETYPES.SPECIAL_STRING_FUNCCALL,
+          blockID: "code",
+          line: line
+        }
       }
       return l;
 
