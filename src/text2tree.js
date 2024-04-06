@@ -242,12 +242,6 @@ class Lexer {
         this.currentLine += 1;
         this.index_before_this_line = this.i;
         this.startToken = [this.currentLine, this.i - this.index_before_this_line]; 
-        // while (this.has('\n')) {
-        //   this.skip();
-        //   this.currentLine += 1;
-        //   this.index_before_this_line = this.i;
-        //   this.startToken = [this.currentLine, this.i - this.index_before_this_line]; 
-        // }
         continue;
       } 
       if (!this.has_letter()){

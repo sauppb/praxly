@@ -2,10 +2,8 @@ import { textEditor } from "./common";
 
 export function generateUrl() {
     // yank the text in ace
-    // console.log(textEditor.getValue());
     var code = textEditor.getValue();
     let encoded = encodeURIComponent(code);
-    // console.log(encoded);
     window.location.hash = ''; //this should clear it before replacing it
     window.location.hash = `code=${encoded}`
     saveToLocal();
