@@ -487,7 +487,7 @@ class Praxly_print {
     }
 
     async evaluate(environment) {
-        var child = await this.expression.evaluate(environment);
+        var child = await (this.expression.evaluate(environment));
         var result = valueToString(child, this.json);
         addToPrintBuffer(result);
         return null;
@@ -913,7 +913,7 @@ class Praxly_program {
     }
 
     async evaluate() {
-        return await this.codeBlock.evaluate(SCOPES.global);
+        return await (this.codeBlock.evaluate(SCOPES.global));
     }
 }
 
@@ -1202,21 +1202,15 @@ class Praxly_while {
     }
     async evaluate(environment) {
         var loopCount = 0;
-        var cond = await this.condition.evaluate(environment);
-        while (loopCount < WHILE_LOOP_LIMIT && await this.condition.evaluate(environment).value) {
-            var newScope = {
-                parent: environment,
-                name: 'while loop',
-                functionList: {},
-                variableList: {},
-            };
+        var cond = await (this.condition.evaluate(environment));
+        while (loopCount < WHILE_LOOP_LIMIT && cond.value) {
             loopCount += 1;
-            await this.statement.evaluate(newScope);
+            await this.statement.evaluate(environment);
+            if (loopCount === WHILE_LOOP_LIMIT) {
+                throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
+            }
+            cond = await this.condition.evaluate(environment);
         }
-        if (loopCount === WHILE_LOOP_LIMIT) {
-            throw new PraxlyError(`This is probably an infinite loop.`, this.json.line);
-        }
-        cond = await this.condition.evaluate(environment);
     }
 }
 
