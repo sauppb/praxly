@@ -20,7 +20,7 @@ import { generateUrl, loadFromUrl } from './share';
 
 // import { readFileSync } from 'fs';
 import { codeText } from './examples';
-import { DebugButton, addBlockErrors, annotationsBuffer, clearErrors, clearOutput, comingSoon, defaultError, errorOutput, getDebugMode, printBuffer, setDebugMode, setStepInto, stepButton, stepIntoButton, stopButton, textEditor } from './common';
+import { DEV_LOG, DebugButton, addBlockErrors, annotationsBuffer, clearErrors, clearOutput, comingSoon, defaultError, errorOutput, getDebugMode, printBuffer, setDebugMode, setStepInto, stepButton, stepIntoButton, stopButton, textEditor } from './common';
 import { hideDebug, showDebug } from './debugger';
 
 const praxlyGenerator = makeGenerator();
@@ -202,9 +202,9 @@ async function runTasks() {
     }
   }
   // stdOut.innerHTML = printBuffer;
-  // stdErr.innerHTML = errorOutput;
   if (errorOutput) {
     textEditor.session.setAnnotations(annotationsBuffer);
+    stdErr.innerHTML = errorOutput;
     addBlockErrors(workspace);
     clearErrors();
   } else {
@@ -229,8 +229,10 @@ export function turnCodeToBLocks() {
   clearOutput();
   clearErrors();
   mainTree = text2tree();
-  //uncomment to print the ir
-  console.log(mainTree);
+  
+  if (DEV_LOG) {
+    console.log(mainTree);
+  }
   workspace.clear();
   tree2blocks(workspace, mainTree);
   workspace.render();

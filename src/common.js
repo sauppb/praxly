@@ -96,6 +96,7 @@ export class PraxlyError extends Error {
     super(`<pre>error occurred on line ${line}:\n\t${message}</pre>`);
     this.errorMessage = this.message;
     appendAnnotation(message, line);
+
     errorOutput = this.message;       // not appending run-time error
   }
 }
@@ -163,13 +164,16 @@ export function addBlockErrors(workspace) {
  */
 export function appendAnnotation(errorMessage, line) {
   var annotation = {
-    row: line - 1, // no idea why the rows start with zero here but start with 1 everywhere else, but okay
+    row: line,
     column: 0,
     text: errorMessage,
     type: "error"
   };
   annotationsBuffer.push(annotation);
-  highlightLine(line);
+
+  //gohere
+  // might cause a bug depending on how line is calculated. 
+  highlightLine(line + 1);
 
 }
 
@@ -320,3 +324,7 @@ export function comingSoon() {
     ComingSoonToast.style.display = 'none';
   }, 3000); // Hide the toast after 3 seconds (adjust as needed)
 }
+
+
+//this will let information that I deemed important to be logged to the console. 
+export const DEV_LOG = false;

@@ -1456,6 +1456,8 @@ class Praxly_String_funccall {
     }
 
 }
+
+// The only reason this is a part of the tree is so that I can preserve the empty lines when I transfer between blocks and text
 class Praxly_emptyLine {
 
     constructor(node) {
