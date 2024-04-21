@@ -284,7 +284,9 @@ h1 {
 #exampleTable {
   color: #2196f3;
   background-color: #e7e5e5;
-  display: flex;
+  position: absolute;
+  right: 0;
+  height: fit-content;
 }
 
 .example_links {
