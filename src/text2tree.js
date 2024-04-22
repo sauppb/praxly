@@ -590,12 +590,15 @@ class Parser {
             this.eof = true;
             return 'EOF';
           case NODETYPES.INT:
-          case 'input':
           case NODETYPES.STRING:
           case NODETYPES.CHAR:
           case NODETYPES.FLOAT:
           case NODETYPES.DOUBLE:
             this.advance();
+            return this.literalNode_new(this.tokens[this.i - 1]);
+          case 'input':
+            this.tokens[this.i].token_type = NODETYPES.INPUT;
+            this.advance(); 
             return this.literalNode_new(this.tokens[this.i - 1]);
           case NODETYPES.BOOLEAN: 
             this.advance(); 
