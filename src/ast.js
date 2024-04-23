@@ -1003,7 +1003,7 @@ class Praxly_assignment {
         this.json = node;
         this.location = location;
         this.value = expression;
-         
+        
     }
 
     async evaluate(environment) {
@@ -1011,7 +1011,7 @@ class Praxly_assignment {
         let valueEvaluated = await this.value.evaluate(environment);
         var storage = accessLocation(environment, this.location);
         if (!storage) {
-            throw new PraxlyError(`Variable ${this.location.name} does not exist.`, this.json.line);
+            throw new PraxlyError(`Variable ${this.location.name} does not exist in this scope.`, this.json.line);
         }
         
         let currentStoredVariableEvaluated = await this.location.evaluate(environment);
@@ -1358,7 +1358,7 @@ class Praxly_function_call {
 
         //NEW: parameter list is now a linkedList. expect some errors till I fix it.
         var newScope = {
-            parent: environment,
+            parent: SCOPES.global,
             name: `function: ${this.name}`,
             functionList: {},
             variableList: {},
