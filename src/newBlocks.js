@@ -213,7 +213,8 @@ export function definePraxlyBlocks(workspace) {
       "previousStatement": null,
       "nextStatement": null,
       "style": 'loop_blocks',
-      "tooltip": "",
+      "tooltip": "This is a loop block. the first hole in this block is for initializing a vairable. The second is the condition in which the loop will hault. " + 
+      "The final hole is for the expression that specifies how you incriment the variable. The code below is what will get called over and over again in the loop. ",
       "helpUrl": ""
     },
     {

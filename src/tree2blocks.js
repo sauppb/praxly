@@ -355,8 +355,9 @@ export const tree2blocks = (workspace, node) => {
             }
             catch (error) {
                 console.error('An error occurred: could not generate the nested block', error);
-                initialization.dispose();
-                increment.dispose();
+                initialization?.dispose();
+                increment?.dispose(); // the question marks here helped the for loop block generate when just typing 
+                // the word "for", giving a little bit of predictive block rendering. 
             }
             break;
 

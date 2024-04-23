@@ -337,31 +337,30 @@ bothButton.click();
 
 function GenerateExamples() {
   const dataArray = codeText.split('##');
-  const result = {};
-
+  var selectDropdown = document.getElementById("exampleTable");
   for (let i = 1; i < dataArray.length - 1; i += 2) {
     const label = dataArray[i].trim();
-    var newButton = document.createElement("button");
-    newButton.textContent = label;
-    newButton.classList.add("example_links");
-    newButton.addEventListener('click', function () {
-      // generateUrl();
-      applyExample(label);
-    });
-    exampleDiv.appendChild(newButton);
-
+    var option = document.createElement("option");
+    option.textContent = label;
     const value = dataArray[i + 1].trim();
-    result[label] = value + "\n";
+    option.value = value;
+
+    selectDropdown.appendChild(option);
   }
 
-  return result;
+  selectDropdown.addEventListener('change', function () {
+    textEditor.setValue(selectDropdown.value, -1);
+    textPane.click();
+  });
+
 }
 
-let examples = GenerateExamples();
+ 
+GenerateExamples();
 
-function applyExample(exampleName) {
+function applyExample(code) {
   // append the example to the code
-  textEditor.setValue(examples[exampleName], -1);
+  textEditor.setValue(code, -1);
   textPane.click();
 }
 
